@@ -1,0 +1,197 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="About — Whisp"
+  description="Whisp is built by Eyes Wide Wellness. We believe meaning is personal — and technology should help you find yours."
+>
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Our story</span>
+      <h1>Built for the meaning-seekers</h1>
+    </div>
+  </div>
+
+  <div class="container page-body">
+    <div class="about-grid">
+      <div class="about-main">
+        <p class="lead">
+          Whisp began with a simple observation: millions of people notice signs, track synchronicities,
+          and log dreams — in scattered notes, camera rolls, and memory. There was no tool that actually
+          helped them make sense of it.
+        </p>
+
+        <p>
+          We built Whisp because we believe in the power of personal meaning-making. Not the kind handed
+          down by a generic app or a one-size-fits-all interpretation guide — but the kind that emerges
+          when you pay attention to your own patterns over time.
+        </p>
+
+        <p>
+          The universe, or your subconscious, or the synchronistic fabric of reality — whatever lens
+          you use — is always speaking. Whisp is the journal that helps you hear it.
+        </p>
+
+        <div class="about-divider">
+          <span class="divider-mark">✦</span>
+        </div>
+
+        <h2>Our philosophy</h2>
+        <p>
+          We don't tell you what your signs mean. We believe that meaning is irreducibly personal —
+          shaped by your history, your beliefs, your cosmology. A crow means something different to
+          someone raised on Norse mythology than to someone who lost a loved one last year.
+        </p>
+        <p>
+          So Whisp's AI is belief-aware. You choose your lenses — astrology, numerology, Jungian
+          psychology, spiritual traditions, or none of the above — and the app only uses frameworks
+          you've opted into. Your meaning, built from your patterns.
+        </p>
+
+        <h2>About Eyes Wide Wellness</h2>
+        <p>
+          Whisp is made by Eyes Wide Wellness, a small studio focused on tools for inner awareness.
+          We're a team of practitioners, developers, and lifelong seekers.
+        </p>
+        <p>
+          Questions or thoughts? We'd love to hear from you:
+          <a href="mailto:eyeswidewellness@gmail.com" class="inline-link">eyeswidewellness@gmail.com</a>
+        </p>
+      </div>
+
+      <aside class="about-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-glyph">◎</div>
+          <h3>Core beliefs</h3>
+          <ul>
+            <li>Meaning is personal, not universal</li>
+            <li>Attention transforms experience</li>
+            <li>Technology should serve inner life</li>
+            <li>Your data belongs to you</li>
+          </ul>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-glyph">◐</div>
+          <h3>What we're building</h3>
+          <p>A long-term companion for your inner life. The more you log, the more Whisp understands — and the more meaning you can find.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-hero {
+    padding: 160px 0 80px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .page-hero .section-label { display: block; margin-bottom: 16px; }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 300;
+    color: var(--cream);
+    max-width: 600px;
+  }
+
+  .page-body { padding: 80px 0 120px; }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-main { display: flex; flex-direction: column; gap: 24px; }
+  .about-main p {
+    font-size: 1rem;
+    color: var(--cream-dim);
+    line-height: 1.9;
+    font-family: var(--font-heading);
+  }
+  .lead {
+    font-size: 1.2rem !important;
+    color: var(--cream) !important;
+    font-weight: 300;
+  }
+  .about-main h2 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin-top: 16px;
+  }
+  .about-divider {
+    text-align: center;
+    color: var(--gold);
+    opacity: 0.3;
+    font-size: 1.2rem;
+    padding: 16px 0;
+  }
+  .inline-link {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    transition: border-color 0.2s;
+  }
+  .inline-link:hover { border-color: var(--gold); }
+
+  .about-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 100px;
+  }
+  .sidebar-card {
+    background: rgba(15, 24, 48, 0.6);
+    border: 1px solid var(--navy-border);
+    border-radius: 8px;
+    padding: 28px;
+  }
+  .sidebar-glyph {
+    font-size: 1.2rem;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-bottom: 14px;
+  }
+  .sidebar-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 14px;
+  }
+  .sidebar-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sidebar-card li {
+    font-size: 0.875rem;
+    color: var(--cream-dim);
+    padding-left: 16px;
+    position: relative;
+  }
+  .sidebar-card li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    opacity: 0.5;
+  }
+  .sidebar-card p {
+    font-size: 0.9rem;
+    color: var(--cream-dim);
+    line-height: 1.7;
+    font-family: var(--font-heading);
+  }
+
+  @media (max-width: 900px) {
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .about-sidebar { position: static; }
+  }
+</style>

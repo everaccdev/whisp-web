@@ -1,0 +1,138 @@
+---
+interface Props {
+  variant?: 'hero' | 'section';
+  label?: string;
+}
+const { variant = 'section', label = 'Join the waitlist' } = Astro.props;
+---
+
+<div class={`email-capture email-capture--${variant}`} id="early-access">
+  <form
+    name="waitlist"
+    method="POST"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    class="capture-form"
+    id="waitlist-form"
+  >
+    <input type="hidden" name="form-name" value="waitlist" />
+    <p class="hidden" aria-hidden="true">
+      <label>Don't fill this out: <input name="bot-field" /></label>
+    </p>
+
+    <div class="input-row">
+      <input
+        type="email"
+        name="email"
+        placeholder="your@email.com"
+        required
+        class="email-input"
+        autocomplete="email"
+      />
+      <button type="submit" class="btn btn-primary">
+        {label}
+      </button>
+    </div>
+
+    <p class="capture-note">No spam. Just a quiet heads-up when we launch.</p>
+  </form>
+
+  <div class="capture-success" id="capture-success" hidden>
+    <div class="success-glyph">✦</div>
+    <p class="success-text">You're on the list. We'll be in touch.</p>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('waitlist-form') as HTMLFormElement;
+  const success = document.getElementById('capture-success');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data as any).toString(),
+      });
+      form.hidden = true;
+      if (success) success.hidden = false;
+    } catch {
+      // fallback: let form submit normally
+      form.submit();
+    }
+  });
+</script>
+
+<style>
+  .email-capture { width: 100%; }
+
+  .capture-form { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+
+  .email-capture--hero .capture-form { align-items: center; }
+
+  .input-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .email-capture--hero .input-row { max-width: 560px; }
+
+  .email-input {
+    flex: 1;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--navy-border);
+    border-radius: 4px;
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+  .email-input::placeholder { color: rgba(200,196,184,0.35); }
+  .email-input:focus { border-color: var(--gold-dim); }
+
+  .capture-note {
+    font-size: 0.75rem;
+    color: rgba(200,196,184,0.4);
+    letter-spacing: 0.04em;
+  }
+
+  .hidden { display: none; }
+
+  .capture-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px;
+    text-align: center;
+  }
+  .success-glyph {
+    font-size: 1.5rem;
+    color: var(--gold);
+    animation: pulse 2s ease infinite;
+  }
+  .success-text {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--cream-dim);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  @media (max-width: 520px) {
+    .input-row { flex-direction: column; }
+    .btn { width: 100%; justify-content: center; }
+  }
+</style>

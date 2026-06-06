@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" fill="none">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- 4-pointed star -->
+  <g transform="translate(32, 36)">
+    <!-- vertical points -->
+    <path d="M0 -26 C1.5 -8 1.5 -1.5 0 0 C-1.5 -1.5 -1.5 -8 0 -26Z" fill="#c9a84c"/>
+    <path d="M0 26 C1.5 8 1.5 1.5 0 0 C-1.5 1.5 -1.5 8 0 26Z" fill="#c9a84c"/>
+    <!-- horizontal points -->
+    <path d="M-26 0 C-8 1.5 -1.5 1.5 0 0 C-1.5 -1.5 -8 -1.5 -26 0Z" fill="#c9a84c"/>
+    <path d="M26 0 C8 1.5 1.5 1.5 0 0 C1.5 -1.5 8 -1.5 26 0Z" fill="#c9a84c"/>
+    <!-- subtle inner glow circle -->
+    <circle cx="0" cy="0" r="3" fill="#e8c97a" opacity="0.6"/>
+  </g>
+
+  <!-- "whisp" italic text using foreignObject for Google Font, fallback to serif -->
+  <text
+    x="72"
+    y="50"
+    font-family="'Cormorant Garamond', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif"
+    font-size="42"
+    font-style="italic"
+    font-weight="400"
+    letter-spacing="1"
+    fill="#e8e4da"
+  >whisp</text>
+</svg>

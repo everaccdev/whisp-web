@@ -1,0 +1,153 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+const updated = 'June 2025';
+---
+
+<Base
+  title="Privacy Policy — Whisp"
+  description="Whisp privacy policy. We take your data and your inner life seriously."
+>
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Legal</span>
+      <h1>Privacy Policy</h1>
+      <p class="page-meta">Last updated: {updated}</p>
+    </div>
+  </div>
+
+  <div class="container legal-body">
+    <div class="legal-content">
+
+      <p class="lead">Your inner life is private. We treat it that way.</p>
+
+      <h2>1. What we collect</h2>
+      <p>When you use Whisp, we may collect:</p>
+      <ul>
+        <li><strong>Account information:</strong> email address and display name when you create an account.</li>
+        <li><strong>Journal content:</strong> sign logs, dreams, symbols, notes, and entries you create in the app. This data is stored in your private account and is not shared with other users.</li>
+        <li><strong>Beliefs and preferences:</strong> the cosmological frameworks you select (astrology, numerology, etc.) to personalize AI responses.</li>
+        <li><strong>Usage data:</strong> basic analytics like app opens and feature usage, collected in aggregate, not linked to your journal content.</li>
+        <li><strong>Device information:</strong> device type, OS version, and app version for debugging and support.</li>
+      </ul>
+
+      <h2>2. How we use your data</h2>
+      <p>We use your data to:</p>
+      <ul>
+        <li>Provide and improve the Whisp service</li>
+        <li>Generate personalized AI reflections and pattern insights</li>
+        <li>Send transactional emails (account confirmations, subscription receipts)</li>
+        <li>Respond to support requests</li>
+      </ul>
+      <p><strong>We do not sell your data.</strong> We do not share your journal content with third parties for advertising or marketing purposes.</p>
+
+      <h2>3. AI and third-party services</h2>
+      <p>
+        Whisp uses Claude (Anthropic) to generate personalized reflections. When you request an AI insight,
+        relevant portions of your journal data are sent to Anthropic's API to generate a response.
+        Anthropic's use of this data is governed by their <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" class="inline-link">privacy policy</a>.
+        We use API access, which means your data is not used to train Anthropic's models.
+      </p>
+      <p>We also use:</p>
+      <ul>
+        <li><strong>Firebase (Google):</strong> for authentication, database, and storage.</li>
+        <li><strong>Adapty:</strong> for subscription management.</li>
+        <li><strong>Stripe:</strong> for payment processing. We do not store payment card details.</li>
+      </ul>
+
+      <h2>4. Data retention</h2>
+      <p>
+        Your journal data is retained as long as your account is active. You may delete your account
+        and all associated data at any time from the app settings. Deletion is permanent and irreversible.
+      </p>
+
+      <h2>5. Security</h2>
+      <p>
+        All data is encrypted in transit and at rest. We use Firebase's security infrastructure and
+        follow industry best practices. No system is perfectly secure; we will notify you promptly
+        in the event of any breach affecting your data.
+      </p>
+
+      <h2>6. Your rights</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access the data we hold about you</li>
+        <li>Export your journal data</li>
+        <li>Delete your account and all data</li>
+        <li>Correct inaccurate account information</li>
+      </ul>
+      <p>To exercise these rights, contact us at <a href="mailto:eyeswidewellness@gmail.com" class="inline-link">eyeswidewellness@gmail.com</a>.</p>
+
+      <h2>7. Children</h2>
+      <p>Whisp is not intended for users under 13 years of age. We do not knowingly collect data from children under 13.</p>
+
+      <h2>8. Changes to this policy</h2>
+      <p>We may update this policy periodically. Material changes will be communicated via email or in-app notification. Continued use of Whisp after changes constitutes acceptance.</p>
+
+      <h2>9. Contact</h2>
+      <p>
+        Questions about this policy? Reach us at:
+        <a href="mailto:eyeswidewellness@gmail.com" class="inline-link">eyeswidewellness@gmail.com</a>
+      </p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-hero {
+    padding: 160px 0 64px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .page-hero .section-label { display: block; margin-bottom: 16px; }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 12px;
+  }
+  .page-meta {
+    font-size: 0.8rem;
+    color: rgba(200,196,184,0.35);
+    letter-spacing: 0.05em;
+  }
+
+  .legal-body { padding: 64px 0 120px; }
+  .legal-content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .lead {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .legal-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-top: 20px;
+  }
+  .legal-content p, .legal-content li {
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+    line-height: 1.9;
+  }
+  .legal-content ul {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .legal-content strong { color: var(--cream); font-weight: 500; }
+  .inline-link {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+  .inline-link:hover { border-color: var(--gold); }
+</style>

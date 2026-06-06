@@ -1,0 +1,176 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+const updated = 'June 2025';
+---
+
+<Base
+  title="Terms of Service — Whisp"
+  description="Whisp terms of service."
+>
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Legal</span>
+      <h1>Terms of Service</h1>
+      <p class="page-meta">Last updated: {updated}</p>
+    </div>
+  </div>
+
+  <div class="container legal-body">
+    <div class="legal-content">
+
+      <p class="lead">By using Whisp, you agree to these terms. Please read them.</p>
+
+      <h2>1. Acceptance of terms</h2>
+      <p>
+        By accessing or using Whisp ("the App"), you agree to be bound by these Terms of Service.
+        If you do not agree, do not use the App. These terms apply to all users, including free and
+        premium subscribers.
+      </p>
+
+      <h2>2. Description of service</h2>
+      <p>
+        Whisp is a personal journaling application for tracking signs, synchronicities, dreams, and symbols.
+        It includes AI-powered features for generating personalized reflections and pattern insights.
+        The service is provided by Eyes Wide Wellness ("we," "us," or "our").
+      </p>
+
+      <h2>3. User accounts</h2>
+      <ul>
+        <li>You must provide a valid email address to create an account.</li>
+        <li>You are responsible for maintaining the security of your account credentials.</li>
+        <li>You may not share your account with others or create multiple accounts.</li>
+        <li>You must be at least 13 years old to use Whisp.</li>
+      </ul>
+
+      <h2>4. Subscriptions and payments</h2>
+      <p>
+        Whisp offers free and premium tiers. Premium features require a paid subscription.
+      </p>
+      <ul>
+        <li><strong>In-app subscriptions</strong> are processed through Apple App Store or Google Play. Billing, cancellation, and refunds are governed by the respective platform's policies.</li>
+        <li><strong>Web subscriptions</strong> are processed through Stripe. You may cancel at any time; cancellation takes effect at the end of your current billing period.</li>
+        <li><strong>Founding member pricing</strong>, where offered, is locked for the duration of your continuous subscription. If you cancel, founder pricing may not be available upon resubscription.</li>
+        <li>We reserve the right to change pricing with reasonable notice.</li>
+      </ul>
+
+      <h2>5. Your content</h2>
+      <p>
+        You own the content you create in Whisp — your journal entries, logs, notes, and data.
+        By using the App, you grant us a limited license to store and process your content solely
+        to provide the service to you. We do not claim ownership of your content.
+      </p>
+      <p>
+        You are responsible for the content you enter. Do not enter sensitive personal information
+        beyond what is necessary for your journaling practice.
+      </p>
+
+      <h2>6. Acceptable use</h2>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use the App for any unlawful purpose</li>
+        <li>Attempt to reverse engineer, hack, or disrupt the service</li>
+        <li>Use automated tools to access the App at scale</li>
+        <li>Misrepresent your identity or create fake accounts</li>
+      </ul>
+
+      <h2>7. AI-generated content</h2>
+      <p>
+        Whisp uses AI to generate personalized reflections. These are meant for personal reflection
+        and meaning-making only — they are not professional medical, psychological, legal, or financial
+        advice. Do not rely on AI-generated content for decisions requiring professional judgment.
+      </p>
+
+      <h2>8. Disclaimers</h2>
+      <p>
+        Whisp is provided "as is" without warranties of any kind. We do not guarantee uninterrupted
+        availability, accuracy of AI outputs, or fitness for any particular purpose.
+      </p>
+
+      <h2>9. Limitation of liability</h2>
+      <p>
+        To the maximum extent permitted by law, Eyes Wide Wellness shall not be liable for any
+        indirect, incidental, or consequential damages arising from your use of Whisp.
+      </p>
+
+      <h2>10. Termination</h2>
+      <p>
+        We may suspend or terminate your account for violation of these terms. You may delete your
+        account at any time. Upon termination, your data will be deleted per our Privacy Policy.
+      </p>
+
+      <h2>11. Governing law</h2>
+      <p>These terms are governed by the laws of the State of Utah, United States.</p>
+
+      <h2>12. Changes to terms</h2>
+      <p>
+        We may update these terms. Continued use after changes constitutes acceptance.
+        Material changes will be communicated via email.
+      </p>
+
+      <h2>13. Contact</h2>
+      <p>
+        Questions about these terms:
+        <a href="mailto:eyeswidewellness@gmail.com" class="inline-link">eyeswidewellness@gmail.com</a>
+      </p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-hero {
+    padding: 160px 0 64px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .page-hero .section-label { display: block; margin-bottom: 16px; }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 12px;
+  }
+  .page-meta {
+    font-size: 0.8rem;
+    color: rgba(200,196,184,0.35);
+    letter-spacing: 0.05em;
+  }
+  .legal-body { padding: 64px 0 120px; }
+  .legal-content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .lead {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .legal-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-top: 20px;
+  }
+  .legal-content p, .legal-content li {
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+    line-height: 1.9;
+  }
+  .legal-content ul {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .legal-content strong { color: var(--cream); font-weight: 500; }
+  .inline-link {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+  .inline-link:hover { border-color: var(--gold); }
+</style>

@@ -1,0 +1,129 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo-mark">✦ whisp</span>
+      <p class="footer-tagline">A journal for signs & synchronicity</p>
+    </div>
+
+    <nav class="footer-nav">
+      <div class="footer-col">
+        <h4>App</h4>
+        <ul>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#how-it-works">How It Works</a></li>
+          <li><a href="/#early-access">Early Access</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="mailto:eyeswidewellness@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <p class="footer-copy">© {year} Eyes Wide Wellness. All rights reserved.</p>
+      <div class="footer-glyph">✦</div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--navy-border);
+    margin-top: var(--section-pad);
+    padding-top: 64px;
+  }
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 64px;
+    padding-bottom: 48px;
+  }
+  .footer-logo-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.55);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .footer-tagline {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--cream-dim);
+  }
+  .footer-nav {
+    display: flex;
+    gap: 48px;
+  }
+  .footer-col h4 {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footer-col a {
+    font-size: 0.875rem;
+    color: var(--cream-dim);
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--cream); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(30, 45, 80, 0.5);
+    padding: 20px 0;
+  }
+  .footer-bottom .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: rgba(200, 196, 184, 0.4);
+    letter-spacing: 0.04em;
+  }
+  .footer-glyph {
+    color: var(--gold);
+    opacity: 0.3;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .footer-nav {
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+  }
+</style>
