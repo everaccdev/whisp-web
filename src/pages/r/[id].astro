@@ -1,0 +1,312 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+
+const { id } = Astro.params;
+
+const FUNCTION_URL =
+  'https://us-central1-life-signs-be094' +
+  '.cloudfunctions.net/sharedReadingAccess';
+
+let data: any = null;
+let error = false;
+
+try {
+  const res = await fetch(
+    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`
+  );
+  data = await res.json();
+} catch (e) {
+  error = true;
+}
+
+const expired = error || data?.expired || data?.error;
+
+const APP_STORE_URL =
+  'https://apps.apple.com/app/whisp-signs-synchronicity'; // update once live
+
+const TYPE_LABELS: Record<string, string> = {
+  sign: 'a sign',
+  dream: 'a dream',
+  event: "what's been happening",
+};
+
+const typeLabel = data?.inputType
+  ? (TYPE_LABELS[data.inputType] ?? 'this')
+  : 'this';
+
+const pageTitle = data?.recipientName
+  ? `A reading for ${data.recipientName} ✦ Whisp`
+  : 'A reading from Whisp ✦';
+
+const pageDescription =
+  !expired && data?.reading
+    ? String(data.reading).slice(0, 150) + '...'
+    : 'Whisp — a journal for signs, dreams, and synchronicities.';
+---
+
+<MinimalLayout title={pageTitle} description={pageDescription} twitterCard="summary">
+
+  {expired && (
+    <section class="reading-page expired">
+      <div class="wordmark">✦ whisp</div>
+
+      <div class="geometry-mark">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none"
+            stroke="#c9a84c"
+            stroke-width="0.8"
+          />
+        </svg>
+      </div>
+
+      <h1>This reading has faded</h1>
+      <p class="subtext">
+        Gifted readings stay active for a little while, then return to the
+        ether — like the signs themselves.
+      </p>
+
+      <a href={APP_STORE_URL} class="cta-primary">Get readings of your own ✦</a>
+      <p class="microcopy">
+        Whisp helps you notice what your life has been trying to tell you.
+      </p>
+    </section>
+  )}
+
+  {!expired && data && (
+    <section class="reading-page">
+      <div class="wordmark">✦ whisp</div>
+
+      <div class="geometry-mark">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none"
+            stroke="#c9a84c"
+            stroke-width="0.8"
+          />
+        </svg>
+      </div>
+
+      <p class="eyebrow">
+        {data.ownerDisplayName
+          ? `${data.ownerDisplayName} thought of you`
+          : 'Someone thought of you'}
+      </p>
+
+      <h1>
+        {data.recipientName
+          ? <>A reading for <em>{data.recipientName}</em></>
+          : <>A reading <em>for you</em></>}
+      </h1>
+
+      {data.signValue && (
+        <div class="sign-pill">{data.signValue}</div>
+      )}
+
+      <p class="reading-context">
+        Based on {typeLabel} they shared with Whisp.
+      </p>
+
+      <div class="reading-card">
+        <p class="reading-eyebrow">✦ WHISP'S READING</p>
+        <div class="reading-text">
+          {(data.reading || '').split('\n').filter((p: string) => p.trim()).map((para: string) => <p>{para}</p>)}
+        </div>
+      </div>
+
+      <div class="reading-divider"></div>
+
+      <h2>Curious what <em>your</em> signs mean?</h2>
+      <p class="subtext">
+        Whisp is a journal for the signs, symbols, and synchronicities you
+        notice every day — with personal AI readings drawn from your own
+        life and beliefs.
+      </p>
+
+      <a href={APP_STORE_URL} class="cta-primary">Download Whisp ✦</a>
+      <p class="microcopy">Free to start · Premium unlocks personal readings</p>
+    </section>
+  )}
+
+</MinimalLayout>
+
+<style>
+  .reading-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px 64px;
+    max-width: 520px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #0a1020 0%, #141c38 60%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 28px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+  }
+
+  .geometry-mark {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 24px;
+    opacity: 0.5;
+  }
+
+  .eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(201, 168, 76, 0.8);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 36px;
+    line-height: 1.2;
+    margin: 0 0 20px;
+    color: #faf8f3;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: #c9a84c;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1.25;
+    margin: 0 0 12px;
+    color: #faf8f3;
+  }
+
+  h2 em {
+    font-style: italic;
+    color: #c9a84c;
+  }
+
+  .sign-pill {
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #c9a84c;
+    border: 0.5px solid rgba(201, 168, 76, 0.4);
+    background: rgba(201, 168, 76, 0.08);
+    border-radius: 999px;
+    padding: 8px 22px;
+    margin-bottom: 16px;
+  }
+
+  .reading-context {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 24px;
+  }
+
+  .reading-card {
+    width: 100%;
+    background: rgba(201, 168, 76, 0.07);
+    border: 0.5px solid rgba(201, 168, 76, 0.2);
+    border-left: 3px solid rgba(201, 168, 76, 0.5);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .reading-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #c9a84c;
+    margin: 0 0 14px;
+  }
+
+  .reading-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 19px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 14px;
+  }
+
+  .reading-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .reading-divider {
+    width: 40px;
+    height: 0.5px;
+    background: rgba(201, 168, 76, 0.4);
+    margin: 8px 0 32px;
+  }
+
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.55);
+    max-width: 380px;
+    margin: 0 0 28px;
+  }
+
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #c9a84c;
+    color: #0a1020;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 16px 36px;
+    transition: opacity 0.2s ease;
+  }
+
+  .cta-primary:hover {
+    opacity: 0.85;
+  }
+
+  .microcopy {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  .expired h1 {
+    font-size: 30px;
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 30px; }
+    .reading-text p { font-size: 17px; }
+  }
+</style>
