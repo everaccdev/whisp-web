@@ -26,15 +26,23 @@ const expired = error || data?.expired || data?.error;
 const APP_STORE_URL =
   'https://apps.apple.com/app/whisp-signs-synchronicity'; // update once live
 
-const TYPE_LABELS: Record<string, string> = {
-  sign: 'a sign',
-  dream: 'a dream',
-  event: "what's been happening",
-};
+const noticing = data?.noticing || {};
+const noticingParts: string[] = [];
+if (noticing.hasDream) noticingParts.push('a dream');
+if (noticing.signs?.length) {
+  noticingParts.push(
+    noticing.signs.length > 1
+      ? `the signs ${noticing.signs.join(', ')}`
+      : `"${noticing.signs[0]}"`
+  );
+}
+if (noticing.hasSituation && !noticing.hasDream && !noticing.signs?.length) {
+  noticingParts.push("what's been going on");
+}
 
-const typeLabel = data?.inputType
-  ? (TYPE_LABELS[data.inputType] ?? 'this')
-  : 'this';
+const contextLine = noticingParts.length
+  ? `Based on ${noticingParts.join(' and ')} they shared with Whisp.`
+  : 'A reading from Whisp.';
 
 const pageTitle = data?.recipientName
   ? `A reading for ${data.recipientName} ✦ Whisp`
@@ -103,13 +111,15 @@ const pageDescription =
           : <>A reading <em>for you</em></>}
       </h1>
 
-      {data.signValue && (
-        <div class="sign-pill">{data.signValue}</div>
+      {noticing.signs?.length > 0 && (
+        <div class="sign-pills">
+          {noticing.signs.map((s: string) => (
+            <div class="sign-pill">{s}</div>
+          ))}
+        </div>
       )}
 
-      <p class="reading-context">
-        Based on {typeLabel} they shared with Whisp.
-      </p>
+      <p class="reading-context">{contextLine}</p>
 
       <div class="reading-card">
         <p class="reading-eyebrow">✦ WHISP'S READING</p>
@@ -203,6 +213,15 @@ const pageDescription =
     color: #c9a84c;
   }
 
+  .sign-pills {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
   .sign-pill {
     display: inline-block;
     font-family: 'Cormorant Garamond', serif;
@@ -212,7 +231,6 @@ const pageDescription =
     background: rgba(201, 168, 76, 0.08);
     border-radius: 999px;
     padding: 8px 22px;
-    margin-bottom: 16px;
   }
 
   .reading-context {
