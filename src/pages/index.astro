@@ -109,6 +109,34 @@ import EmailCapture from '../components/EmailCapture.astro';
         <div class="slide-logo">✦ whisp</div>
       </div>
 
+      <div class="quote-slide" style="--bg: url('/quote-3.png')">
+        <div class="quote-bg"></div>
+        <div class="quote-body">
+          <div class="quote-category">
+            <span class="q-glyph">✦</span>
+            <span>ON INTUITION</span>
+          </div>
+          <div class="q-rule"></div>
+          <blockquote>"The intuitive mind is a sacred gift and the rational mind is a faithful servant. We have created a society that honors the servant and has forgotten the gift."</blockquote>
+          <cite>~ Albert Einstein</cite>
+        </div>
+        <div class="slide-logo">✦ whisp</div>
+      </div>
+
+      <div class="quote-slide" style="--bg: url('/quote-1.png')">
+        <div class="quote-bg"></div>
+        <div class="quote-body">
+          <div class="quote-category">
+            <span class="q-glyph">✦</span>
+            <span>CARL JUNG</span>
+          </div>
+          <div class="q-rule"></div>
+          <blockquote>"Who looks outside, dreams; who looks inside, awakens."</blockquote>
+          <cite>~ Carl Jung</cite>
+        </div>
+        <div class="slide-logo">✦ whisp</div>
+      </div>
+
     </div>
 
     <!-- Navigation -->
@@ -119,6 +147,8 @@ import EmailCapture from '../components/EmailCapture.astro';
         <button class="q-dot" data-idx="1"></button>
         <button class="q-dot" data-idx="2"></button>
         <button class="q-dot" data-idx="3"></button>
+        <button class="q-dot" data-idx="4"></button>
+        <button class="q-dot" data-idx="5"></button>
       </div>
       <button class="q-btn" id="q-next" aria-label="Next">→</button>
     </div>
@@ -129,7 +159,7 @@ import EmailCapture from '../components/EmailCapture.astro';
     const track = document.getElementById('quotes-track');
     const dots = document.querySelectorAll('.q-dot');
     let current = 0;
-    const total = 4;
+    const total = 6;
 
     function goTo(idx) {
       current = (idx + total) % total;
@@ -152,6 +182,100 @@ import EmailCapture from '../components/EmailCapture.astro';
       if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
     });
   </script>
+
+  <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
+  <section class="showcase" id="showcase">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Inside Whisp</span>
+        <h2 class="section-title">Every sign has a home</h2>
+        <p class="section-sub">Beautiful, minimal, and built around what you actually believe.</p>
+      </div>
+    </div>
+
+    <div class="showcase-scroller">
+
+      <!-- Screen 1: Sign Log -->
+      <div class="mock-screen">
+        <div class="ms-top">
+          <span class="ms-back">←</span>
+          <span class="ms-nav">SIGN LOG</span>
+          <span class="ms-edit">✎</span>
+        </div>
+        <div class="ms-header-img ms-header-img--log">
+          <div class="ms-img-overlay"></div>
+          <div class="ms-top-chips">
+            <span class="ms-chip">view symbol</span>
+            <span class="ms-chip ms-chip-dim">3×</span>
+          </div>
+        </div>
+        <div class="ms-content">
+          <div class="ms-sign-name">Black Crow</div>
+          <div class="ms-meta">Jun 10 · ◯ Waking</div>
+          <div class="ms-tag-row">
+            <span class="ms-tag">◎ Animal</span>
+            <span class="ms-tag">☽ Waxing Gibbous</span>
+          </div>
+          <div class="ms-section-label">SIGN NOTES</div>
+          <div class="ms-note">Saw a crow land directly in front of me twice today. Both times at a threshold — a doorway, then the edge of the park path.</div>
+          <div class="ms-section-label" style="margin-top:8px">✦ AI REFLECTION</div>
+          <div class="ms-ai">The crow at thresholds speaks to transition. Your third encounter this month — the pattern is becoming clear.</div>
+        </div>
+        <div class="ms-screen-label">Sign & Dream Logging</div>
+      </div>
+
+      <!-- Screen 2: Weekly Narrative (center) -->
+      <div class="mock-screen mock-screen--center">
+        <div class="ms-top">
+          <span class="ms-spacer"></span>
+          <span class="ms-nav">WEEKLY INSIGHTS</span>
+          <span class="ms-spacer"></span>
+        </div>
+        <div class="ms-insights-period">Jun 3 — Jun 10, 2025</div>
+        <div class="ms-stats">
+          <div class="ms-stat"><span class="ms-n">12</span><span class="ms-l">Signs</span></div>
+          <div class="ms-stat"><span class="ms-n">4</span><span class="ms-l">Dreams</span></div>
+          <div class="ms-stat"><span class="ms-n">3</span><span class="ms-l">✦ Pulls</span></div>
+        </div>
+        <div class="ms-narrative">
+          <div class="ms-narr-eyebrow">✦ YOUR NARRATIVE</div>
+          <div class="ms-narr-text">"Your signs this week gather around a single thread — encounters at thresholds. Crows at doorways, 11:11 twice in transit, a wolf in the liminal space of a dream. Something in you is ready to cross."</div>
+        </div>
+        <div class="ms-sacred">
+          <div class="ms-section-label">SACRED TOOLS CONSULTED</div>
+          <div class="ms-sacred-item">ᚺ Hagalaz — Rune · disruption</div>
+          <div class="ms-sacred-item">✦ The Tower (Rev.) — Tarot · XVI</div>
+          <div class="ms-sacred-item">☰ Hexagram 51 — The Arousing</div>
+        </div>
+        <div class="ms-screen-label">Weekly AI Narrative</div>
+      </div>
+
+      <!-- Screen 3: Tarot Pull -->
+      <div class="mock-screen">
+        <div class="ms-top">
+          <span class="ms-back">←</span>
+          <span class="ms-nav">TAROT PULL</span>
+          <span style="width:20px"></span>
+        </div>
+        <div class="ms-intro-band">Rider-Waite · 78 Cards · Upright & Reversed</div>
+        <div class="ms-tarot-frame">
+          <div class="ms-tarot-arcana">MAJOR ARCANA · XVI</div>
+          <div class="ms-tarot-numeral">XVI</div>
+          <div class="ms-tarot-name">The Tower</div>
+          <div class="ms-tarot-rev">✦ Reversed</div>
+        </div>
+        <div class="ms-tarot-meaning">Structures that no longer serve are collapsing to make space for what must emerge.</div>
+        <div class="ms-kw-row">
+          <span class="ms-kw">upheaval</span>
+          <span class="ms-kw">revelation</span>
+          <span class="ms-kw">release</span>
+        </div>
+        <div class="ms-draw-btn">DRAW A CARD</div>
+        <div class="ms-screen-label">Sacred Tools</div>
+      </div>
+
+    </div>
+  </section>
 
   <!-- ═══════════════ FEATURES ═══════════════ -->
   <section class="features" id="features">
@@ -200,6 +324,80 @@ import EmailCapture from '../components/EmailCapture.astro';
           <p>Choose your cosmology — astrology, numerology, Jungian, spiritual, secular — and Whisp's AI only draws on the lenses you've selected. Your meaning, not ours.</p>
           <div class="feature-tag feature-tag--gold">Premium</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ LATEST RELEASE ═══════════════ -->
+  <section class="whats-new" id="whats-new">
+    <div class="container">
+      <div class="wn-header">
+        <div class="wn-meta-row">
+          <span class="wn-badge">What's New</span>
+          <span class="wn-date">June 2025</span>
+        </div>
+        <h2 class="section-title">Latest Release Highlights</h2>
+        <p class="section-sub">We've been building. A lot. Here's what just arrived.</p>
+      </div>
+
+      <div class="wn-grid">
+
+        <div class="wn-card">
+          <div class="wn-icon">✦</div>
+          <div class="wn-label wn-label--sacred">New · Sacred</div>
+          <h3 class="wn-title">Tarot Card Pulls</h3>
+          <p class="wn-desc">Draw from the full 78-card Rider-Waite deck — Major and Minor Arcana, upright and reversed — with meanings in Whisp's own reflective voice.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">ᚠ</div>
+          <div class="wn-label wn-label--sacred">New · Sacred</div>
+          <h3 class="wn-title">Elder Futhark Runes</h3>
+          <p class="wn-desc">All 24 runes of the Elder Futhark with meanings rooted in Norse cosmology — upright and reversed, each with its mythic resonance intact.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">☰</div>
+          <div class="wn-label wn-label--sacred">New · Sacred</div>
+          <h3 class="wn-title">I Ching Hexagrams</h3>
+          <p class="wn-desc">Consult all 64 hexagrams of the I Ching. Each cast is recorded and woven into your weekly AI narrative alongside your signs and dreams.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">◐</div>
+          <div class="wn-label">New</div>
+          <h3 class="wn-title">Sacred Tool Narrative</h3>
+          <p class="wn-desc">Your rune, tarot, and I Ching pulls now flow directly into your weekly AI reflection — woven alongside your signs for a richer, fuller picture.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">◈</div>
+          <div class="wn-label">New</div>
+          <h3 class="wn-title">Whisp for a Friend</h3>
+          <p class="wn-desc">Generate a personalized reading for someone you love. Share it as a beautiful web page — drawn from their astrological profile and your intention for them.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">◎</div>
+          <div class="wn-label">New</div>
+          <h3 class="wn-title">Milestone Celebrations</h3>
+          <p class="wn-desc">Personalized full-screen celebrations when you hit meaningful tracking milestones — not generic notifications, but moments that feel like yours.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">⟁</div>
+          <div class="wn-label wn-label--premium">Enhanced · Premium</div>
+          <h3 class="wn-title">Pattern Correlations</h3>
+          <p class="wn-desc">Discover which symbols appear when your emotional state shifts, when the moon is in certain phases, or when specific life events cluster together.</p>
+        </div>
+
+        <div class="wn-card">
+          <div class="wn-icon">☽</div>
+          <div class="wn-label">Enhanced</div>
+          <h3 class="wn-title">Celestial Intelligence</h3>
+          <p class="wn-desc">Live moon phases, retrograde windows, and eclipse seasons woven into every log — so the cosmic weather is always part of the context you're reading from.</p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -903,5 +1101,456 @@ import EmailCapture from '../components/EmailCapture.astro';
     .pricing-grid { grid-template-columns: 1fr; }
     .step { grid-template-columns: 48px 1fr; gap: 20px; }
     .cta-inner { padding: 40px 24px; }
+  }
+
+  /* ── APP SHOWCASE ── */
+  .showcase {
+    padding: var(--section-pad) 0 0;
+    overflow: hidden;
+  }
+  .showcase-scroller {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 64px;
+    padding: 0 clamp(24px,5vw,64px) 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .showcase-scroller::-webkit-scrollbar { display: none; }
+
+  .mock-screen {
+    flex: 0 0 250px;
+    height: 460px;
+    background: #090c1a;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.88) translateY(28px);
+    opacity: 0.55;
+    transition: all 0.3s;
+  }
+  .mock-screen--center {
+    flex: 0 0 270px;
+    height: 500px;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    border-color: rgba(201,168,76,0.22);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,168,76,0.07);
+  }
+
+  /* Nav bar */
+  .ms-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px 8px;
+    background: rgba(9,12,26,0.98);
+    border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .ms-nav {
+    font-family: var(--font-display);
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.65);
+  }
+  .ms-back, .ms-edit, .ms-spacer {
+    font-size: 13px;
+    color: rgba(255,255,255,0.3);
+    width: 20px;
+    text-align: center;
+  }
+
+  /* Header image area */
+  .ms-header-img {
+    height: 110px;
+    position: relative;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #1a2455 0%, #0d1230 55%, #06080f 100%);
+  }
+  .ms-header-img--log {
+    background: linear-gradient(145deg, #0f1e38 0%, #1a2850 40%, #0a0d1c 100%);
+  }
+  .ms-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 25%, #090c1a 100%);
+  }
+  .ms-top-chips {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    display: flex;
+    gap: 5px;
+  }
+  .ms-chip {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.7);
+  }
+  .ms-chip-dim {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* Content area */
+  .ms-content {
+    flex: 1;
+    padding: 10px 14px 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .ms-sign-name {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(255,248,235,0.9);
+    line-height: 1.1;
+  }
+  .ms-meta {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+  .ms-tag-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 3px;
+  }
+  .ms-tag {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.4);
+  }
+  .ms-section-label {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.18em;
+    color: rgba(201,168,76,0.55);
+    text-transform: uppercase;
+  }
+  .ms-note {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    line-height: 1.5;
+    color: rgba(255,248,235,0.6);
+    font-style: italic;
+  }
+  .ms-ai {
+    font-family: var(--font-heading);
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: rgba(255,248,235,0.4);
+    font-style: italic;
+  }
+
+  /* Insights screen */
+  .ms-insights-period {
+    font-family: var(--font-display);
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.28);
+    text-transform: uppercase;
+    text-align: center;
+    padding: 10px 14px 0;
+    flex-shrink: 0;
+  }
+  .ms-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 8px 14px 10px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .ms-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .ms-n {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 300;
+    color: rgba(255,248,235,0.85);
+    line-height: 1;
+  }
+  .ms-l {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.28);
+    text-transform: uppercase;
+  }
+  .ms-narrative {
+    padding: 12px 14px;
+    background: rgba(201,168,76,0.04);
+    border-top: 0.5px solid rgba(201,168,76,0.1);
+    border-bottom: 0.5px solid rgba(201,168,76,0.1);
+    flex-shrink: 0;
+  }
+  .ms-narr-eyebrow {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.18em;
+    color: rgba(201,168,76,0.65);
+    margin-bottom: 8px;
+  }
+  .ms-narr-text {
+    font-family: var(--font-heading);
+    font-size: 11.5px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255,248,235,0.7);
+  }
+  .ms-sacred {
+    padding: 10px 14px;
+    flex-shrink: 0;
+  }
+  .ms-sacred-item {
+    font-family: var(--font-heading);
+    font-size: 10.5px;
+    color: rgba(255,248,235,0.4);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* Tarot screen */
+  .ms-intro-band {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.13em;
+    color: rgba(255,255,255,0.22);
+    text-align: center;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .ms-tarot-frame {
+    margin: 14px auto 10px;
+    width: 115px;
+    height: 170px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,168,76,0.28);
+    background: rgba(201,168,76,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .ms-tarot-arcana {
+    font-family: var(--font-display);
+    font-size: 6px;
+    letter-spacing: 0.12em;
+    color: rgba(201,168,76,0.55);
+    text-align: center;
+  }
+  .ms-tarot-numeral {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 300;
+    color: rgba(201,168,76,0.8);
+    line-height: 1;
+  }
+  .ms-tarot-name {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    color: rgba(255,248,235,0.82);
+    text-align: center;
+  }
+  .ms-tarot-rev {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    color: rgba(180,150,220,0.65);
+  }
+  .ms-tarot-meaning {
+    font-family: var(--font-heading);
+    font-size: 10.5px;
+    font-style: italic;
+    line-height: 1.55;
+    color: rgba(255,248,235,0.55);
+    text-align: center;
+    padding: 0 14px;
+    flex-shrink: 0;
+  }
+  .ms-kw-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding: 8px 12px 0;
+    flex-shrink: 0;
+  }
+  .ms-kw {
+    font-family: var(--font-display);
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(201,168,76,0.28);
+    background: rgba(201,168,76,0.05);
+    color: rgba(201,168,76,0.7);
+  }
+  .ms-draw-btn {
+    margin: 10px 14px 0;
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,168,76,0.28);
+    background: rgba(201,168,76,0.07);
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: rgba(201,168,76,0.75);
+    flex-shrink: 0;
+  }
+
+  /* Screen label footer */
+  .ms-screen-label {
+    margin-top: auto;
+    padding: 8px 14px;
+    font-family: var(--font-display);
+    font-size: 7.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(200,196,184,0.3);
+    text-align: center;
+    border-top: 0.5px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .mock-screen--center .ms-screen-label {
+    color: rgba(201,168,76,0.45);
+    border-top-color: rgba(201,168,76,0.1);
+  }
+
+  /* ── WHAT'S NEW ── */
+  .whats-new {
+    padding: var(--section-pad) 0;
+  }
+  .wn-header {
+    text-align: center;
+    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .wn-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .wn-badge {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.28);
+  }
+  .wn-date {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(200,196,184,0.3);
+    text-transform: uppercase;
+  }
+  .wn-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .wn-card {
+    background: rgba(12,20,42,0.65);
+    border: 1px solid var(--navy-border);
+    border-radius: 8px;
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.28s, transform 0.28s;
+    position: relative;
+  }
+  .wn-card:hover {
+    border-color: rgba(201,168,76,0.22);
+    transform: translateY(-2px);
+  }
+  .wn-icon {
+    font-size: 1.35rem;
+    color: var(--gold);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .wn-label {
+    font-family: var(--font-display);
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    opacity: 0.6;
+  }
+  .wn-label--sacred {
+    color: rgba(180,150,220,0.9);
+    opacity: 1;
+  }
+  .wn-label--premium {
+    color: var(--gold);
+    opacity: 0.75;
+  }
+  .wn-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .wn-desc {
+    font-size: 0.82rem;
+    color: var(--cream-dim);
+    line-height: 1.68;
+  }
+
+  /* Showcase + What's New responsive */
+  @media (max-width: 1100px) {
+    .wn-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .wn-grid { grid-template-columns: repeat(2, 1fr); }
+    .showcase-scroller { justify-content: flex-start; }
+  }
+  @media (max-width: 640px) {
+    .wn-grid { grid-template-columns: 1fr 1fr; }
+    .mock-screen:not(.mock-screen--center) { display: none; }
+    .showcase-scroller { justify-content: center; padding: 0 24px; }
+  }
+  @media (max-width: 480px) {
+    .wn-grid { grid-template-columns: 1fr; }
   }
 </style>
