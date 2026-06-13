@@ -49,138 +49,182 @@ import EmailCapture from '../components/EmailCapture.astro';
     </div>
   </section>
 
-  <!-- ═══════════════ QUOTE CAROUSEL ═══════════════ -->
-  <section class="quotes" id="quotes">
-    <div class="quotes-track" id="quotes-track">
-
-      <div class="quote-slide" style="--bg: url('/quote-1.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>ON SYNCHRONICITY</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"Coincidence is God's way of remaining anonymous."</blockquote>
-          <cite>~ Albert Einstein</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
+  <!-- ═══════════════ APP SLIDES ═══════════════ -->
+  <section class="slides" id="slides">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:36px">
+        <span class="section-label">✦ What Whisp Does</span>
+        <h2 class="section-title">Wonder. Depth. Meaning.</h2>
       </div>
-
-      <div class="quote-slide" style="--bg: url('/quote-2.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>ON SIGNS</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"The universe is always speaking to us… sending us little messages, causing coincidences and serendipities, reminding us to stop, to look around, to believe in something more."</blockquote>
-          <cite>~ Nancy Thayer</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
-      </div>
-
-      <div class="quote-slide" style="--bg: url('/quote-3.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>CARL JUNG</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"Synchronicity is an ever-present reality for those who have eyes to see."</blockquote>
-          <cite>~ Carl Jung</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
-      </div>
-
-      <div class="quote-slide" style="--bg: url('/quote-4.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>ON NOTICING</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"When you live your life with an appreciation of coincidences and their meanings, you connect with the underlying field of infinite possibilities."</blockquote>
-          <cite>~ Deepak Chopra</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
-      </div>
-
-      <div class="quote-slide" style="--bg: url('/quote-3.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>ON INTUITION</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"The intuitive mind is a sacred gift and the rational mind is a faithful servant. We have created a society that honors the servant and has forgotten the gift."</blockquote>
-          <cite>~ Albert Einstein</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
-      </div>
-
-      <div class="quote-slide" style="--bg: url('/quote-1.png')">
-        <div class="quote-bg"></div>
-        <div class="quote-body">
-          <div class="quote-category">
-            <span class="q-glyph">✦</span>
-            <span>CARL JUNG</span>
-          </div>
-          <div class="q-rule"></div>
-          <blockquote>"Who looks outside, dreams; who looks inside, awakens."</blockquote>
-          <cite>~ Carl Jung</cite>
-        </div>
-        <div class="slide-logo">✦ whisp</div>
-      </div>
-
     </div>
 
-    <!-- Navigation -->
-    <div class="quotes-nav">
-      <button class="q-btn" id="q-prev" aria-label="Previous">←</button>
-      <div class="q-dots" id="q-dots">
-        <button class="q-dot active" data-idx="0"></button>
-        <button class="q-dot" data-idx="1"></button>
-        <button class="q-dot" data-idx="2"></button>
-        <button class="q-dot" data-idx="3"></button>
-        <button class="q-dot" data-idx="4"></button>
-        <button class="q-dot" data-idx="5"></button>
+    <div class="slides-scroll" id="slides-scroll">
+
+      <!-- 1: Sign logging -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/quote-2.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">1 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> SIGN LOGGING</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Nothing passes<br><em>unnoticed.</em></p>
+          <p class="slide-text">A crow. A repeating number. A dream you almost forgot. Log it in seconds — Whisp holds the thread so you can follow it.</p>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
       </div>
-      <button class="q-btn" id="q-next" aria-label="Next">→</button>
+
+      <!-- 2: Dream intelligence -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/quote-3.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">2 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> DREAM INTELLIGENCE</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Your dreams speak.<br><em>We listen.</em></p>
+          <p class="slide-text">Each night your mind weaves symbols and stories. Whisp decodes them — surfacing the archetypes and patterns woven into your sleep.</p>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <!-- 3: Pattern recognition -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/quote-4.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">3 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> PATTERN RECOGNITION</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Hidden patterns,<br><em>revealed.</em></p>
+          <p class="slide-text">Your signs don't exist in isolation. Whisp maps connections across time — surfacing what repeats, what clusters, what the universe keeps returning to.</p>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <!-- 4: Sacred tools -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/quote-1.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">4 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> SACRED TOOLS</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Ancient wisdom.<br><em>Your moment.</em></p>
+          <p class="slide-text">Draw a tarot card. Cast a rune. Consult the I Ching. Each pull is recorded and woven into your week's unfolding story.</p>
+          <div class="slide-chips">
+            <span class="slide-chip">Tarot</span>
+            <span class="slide-chip">Runes</span>
+            <span class="slide-chip">I Ching</span>
+          </div>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <!-- 5: Weekly narrative -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/hero-bg-2.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">5 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> WEEKLY NARRATIVE</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Your week,<br><em>in your language.</em></p>
+          <p class="slide-text">Each week, Whisp weaves your signs, dreams, and sacred pulls into a personalized AI reflection — drawn from your cosmology, not a template.</p>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <!-- 6: Belief-aware AI -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/hero-bg-1.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">6 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> BELIEF-AWARE AI</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Your meaning.<br><em>Not ours.</em></p>
+          <p class="slide-text">Choose your cosmology — astrology, Jungian archetypes, numerology, or none. Whisp reads every sign through your lens alone.</p>
+          <div class="slide-chips">
+            <span class="slide-chip">Astrology</span>
+            <span class="slide-chip">Jungian</span>
+            <span class="slide-chip">Numerology</span>
+          </div>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <div class="slides-spacer"></div>
+    </div>
+
+    <div class="slides-nav">
+      <button class="sc-btn" id="sc-prev" aria-label="Previous">←</button>
+      <div class="sc-dots" id="sc-dots">
+        <button class="sc-dot active" data-idx="0"></button>
+        <button class="sc-dot" data-idx="1"></button>
+        <button class="sc-dot" data-idx="2"></button>
+        <button class="sc-dot" data-idx="3"></button>
+        <button class="sc-dot" data-idx="4"></button>
+        <button class="sc-dot" data-idx="5"></button>
+      </div>
+      <button class="sc-btn" id="sc-next" aria-label="Next">→</button>
     </div>
   </section>
 
   <script>
-    // Quote carousel
-    const track = document.getElementById('quotes-track');
-    const dots = document.querySelectorAll('.q-dot');
-    let current = 0;
-    const total = 6;
+    // App slides carousel
+    const slidesEl   = document.getElementById('slides-scroll') as HTMLElement | null;
+    const slideCards = document.querySelectorAll<HTMLElement>('.slide-card');
+    const slideDots  = document.querySelectorAll<HTMLElement>('#sc-dots .sc-dot');
+    let slideCur = 0;
+    const slideTot = 6;
 
-    function goTo(idx) {
-      current = (idx + total) % total;
-      if (track) (track as HTMLElement).style.transform = `translateX(-${current * 100}%)`;
-      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    function getScrollPad() {
+      if (!slidesEl) return 0;
+      return parseInt(getComputedStyle(slidesEl).paddingLeft) || 0;
     }
 
-    document.getElementById('q-prev')?.addEventListener('click', () => goTo(current - 1));
-    document.getElementById('q-next')?.addEventListener('click', () => goTo(current + 1));
-    dots.forEach(d => d.addEventListener('click', () => goTo(Number(d.getAttribute('data-idx')))));
+    function slideTo(idx: number) {
+      slideCur = ((idx % slideTot) + slideTot) % slideTot;
+      const card = slideCards[slideCur];
+      if (card && slidesEl) {
+        slidesEl.scrollTo({ left: card.offsetLeft - getScrollPad(), behavior: 'smooth' });
+      }
+      slideDots.forEach((d, i) => d.classList.toggle('active', i === slideCur));
+    }
+
+    document.getElementById('sc-prev')?.addEventListener('click', () => slideTo(slideCur - 1));
+    document.getElementById('sc-next')?.addEventListener('click', () => slideTo(slideCur + 1));
+    slideDots.forEach(d => d.addEventListener('click', () => slideTo(Number(d.dataset.idx))));
 
     // Auto-advance
-    setInterval(() => goTo(current + 1), 7000);
+    let slideTimer = setInterval(() => slideTo(slideCur + 1), 6500);
+    slidesEl?.addEventListener('pointerdown', () => { clearInterval(slideTimer); slideTimer = setInterval(() => slideTo(slideCur + 1), 6500); });
 
-    // Touch/swipe
-    let touchStartX = 0;
-    track?.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-    track?.addEventListener('touchend', e => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
-    });
+    // Sync dot on native scroll
+    if (typeof IntersectionObserver !== 'undefined' && slidesEl) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const i = Array.from(slideCards).indexOf(e.target as HTMLElement);
+            if (i !== -1) { slideCur = i; slideDots.forEach((d, j) => d.classList.toggle('active', j === i)); }
+          }
+        });
+      }, { root: slidesEl, threshold: 0.55 });
+      slideCards.forEach(c => io.observe(c));
+    }
   </script>
 
   <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
@@ -661,121 +705,159 @@ import EmailCapture from '../components/EmailCapture.astro';
     50% { opacity: 0.7; transform: scaleY(1); }
   }
 
-  /* ── QUOTE CAROUSEL ── */
-  .quotes {
-    position: relative;
-    overflow: hidden;
+  /* ── APP SLIDES ── */
+  .slides {
+    padding: var(--section-pad) 0 60px;
     background: #060a12;
-  }
-  .quotes-track {
-    display: flex;
-    transition: transform 0.6s cubic-bezier(0.77,0,0.175,1);
-    will-change: transform;
-  }
-  .quote-slide {
-    flex: 0 0 100%;
-    min-height: 100vh;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
     overflow: hidden;
   }
-  .quote-bg {
+  .slides-scroll {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 0 clamp(24px, 6vw, 80px);
+    -webkit-overflow-scrolling: touch;
+  }
+  .slides-scroll::-webkit-scrollbar { display: none; }
+  .slides-spacer { flex: 0 0 clamp(24px,6vw,80px); }
+
+  .slide-card {
+    flex: 0 0 300px;
+    height: 530px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+    background: #06080f;
+  }
+  .slide-bg {
     position: absolute;
     inset: 0;
-    background-image: var(--bg);
     background-size: cover;
     background-position: center 25%;
-    transition: transform 0.6s ease;
   }
-  .quote-slide::before {
-    content: '';
+  .slide-grain {
     position: absolute;
     inset: 0;
-    z-index: 1;
-    background: linear-gradient(
-      to bottom,
-      rgba(6,10,18,0.1) 0%,
-      rgba(6,10,18,0.3) 40%,
-      rgba(6,10,18,0.75) 65%,
-      rgba(6,10,18,0.97) 100%
-    );
-  }
-  .quote-body {
-    position: relative;
     z-index: 2;
-    padding: clamp(40px,6vw,80px) clamp(28px,6vw,80px) 100px;
-    max-width: 820px;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 128px;
   }
-  .quote-category {
+  .slide-ov-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 42%;
+    background: linear-gradient(to bottom, rgba(4,5,14,0.52), transparent);
+    z-index: 1;
+  }
+  .slide-ov-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 78%;
+    background: linear-gradient(to top, rgba(4,5,14,0.97) 0%, rgba(4,5,14,0.88) 35%, rgba(4,5,14,0.42) 65%, transparent 100%);
+    z-index: 1;
+  }
+  .slide-num {
+    position: absolute;
+    top: 15px; right: 15px;
+    z-index: 10;
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.28);
+    background: rgba(0,0,0,0.38);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .slide-body {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 10;
+    padding: 0 26px 42px;
+  }
+  .slide-eyebrow {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .q-glyph {
-    color: var(--gold);
-    font-size: 0.7rem;
-  }
-  .quote-category span:last-child {
+    gap: 8px;
     font-family: var(--font-display);
-    font-size: 0.6rem;
-    letter-spacing: 0.28em;
+    font-size: 8px;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--gold);
-    opacity: 0.8;
+    opacity: 0.85;
+    margin-bottom: 10px;
   }
-  .q-rule {
-    width: 48px;
-    height: 1px;
-    background: var(--gold-dim);
-    margin-bottom: 24px;
-    opacity: 0.6;
+  .slide-rule {
+    width: 28px;
+    height: 0.5px;
+    background: rgba(201,168,76,0.5);
+    margin-bottom: 14px;
   }
-  .quote-body blockquote {
+  .slide-head {
     font-family: var(--font-heading);
-    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    font-size: 1.75rem;
+    font-weight: 300;
+    line-height: 1.28;
+    color: rgba(255,248,235,0.96);
+    margin-bottom: 12px;
+    text-shadow: 0 1px 16px rgba(0,0,0,0.95), 0 0 40px rgba(0,0,0,0.7);
+  }
+  .slide-head em { font-style: italic; }
+  .slide-text {
+    font-family: var(--font-heading);
+    font-size: 0.92rem;
     font-weight: 300;
     font-style: italic;
-    color: var(--cream);
-    line-height: 1.45;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    line-height: 1.65;
+    color: rgba(255,248,235,0.58);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+    margin-bottom: 2px;
   }
-  .quote-body cite {
-    font-family: var(--font-heading);
-    font-size: 1rem;
-    font-style: italic;
+  .slide-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .slide-chip {
+    font-family: var(--font-display);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    padding: 4px 11px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(201,168,76,0.35);
+    background: rgba(201,168,76,0.08);
     color: var(--gold);
-    opacity: 0.85;
   }
-  .slide-logo {
+  .slide-mark {
     position: absolute;
-    bottom: 28px;
-    left: clamp(28px,6vw,80px);
-    z-index: 2;
+    bottom: 13px; left: 17px;
+    z-index: 10;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 16px;
-    color: rgba(255, 248, 235, 0.35);
-    letter-spacing: 0.05em;
+    font-size: 11px;
+    color: rgba(255,248,235,0.18);
+    letter-spacing: 0.06em;
   }
-  .quotes-nav {
-    position: absolute;
-    bottom: 28px;
-    right: clamp(28px,4vw,60px);
-    z-index: 10;
+  .slides-nav {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 16px;
+    margin-top: 28px;
+    padding: 0 clamp(24px,5vw,64px);
   }
-  .q-btn {
-    background: rgba(255,255,255,0.08);
+  .sc-btn {
+    background: rgba(255,255,255,0.07);
     border: 1px solid rgba(201,168,76,0.2);
     color: var(--cream-dim);
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 0.85rem;
@@ -783,31 +865,20 @@ import EmailCapture from '../components/EmailCapture.astro';
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    backdrop-filter: blur(4px);
   }
-  .q-btn:hover {
-    border-color: var(--gold-dim);
-    color: var(--gold-light);
-  }
-  .q-dots {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .q-dot {
-    width: 6px;
-    height: 6px;
+  .sc-btn:hover { border-color: var(--gold-dim); color: var(--gold-light); }
+  .sc-dots { display: flex; gap: 8px; align-items: center; }
+  .sc-dot {
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: rgba(200,196,184,0.25);
+    background: rgba(200,196,184,0.22);
     border: none;
     cursor: pointer;
     transition: all 0.25s;
     padding: 0;
   }
-  .q-dot.active {
-    background: var(--gold);
-    transform: scale(1.3);
-  }
+  .sc-dot.active { background: var(--gold); transform: scale(1.4); }
 
   /* ── FEATURES ── */
   .features { padding: var(--section-pad) 0; }
