@@ -14,7 +14,8 @@ let error = false;
 
 try {
   const res = await fetch(
-    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`
+    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
+    { signal: AbortSignal.timeout(8000) }
   );
   data = await res.json();
 } catch (e) {
