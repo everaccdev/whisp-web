@@ -1,0 +1,385 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+
+const { id } = Astro.params;
+
+const FUNCTION_URL =
+  'https://us-central1-life-signs-be094' +
+  '.cloudfunctions.net/sharedDreamAccess';
+
+const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
+
+let data: any = null;
+let error = false;
+
+try {
+  const res = await fetch(
+    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
+    { signal: AbortSignal.timeout(8000) }
+  );
+  if (res.ok) data = await res.json();
+  else error = true;
+} catch {
+  error = true;
+}
+
+const notFound = error || !data || data?.error;
+const hasImage = !notFound && !!data?.imageUrl;
+
+const dreamTitle = data?.dreamTitle || 'A Dream';
+const keywords   = (data?.keywords  || []) as string[];
+const palette    = (data?.palette   || 'purple-gold') as string;
+const imageUrl   = data?.imageUrl   || null;
+const ownerName  = data?.ownerDisplayName || null;
+
+// Palette-based accent colors
+const PALETTES: Record<string, { accent: string; accentDim: string; bgFrom: string; bgTo: string }> = {
+  'purple-gold':   { accent: '#c9a84c', accentDim: 'rgba(201,168,76,0.35)',  bgFrom: '#180e32', bgTo: '#2d1b4e' },
+  'teal-indigo':   { accent: '#4ecdc4', accentDim: 'rgba(78,205,196,0.35)', bgFrom: '#0a1e1c', bgTo: '#1a2a3c' },
+  'coral-amber':   { accent: '#e8845c', accentDim: 'rgba(232,132,92,0.35)', bgFrom: '#220e0a', bgTo: '#3a1a10' },
+  'rose-midnight': { accent: '#d97aaa', accentDim: 'rgba(217,122,170,0.35)',bgFrom: '#1c0a18', bgTo: '#380a2a' },
+};
+
+const p = PALETTES[palette] || PALETTES['purple-gold'];
+
+const pageTitle = notFound
+  ? 'A Dream Interpreted · Whisp'
+  : `"${dreamTitle}" · A Dream · Whisp`;
+
+const pageDescription = notFound
+  ? 'Whisp — a journal for signs, dreams, and synchronicities.'
+  : `${keywords.slice(0,3).join(', ')} — a dream interpreted with Whisp.`;
+---
+
+<MinimalLayout
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={hasImage ? imageUrl : '/og-image.jpg'}
+  ogUrl={`https://getwhisp.app/d/${id}`}
+  twitterCard="summary_large_image"
+>
+
+  {notFound && (
+    <section class="page expired">
+      <div class="wordmark">✦ whisp</div>
+      <div class="starburst" aria-hidden="true">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none" stroke="#c9a84c" stroke-width="0.8"
+          />
+        </svg>
+      </div>
+      <h1>This dream has dissolved</h1>
+      <p class="subtext">Dream interpretations linger for a while, then fade — as dreams do.</p>
+      <a href={APP_STORE_URL} class="cta" style={`background:${p.accent};`}>Interpret your own dreams ✦</a>
+      <p class="microcopy">Free to start · Available on iOS</p>
+    </section>
+  )}
+
+  {!notFound && (
+    <article class="dream-page" style={`--accent:${p.accent};--accent-dim:${p.accentDim};--bg-from:${p.bgFrom};--bg-to:${p.bgTo};`}>
+
+      <!-- Hero -->
+      <div class="hero">
+        {hasImage ? (
+          <img src={imageUrl} alt={dreamTitle} class="hero-img" />
+        ) : (
+          <div class="hero-fallback"></div>
+        )}
+        <div class="hero-overlay"></div>
+
+        <div class="hero-wordmark">✦ whisp</div>
+
+        <div class="hero-title-block">
+          {ownerName ? (
+            <p class="hero-eyebrow">{ownerName}'s dream</p>
+          ) : (
+            <p class="hero-eyebrow">A DREAM INTERPRETED</p>
+          )}
+          <h1 class="hero-title">"{dreamTitle}"</h1>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        {keywords.length > 0 && (
+          <div class="keyword-pills">
+            {keywords.map((k) => (
+              <div class="keyword-pill">{k}</div>
+            ))}
+          </div>
+        )}
+
+        <div class="divider"></div>
+
+        <div class="convert">
+          <p class="convert-headline">Every dream speaks in symbols.</p>
+          <p class="convert-body">
+            Whisp listens. Log your dreams and let AI surface
+            the archetypes, patterns, and meanings hiding in
+            your sleep.
+          </p>
+          <a href={APP_STORE_URL} class="cta">Interpret your own dreams ✦</a>
+          <p class="microcopy">Free to start · Available on iOS</p>
+        </div>
+
+        <p class="footer-mark">getwhisp.app</p>
+      </div>
+
+    </article>
+  )}
+
+</MinimalLayout>
+
+<style>
+  /* ── Shared ─────────────────────────────────────────────────────────────────── */
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .starburst {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 28px;
+    opacity: 0.45;
+  }
+
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent, #c9a84c);
+    color: #0a0814;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 16px 36px;
+    transition: opacity 0.2s;
+  }
+
+  .cta:hover { opacity: 0.85; }
+
+  .microcopy {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.28);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ── Expired ────────────────────────────────────────────────────────────────── */
+
+  .expired {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(180deg, #100820 0%, #1c103a 60%, #100820 100%);
+    color: #faf8f3;
+    --accent: #c9a84c;
+  }
+
+  .expired h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: #faf8f3;
+    margin: 0 0 16px;
+  }
+
+  /* ── Dream page ─────────────────────────────────────────────────────────────── */
+
+  .dream-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-to) 40%, #0a0814 100%);
+    color: #faf8f3;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 68vh;
+    min-height: 440px;
+    max-height: 660px;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .hero-fallback {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 30%,
+      var(--bg-to) 0%,
+      var(--bg-from) 70%,
+      #0a0814 100%
+    );
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 8, 20, 0.25) 0%,
+      rgba(10, 8, 20, 0.0) 30%,
+      rgba(10, 8, 20, 0.55) 65%,
+      rgba(10, 8, 20, 0.97) 100%
+    );
+  }
+
+  .hero-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.7);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .hero-title-block {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+    padding: 0 24px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(26px, 7vw, 44px);
+    line-height: 1.2;
+    color: #faf8f3;
+    margin: 0;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+
+  /* Body */
+  .body {
+    padding: 36px 24px 64px;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .keyword-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .keyword-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--accent);
+    border: 0.5px solid var(--accent-dim);
+    background: rgba(255,255,255,0.04);
+    border-radius: 999px;
+    padding: 8px 20px;
+  }
+
+  .divider {
+    width: 36px;
+    height: 0.5px;
+    background: var(--accent-dim);
+    margin: 0 auto 36px;
+  }
+
+  .convert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .convert-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: #faf8f3;
+    margin: 0 0 14px;
+    line-height: 1.3;
+  }
+
+  .convert-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 28px;
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 1px;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { height: 60vh; min-height: 360px; }
+    .hero-title { font-size: 24px; }
+  }
+</style>

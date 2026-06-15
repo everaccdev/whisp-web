@@ -1,0 +1,426 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+
+const { id } = Astro.params;
+
+const FUNCTION_URL =
+  'https://us-central1-life-signs-be094' +
+  '.cloudfunctions.net/sharedVisionAccess';
+
+const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
+
+let data: any = null;
+let error = false;
+
+try {
+  const res = await fetch(
+    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
+    { signal: AbortSignal.timeout(8000) }
+  );
+  if (res.ok) data = await res.json();
+  else error = true;
+} catch {
+  error = true;
+}
+
+const notFound = error || !data || data?.error;
+const hasImage = !notFound && !!data?.imageUrl;
+
+const weekTitle  = data?.weekTitle  || 'A Weekly Vision';
+const dateRange  = data?.dateRange  || '';
+const keywords   = (data?.keywords  || []) as string[];
+const topSigns   = (data?.topSigns  || []) as { name: string; count: number }[];
+const imageUrl   = data?.imageUrl   || null;
+const ownerName  = data?.ownerDisplayName || null;
+
+const pageTitle = notFound
+  ? 'A Weekly Vision · Whisp'
+  : `${weekTitle} · A Weekly Vision · Whisp`;
+
+const pageDescription = notFound
+  ? 'Whisp — a journal for signs, dreams, and synchronicities.'
+  : `Signs noticed during ${dateRange} rendered as a vision. See your own pattern with Whisp.`;
+---
+
+<MinimalLayout
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={hasImage ? imageUrl : '/og-image.jpg'}
+  ogUrl={`https://getwhisp.app/v/${id}`}
+  twitterCard="summary_large_image"
+>
+
+  {notFound && (
+    <section class="page expired">
+      <div class="wordmark">✦ whisp</div>
+      <div class="starburst" aria-hidden="true">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none" stroke="#c9a84c" stroke-width="0.8"
+          />
+        </svg>
+      </div>
+      <h1>This vision has faded</h1>
+      <p class="subtext">Weekly visions linger for a while, then dissolve — like the signs themselves.</p>
+      <a href={APP_STORE_URL} class="cta">See your own signs ✦</a>
+      <p class="microcopy">Free to start · Available on iOS</p>
+    </section>
+  )}
+
+  {!notFound && (
+    <article class="vision-page">
+
+      <!-- Hero image -->
+      <div class="hero">
+        {hasImage ? (
+          <img src={imageUrl} alt={weekTitle} class="hero-img" />
+        ) : (
+          <div class="hero-gradient-fallback"></div>
+        )}
+        <div class="hero-overlay"></div>
+
+        <div class="hero-wordmark">✦ whisp</div>
+
+        <div class="hero-title-block">
+          {ownerName && (
+            <p class="hero-eyebrow">{ownerName}'s weekly vision</p>
+          )}
+          {!ownerName && (
+            <p class="hero-eyebrow">A WEEKLY VISION</p>
+          )}
+          <h1 class="hero-title">{weekTitle}</h1>
+          {dateRange && <p class="hero-date">{dateRange}</p>}
+        </div>
+      </div>
+
+      <!-- Body content -->
+      <div class="body">
+
+        {topSigns.length > 0 && (
+          <div class="signs-section">
+            <p class="section-label">SIGNS NOTICED</p>
+            <div class="sign-pills">
+              {topSigns.slice(0, 6).map((s) => (
+                <div class="sign-pill">
+                  <span class="sign-name">{s.name}</span>
+                  {s.count > 1 && <span class="sign-count">×{s.count}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {keywords.length > 0 && (
+          <p class="keywords">{keywords.join('  ·  ')}</p>
+        )}
+
+        <div class="divider"></div>
+
+        <div class="convert">
+          <p class="convert-headline">Your signs are building a story.</p>
+          <p class="convert-body">
+            Whisp watches for patterns across everything you notice —
+            signs, dreams, synchronicities — then renders them as art
+            at the end of each week.
+          </p>
+          <a href={APP_STORE_URL} class="cta">See your own vision ✦</a>
+          <p class="microcopy">Free to start · Available on iOS</p>
+        </div>
+
+        <p class="footer-mark">getwhisp.app</p>
+      </div>
+
+    </article>
+  )}
+
+</MinimalLayout>
+
+<style>
+  /* ── Shared ────────────────────────────────────────────────────────────────── */
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .starburst {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 28px;
+    opacity: 0.45;
+  }
+
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #c9a84c;
+    color: #0a1020;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 16px 36px;
+    transition: opacity 0.2s;
+  }
+
+  .cta:hover { opacity: 0.85; }
+
+  .microcopy {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.28);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ── Expired / not-found ───────────────────────────────────────────────────── */
+
+  .expired {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(180deg, #0a1020 0%, #141c38 60%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  .expired h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: #faf8f3;
+    margin: 0 0 16px;
+  }
+
+  /* ── Vision page ───────────────────────────────────────────────────────────── */
+
+  .vision-page {
+    min-height: 100vh;
+    background: #0a1020;
+    color: #faf8f3;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 65vh;
+    min-height: 420px;
+    max-height: 640px;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .hero-gradient-fallback {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 40% 40%, #2D1B4E 0%, #0f0c22 60%, #0a1020 100%);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 16, 32, 0.35) 0%,
+      rgba(10, 16, 32, 0.0) 35%,
+      rgba(10, 16, 32, 0.6) 70%,
+      rgba(10, 16, 32, 0.95) 100%
+    );
+  }
+
+  .hero-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.75);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .hero-title-block {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    padding: 0 24px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin: 0 0 10px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(28px, 7vw, 46px);
+    line-height: 1.15;
+    color: #faf8f3;
+    margin: 0 0 8px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+
+  .hero-date {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+  }
+
+  /* Body */
+  .body {
+    padding: 36px 24px 64px;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .section-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(201, 168, 76, 0.6);
+    margin: 0 0 14px;
+  }
+
+  .signs-section {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .sign-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .sign-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: #c9a84c;
+    border: 0.5px solid rgba(201, 168, 76, 0.35);
+    background: rgba(201, 168, 76, 0.07);
+    border-radius: 999px;
+    padding: 8px 20px;
+  }
+
+  .sign-count {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    color: rgba(201, 168, 76, 0.55);
+    font-weight: 500;
+  }
+
+  .keywords {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0 0 32px;
+    line-height: 1.8;
+  }
+
+  .divider {
+    width: 36px;
+    height: 0.5px;
+    background: rgba(201, 168, 76, 0.35);
+    margin: 0 auto 36px;
+  }
+
+  .convert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .convert-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: #faf8f3;
+    margin: 0 0 14px;
+    line-height: 1.3;
+  }
+
+  .convert-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 360px;
+    margin: 0 0 28px;
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 1px;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { height: 58vh; min-height: 340px; }
+    .hero-title { font-size: 26px; }
+  }
+</style>
