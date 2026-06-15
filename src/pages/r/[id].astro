@@ -24,8 +24,7 @@ try {
 
 const expired = error || data?.expired || data?.error;
 
-const APP_STORE_URL =
-  'https://apps.apple.com/app/whisp-signs-synchronicity'; // update once live
+const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
 const noticing = data?.noticing || {};
 const noticingParts: string[] = [];
@@ -55,7 +54,7 @@ const pageDescription =
     : 'Whisp — a journal for signs, dreams, and synchronicities.';
 ---
 
-<MinimalLayout title={pageTitle} description={pageDescription} twitterCard="summary">
+<MinimalLayout title={pageTitle} description={pageDescription} twitterCard="summary" ogUrl={`https://getwhisp.app/r/${id}`}>
 
   {expired && (
     <section class="reading-page expired">
