@@ -1,7 +1,6 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-import EmailCapture from '../components/EmailCapture.astro';
 ---
 
 <Base>
@@ -35,11 +34,12 @@ import EmailCapture from '../components/EmailCapture.astro';
       </p>
 
       <div class="hero-cta fade-up" style="animation-delay:0.36s">
-        <EmailCapture variant="hero" label="Get Early Access" />
+        <a href="/founders" class="btn btn-primary hero-founder-btn">Claim Founder Pricing ✦</a>
+        <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline hero-dl-btn">Download free</a>
       </div>
 
       <p class="hero-note fade-up" style="animation-delay:0.44s">
-        ✦ &nbsp;Free to start &nbsp;·&nbsp; iOS & Android &nbsp;·&nbsp; Coming soon
+        ✦ &nbsp;Free to start &nbsp;·&nbsp; iOS &nbsp;·&nbsp; Founder rate locked for early members
       </p>
     </div>
 
@@ -759,8 +759,9 @@ import EmailCapture from '../components/EmailCapture.astro';
       <div class="cta-inner">
         <div class="cta-glyph" aria-hidden="true">◎</div>
         <h2>Your signs are waiting</h2>
-        <p>Be among the first to hear what they're saying.</p>
-        <EmailCapture variant="hero" label="Get Early Access" />
+        <p>Lock in the founder rate before it closes — $3.99/mo for life.</p>
+        <a href="/founders" class="btn btn-primary" style="padding: 16px 36px; font-size: 0.9rem;">Claim Founder Pricing ✦</a>
+        <span class="cta-note">Normally $7.99/mo · Cancel anytime</span>
       </div>
     </div>
   </section>
@@ -873,7 +874,9 @@ import EmailCapture from '../components/EmailCapture.astro';
     text-shadow: 0 1px 12px rgba(0,0,0,0.5);
   }
   .hero-sub em { font-style: italic; color: var(--cream); }
-  .hero-cta { width: 100%; display: flex; justify-content: center; }
+  .hero-cta { width: 100%; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .hero-founder-btn { padding: 16px 32px; font-size: 0.9rem; }
+  .hero-dl-btn { padding: 16px 28px; font-size: 0.9rem; }
   .hero-note {
     font-size: 0.75rem;
     color: rgba(200,196,184,0.4);
@@ -1439,6 +1442,12 @@ import EmailCapture from '../components/EmailCapture.astro';
     font-style: italic;
     color: var(--cream-dim);
     margin-bottom: 8px;
+  }
+  .cta-note {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: rgba(200,196,184,0.35);
   }
 
   /* ── RESPONSIVE ── */
