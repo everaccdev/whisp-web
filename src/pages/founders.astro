@@ -4,7 +4,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
 
 <MinimalLayout
   title="Founders Access · Whisp"
-  description="Lock in lifetime premium access at the founders price — before Whisp goes wide."
+  description="Lock in premium access at the founders price — before Whisp goes wide."
   ogUrl="https://getwhisp.app/founders"
 >
 
@@ -21,8 +21,8 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
         <em>to hear every sign.</em>
       </h1>
       <p class="sub">
-        Lock in lifetime premium — journals, AI reflections, dream archetypes,
-        celestial context, and everything we build next. One payment, forever.
+        Lock in full premium — journals, AI reflections, dream archetypes,
+        celestial context, and everything we build next. At the founders rate.
       </p>
     </div>
   </div>
@@ -31,9 +31,20 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
   <div class="offer-wrap">
     <div class="offer-card">
       <p class="offer-eyebrow">✦ FOUNDERS PRICE</p>
+
+      <!-- Plan toggle -->
+      <div class="plan-toggle">
+        <button class="plan-btn active" id="btn-monthly" data-plan="monthly">
+          Monthly
+        </button>
+        <button class="plan-btn" id="btn-annual" data-plan="annual">
+          Annual <span class="save-badge">SAVE 17%</span>
+        </button>
+      </div>
+
       <div class="price-row">
-        <span class="price">$49</span>
-        <span class="price-note">one-time · lifetime access</span>
+        <span class="price" id="price-display">$3.99</span>
+        <span class="price-note" id="price-note">/month · cancel anytime</span>
       </div>
 
       <ul class="features">
@@ -46,7 +57,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
         <li><span class="check">✓</span> Sign correlations &amp; dream archetype mapping</li>
         <li><span class="check">✓</span> Full sign &amp; dream history — all time</li>
         <li><span class="check">✓</span> Gifted readings for people you love</li>
-        <li><span class="check">✓</span> Everything we ship next, at no extra cost</li>
+        <li><span class="check">✓</span> Everything we ship next, included</li>
       </ul>
 
       <form id="checkout-form">
@@ -71,7 +82,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
 
     <p class="founders-note">
       ✦ Founders pricing is limited and will close when early access ends.
-      Premium after that is a subscription — this deal locks you in for life.
+      Standard premium after that is $7.99/mo — this rate locks you in.
     </p>
   </div>
 
@@ -81,26 +92,49 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
 </section>
 
 <script>
-  const form = document.getElementById('checkout-form') as HTMLFormElement;
-  const btn  = document.getElementById('checkout-btn') as HTMLButtonElement;
-  const text = document.getElementById('btn-text') as HTMLSpanElement;
-  const spin = document.getElementById('btn-loading') as HTMLSpanElement;
-  const emailInput = document.getElementById('email-input') as HTMLInputElement;
+  let selectedPlan = 'monthly';
+
+  const btnMonthly = document.getElementById('btn-monthly') as HTMLButtonElement;
+  const btnAnnual  = document.getElementById('btn-annual')  as HTMLButtonElement;
+  const priceEl    = document.getElementById('price-display') as HTMLSpanElement;
+  const noteEl     = document.getElementById('price-note')   as HTMLSpanElement;
+
+  btnMonthly.addEventListener('click', () => {
+    selectedPlan = 'monthly';
+    btnMonthly.classList.add('active');
+    btnAnnual.classList.remove('active');
+    priceEl.textContent = '$3.99';
+    noteEl.textContent  = '/month · cancel anytime';
+  });
+
+  btnAnnual.addEventListener('click', () => {
+    selectedPlan = 'annual';
+    btnAnnual.classList.add('active');
+    btnMonthly.classList.remove('active');
+    priceEl.textContent = '$39.97';
+    noteEl.textContent  = '/year · cancel anytime';
+  });
+
+  const form        = document.getElementById('checkout-form') as HTMLFormElement;
+  const checkoutBtn = document.getElementById('checkout-btn')  as HTMLButtonElement;
+  const btnText     = document.getElementById('btn-text')      as HTMLSpanElement;
+  const btnSpin     = document.getElementById('btn-loading')   as HTMLSpanElement;
+  const emailInput  = document.getElementById('email-input')   as HTMLInputElement;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = emailInput.value.trim();
     if (!email) { emailInput.focus(); return; }
 
-    btn.disabled = true;
-    text.style.display = 'none';
-    spin.style.display = 'inline';
+    checkoutBtn.disabled = true;
+    btnText.style.display = 'none';
+    btnSpin.style.display = 'inline';
 
     try {
-      const res = await fetch('/api/checkout', {
+      const res  = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, plan: selectedPlan }),
       });
       const data = await res.json();
       if (data.url) {
@@ -110,9 +144,9 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
       }
     } catch (err: any) {
       alert('Something went wrong: ' + err.message);
-      btn.disabled = false;
-      text.style.display = 'inline';
-      spin.style.display = 'none';
+      checkoutBtn.disabled = false;
+      btnText.style.display = 'inline';
+      btnSpin.style.display = 'none';
     }
   });
 </script>
@@ -129,7 +163,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     align-items: center;
   }
 
-  /* ── Hero ────────────────────────────────────────────────────────────────────── */
+  /* ── Hero ──────────────────────────────────────────────────────────────── */
   .hero {
     position: relative;
     width: 100%;
@@ -185,10 +219,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     margin: 0 0 20px;
   }
 
-  .headline em {
-    font-style: italic;
-    color: #F0C040;
-  }
+  .headline em { font-style: italic; color: #F0C040; }
 
   .sub {
     font-family: 'Raleway', sans-serif;
@@ -199,7 +230,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     margin: 0 auto;
   }
 
-  /* ── Offer card ──────────────────────────────────────────────────────────────── */
+  /* ── Offer card ────────────────────────────────────────────────────────── */
   .offer-wrap {
     width: 100%;
     max-width: 520px;
@@ -220,13 +251,55 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     font-weight: 600;
     letter-spacing: 2.5px;
     color: #9575CD;
-    margin: 0 0 16px;
+    margin: 0 0 20px;
+  }
+
+  /* Plan toggle */
+  .plan-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .plan-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(149,117,205,0.25);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .plan-btn.active {
+    background: rgba(149,117,205,0.18);
+    border-color: rgba(149,117,205,0.6);
+    color: #faf8f3;
+  }
+
+  .save-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #F0C040;
+    background: rgba(240,192,64,0.12);
+    border-radius: 4px;
+    padding: 2px 5px;
   }
 
   .price-row {
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    gap: 10px;
     margin-bottom: 28px;
     border-bottom: 0.5px solid rgba(149,117,205,0.2);
     padding-bottom: 24px;

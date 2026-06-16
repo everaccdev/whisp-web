@@ -4,18 +4,23 @@ import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY as string);
-
 const SITE = 'https://getwhisp.app';
-const PRICE_CENTS = parseInt(import.meta.env.FOUNDERS_PRICE_CENTS || '4900'); // $49
+
+const PLANS = {
+  monthly: { amount: 399,  interval: 'month' as const, label: 'Whisp Premium — Monthly' },
+  annual:  { amount: 3997, interval: 'year'  as const, label: 'Whisp Premium — Annual'  },
+};
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = await request.json().catch(() => ({}));
+    const body  = await request.json().catch(() => ({}));
     const email: string | undefined = body?.email || undefined;
+    const plan  = (body?.plan === 'annual') ? 'annual' : 'monthly';
+    const { amount, interval, label } = PLANS[plan];
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
+      mode: 'subscription',
       customer_email: email,
       allow_promotion_codes: true,
       line_items: [
@@ -23,19 +28,18 @@ export const POST: APIRoute = async ({ request }) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Whisp — Founders Access',
-              description:
-                'Lifetime premium access at the founders price. Your Whisp account will be ready within minutes of payment.',
-              images: ['https://getwhisp.app/og-image.jpg'],
+              name: label,
+              description: 'Full premium access. Cancel anytime.',
             },
-            unit_amount: PRICE_CENTS,
+            unit_amount: amount,
+            recurring: { interval },
           },
           quantity: 1,
         },
       ],
       success_url: `${SITE}/founders/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${SITE}/founders`,
-      metadata: { source: 'founders_page' },
+      cancel_url:  `${SITE}/founders`,
+      metadata: { source: 'founders_page', plan },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
