@@ -2,40 +2,24 @@
 export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-
-const FUNCTION_URL =
-  'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedVisionAccess';
-
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
-let data: any = null;
-let error = false;
-
-try {
-  const res = await fetch(
-    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
-    { signal: AbortSignal.timeout(15000) }
-  );
-  if (res.ok) data = await res.json();
-  else error = true;
-} catch {
-  error = true;
-}
-
-const notFound = error || !data || data?.error;
-const hasImage = !notFound && !!data?.imageUrl;
+const data = await getDoc('sharedVisions', id ?? '');
+const notFound = !data;
 
 const weekTitle  = data?.weekTitle  || 'A Weekly Vision';
 const dateRange  = data?.dateRange  || '';
 const keywords   = (data?.keywords  || []) as string[];
 const topSigns   = (data?.topSigns  || []) as { name: string; count: number }[];
 const imageUrl   = data?.imageUrl   || null;
+const reflection = data?.reflection || null;
 const ownerName  = data?.ownerDisplayName || null;
+const hasImage   = !notFound && !!imageUrl;
 
 const pageTitle = notFound
   ? 'A Weekly Vision · Whisp'
@@ -43,7 +27,9 @@ const pageTitle = notFound
 
 const pageDescription = notFound
   ? 'Whisp — a journal for signs, dreams, and synchronicities.'
-  : `Signs noticed during ${dateRange} rendered as a vision. See your own pattern with Whisp.`;
+  : reflection
+    ? reflection.slice(0, 150) + '…'
+    : `Signs noticed during ${dateRange} rendered as a vision.`;
 ---
 
 <MinimalLayout
@@ -117,6 +103,13 @@ const pageDescription = notFound
 
         {keywords.length > 0 && (
           <p class="keywords">{keywords.join('  ·  ')}</p>
+        )}
+
+        {reflection && (
+          <div class="reflection-card">
+            <p class="reflection-eyebrow">✦ WHISP'S REFLECTION</p>
+            <p class="reflection-text">{reflection}</p>
+          </div>
         )}
 
         <div class="divider"></div>
@@ -377,8 +370,37 @@ const pageDescription = notFound
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.3);
-    margin: 0 0 32px;
+    margin: 0 0 28px;
     line-height: 1.8;
+  }
+
+  .reflection-card {
+    width: 100%;
+    background: rgba(201, 168, 76, 0.05);
+    border: 0.5px solid rgba(201, 168, 76, 0.2);
+    border-left: 3px solid rgba(201, 168, 76, 0.45);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .reflection-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #c9a84c;
+    margin: 0 0 14px;
+  }
+
+  .reflection-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
   }
 
   .divider {

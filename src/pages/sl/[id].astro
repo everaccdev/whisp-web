@@ -2,32 +2,15 @@
 export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-
-const FUNCTION_URL =
-  'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedSignLogAccess';
-
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
-let data: any = null;
-let error = false;
-
-try {
-  const res = await fetch(
-    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
-    { signal: AbortSignal.timeout(15000) }
-  );
-  if (res.ok) data = await res.json();
-  else error = true;
-} catch {
-  error = true;
-}
-
-const notFound   = error || !data || data?.error;
+const data = await getDoc('sharedSignLogs', id ?? '');
+const notFound = !data;
 
 const signValue  = data?.signValue  || 'A sign';
 const signType   = data?.signType   || 'Sign';

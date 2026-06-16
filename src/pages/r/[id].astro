@@ -2,37 +2,20 @@
 export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-
-const FUNCTION_URL =
-  'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedReadingAccess';
-
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
-let data: any = null;
-let error = false;
-
-try {
-  const res = await fetch(
-    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
-    { signal: AbortSignal.timeout(15000) }
-  );
-  if (res.ok) data = await res.json();
-  else error = true;
-} catch {
-  error = true;
-}
-
-const notFound = error || !data || data?.error;
+const data = await getDoc('sharedReadings', id ?? '');
+const notFound = !data;
 const hasImage = !notFound && !!data?.imageUrl;
 
 const recipientName  = data?.recipientName   || null;
 const ownerName      = data?.ownerDisplayName || null;
-const noticing       = data?.noticing         || {};
+const noticing       = (data?.noticing        || {}) as Record<string, any>;
 const signs          = (noticing.signs        || []) as string[];
 const reading        = data?.reading          || '';
 const imageUrl       = data?.imageUrl         || null;

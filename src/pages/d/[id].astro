@@ -2,40 +2,28 @@
 export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-
-const FUNCTION_URL =
-  'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedDreamAccess';
-
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
-let data: any = null;
-let error = false;
-
-try {
-  const res = await fetch(
-    `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
-    { signal: AbortSignal.timeout(15000) }
-  );
-  if (res.ok) data = await res.json();
-  else error = true;
-} catch {
-  error = true;
-}
-
-const notFound = error || !data || data?.error;
-const hasImage = !notFound && !!data?.imageUrl;
+const data = await getDoc('sharedDreams', id ?? '');
+const notFound = !data;
 
 const dreamTitle = data?.dreamTitle || 'A Dream';
-const keywords   = (data?.keywords   || []) as string[];
-const palette    = (data?.palette    || 'purple-gold') as string;
-const imageUrl   = data?.imageUrl    || null;
-const reflection = data?.reflection  || null;
+const keywords   = (data?.keywords  || []) as string[];
+const palette    = (data?.palette   || 'purple-gold') as string;
+const imageUrl   = data?.imageUrl   || null;
+const reflection = data?.reflection || null;
 const ownerName  = data?.ownerDisplayName || null;
+const hasImage   = !notFound && !!imageUrl;
+
+// Paragraph-split reflection for nicer rendering
+const reflectionParas = reflection
+  ? (reflection as string).split('\n').filter((p: string) => p.trim())
+  : [];
 
 // Palette-based accent colors
 const PALETTES: Record<string, { accent: string; accentDim: string; bgFrom: string; bgTo: string }> = {
@@ -53,7 +41,9 @@ const pageTitle = notFound
 
 const pageDescription = notFound
   ? 'Whisp — a journal for signs, dreams, and synchronicities.'
-  : `${keywords.slice(0,3).join(', ')} — a dream interpreted with Whisp.`;
+  : reflection
+    ? (reflection as string).slice(0, 150) + '…'
+    : `${keywords.slice(0,3).join(', ')} — a dream interpreted with Whisp.`;
 ---
 
 <MinimalLayout
@@ -117,10 +107,12 @@ const pageDescription = notFound
           </div>
         )}
 
-        {reflection && (
+        {reflectionParas.length > 0 && (
           <div class="reflection-card">
             <p class="reflection-eyebrow">✦ THE DREAM</p>
-            <p class="reflection-text">{reflection}</p>
+            <div class="reflection-text">
+              {reflectionParas.map((para: string) => <p>{para}</p>)}
+            </div>
           </div>
         )}
 
@@ -335,7 +327,7 @@ const pageDescription = notFound
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .keyword-pill {
@@ -350,8 +342,9 @@ const pageDescription = notFound
 
   .reflection-card {
     width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 0.5px solid rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.04);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--accent-dim);
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 28px;
@@ -367,14 +360,16 @@ const pageDescription = notFound
     margin: 0 0 14px;
   }
 
-  .reflection-text {
+  .reflection-text p {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 300;
     font-size: clamp(17px, 4.5vw, 20px);
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.85);
-    margin: 0;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 14px;
   }
+
+  .reflection-text p:last-child { margin-bottom: 0; }
 
   .divider {
     width: 36px;
@@ -419,5 +414,6 @@ const pageDescription = notFound
   @media (max-width: 480px) {
     .hero { height: 60vh; min-height: 360px; }
     .hero-title { font-size: 24px; }
+    .reflection-text p { font-size: 16px; }
   }
 </style>
