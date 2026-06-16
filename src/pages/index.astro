@@ -387,6 +387,13 @@ import EmailCapture from '../components/EmailCapture.astro';
       <div class="wn-grid">
 
         <div class="wn-card">
+          <div class="wn-icon">◷</div>
+          <div class="wn-label">New</div>
+          <h3 class="wn-title">Highlights from the Past</h3>
+          <p class="wn-desc">Your home screen now surfaces moments from a month ago, two months, three months, six months, and a year back — picking the entries with the most resonance. Dreams rise first, then signs with notes. The same thread, returning.</p>
+        </div>
+
+        <div class="wn-card">
           <div class="wn-icon">◈</div>
           <div class="wn-label wn-label--premium">New · Premium</div>
           <h3 class="wn-title">Chakra System Insights</h3>
@@ -671,6 +678,75 @@ import EmailCapture from '../components/EmailCapture.astro';
           <a href="#early-access" class="btn btn-primary" style="width:100%; justify-content:center;">Claim founder pricing</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FAQ ═══════════════ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Common questions</span>
+        <h2 class="section-title">What people ask</h2>
+      </div>
+
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary class="faq-q">Is Whisp free to use?</summary>
+          <p class="faq-a">Yes. Whisp is free to download and start. The free plan includes unlimited sign and dream logging, the symbol library, celestial context, and pattern tracking. Premium unlocks AI reflections, chakra insights, sacred text resonance, custom symbol imagery, and more. Current pricing is shown in the app.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">What makes Whisp different from a regular journaling app?</summary>
+          <p class="faq-a">Whisp is built around meaning, not output. Rather than just storing what you write, it tracks patterns across time — which symbols recur, which emotional states cluster together, which signs appear during specific moon phases or life events. The AI doesn't respond to a single entry; it responds to your history.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Do I have to be spiritual or religious to use Whisp?</summary>
+          <p class="faq-a">Not at all. Whisp is belief-aware, not belief-prescriptive. Whether you approach signs through Jungian psychology, synchronicity, a specific faith tradition, or plain curiosity — the app adapts to your lens. You choose which frameworks the AI uses. You can also choose none and treat it purely as a pattern journal.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">What is a "sign" exactly?</summary>
+          <p class="faq-a">Anything that catches your attention and feels meaningful — a repeating number, an animal encounter, a vivid dream, a word that keeps appearing, a feeling that arrives without explanation. If it made you pause, it's worth logging.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">How does Sacred Text Resonance work?</summary>
+          <p class="faq-a">After you log a sign, Whisp finds a passage from your selected tradition — Bible, Torah, Quran, Bhagavad Gita, Tao Te Ching, Buddhist canon, or others — that genuinely speaks to the moment. Not the most famous verse. The one that actually meets where you are. Available with Premium when a tradition is selected in your belief settings.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">What is the "Sit With This" prompt?</summary>
+          <p class="faq-a">After understanding a sign log, dream, or journal entry, Whisp generates a single open question to return to — something that opens rather than closes, not answerable with yes or no. It's an invitation to stay with the moment a little longer rather than move on.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Can I customize how the app looks and how Whisp speaks to me?</summary>
+          <p class="faq-a">Yes. Whisp ships with several curated gradient themes, and you can build your own using the in-app color picker — touch-drag into any combination you want. You also set your guidance style (direct, reflective, poetic, archetypal, pattern-focused) and your belief lenses, so reflections actually sound like they were written for you.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Can I send a reading to someone else?</summary>
+          <p class="faq-a">"Whisp for a Friend" lets you generate a personalized reading for someone — drawn from their astrological profile and your intention for them. It arrives as a beautiful web page with an AI painting, shareable via any message app with a full image preview.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">What AI powers Whisp?</summary>
+          <p class="faq-a">Whisp uses Claude by Anthropic — one of the most thoughtful and context-aware AI systems available. Your belief settings shape what the AI considers; your logged history shapes how it interprets. Free users receive 3 AI reflections per month; Premium is unlimited.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Is my data private? Can I delete my account?</summary>
+          <p class="faq-a">Your data is private and never sold. You can export everything as a file or permanently delete your account — both available in the app under More → Privacy &amp; Data. We think trust is built through control, not promises.</p>
+        </details>
+
+      </div>
+
+      <p class="faq-contact">
+        Still have questions?
+        <a href="mailto:hello@eyeswidewellness.com" class="faq-link">hello@eyeswidewellness.com</a>
+      </p>
     </div>
   </section>
 
@@ -1248,6 +1324,83 @@ import EmailCapture from '../components/EmailCapture.astro';
     font-size: 0.875rem;
     color: var(--cream-dim);
   }
+
+  /* ── FAQ ── */
+  .faq {
+    padding: var(--section-pad) 0;
+    border-top: 1px solid var(--navy-border);
+  }
+  .faq-list {
+    max-width: 720px;
+    margin: 0 auto 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .faq-item {
+    border: 1px solid var(--navy-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(15, 24, 48, 0.4);
+    transition: border-color 0.2s;
+  }
+  .faq-item[open] {
+    border-color: rgba(201, 168, 76, 0.3);
+  }
+  .faq-q {
+    list-style: none;
+    padding: 20px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--cream);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .faq-q::-webkit-details-marker { display: none; }
+  .faq-q::after {
+    content: '+';
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.6;
+    flex-shrink: 0;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .faq-item[open] .faq-q::after {
+    transform: rotate(45deg);
+    opacity: 1;
+  }
+  .faq-item[open] .faq-q { color: var(--cream); }
+  .faq-a {
+    padding: 0 24px 20px;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+    line-height: 1.8;
+    border-top: 1px solid var(--navy-border);
+    margin-top: 0;
+  }
+  .faq-contact {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--cream-dim);
+    opacity: 0.6;
+  }
+  .faq-link {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+    transition: border-color 0.2s;
+    margin-left: 4px;
+  }
+  .faq-link:hover { border-color: var(--gold); }
 
   /* ── FINAL CTA ── */
   .final-cta {
