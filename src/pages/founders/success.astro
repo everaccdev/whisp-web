@@ -1,0 +1,201 @@
+---
+export const prerender = false;
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+---
+
+<MinimalLayout
+  title="Welcome, Founder · Whisp"
+  description="Your Whisp founders access is confirmed."
+  ogUrl="https://getwhisp.app/founders/success"
+>
+
+<section class="success-page">
+  <div class="starburst" aria-hidden="true">
+    <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+      <polygon
+        points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+        fill="none" stroke="#9575CD" stroke-width="0.8"
+      />
+    </svg>
+  </div>
+
+  <p class="eyebrow">✦ PAYMENT CONFIRMED</p>
+  <h1 class="headline">Welcome,<br/><em>Founder.</em></h1>
+
+  <div class="message">
+    <p>
+      Your founders access is locked in. We're setting up your Whisp account now —
+      you'll receive an email within a few minutes with a link to set your password
+      and sign in.
+    </p>
+    <p>
+      Once you're in, everything is waiting for you: your signs, your dreams,
+      your reflections. The full journey.
+    </p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">1</span>
+      <div>
+        <p class="step-title">Check your email</p>
+        <p class="step-sub">A password setup link is on its way — check your spam folder if it doesn't arrive within a few minutes.</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <div>
+        <p class="step-title">Download the app</p>
+        <p class="step-sub">Whisp is available on iOS. Sign in with the same email address.</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <div>
+        <p class="step-title">Start noticing</p>
+        <p class="step-sub">Log your first sign. Your premium access is already active.</p>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://apps.apple.com/app/id6777561873" class="app-btn">Download on the App Store ✦</a>
+  <p class="footer-mark">getwhisp.app</p>
+</section>
+
+</MinimalLayout>
+
+<style>
+  .success-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #07041a 0%, #0e0830 50%, #050212 100%);
+    color: #faf8f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+  }
+
+  .starburst {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 32px;
+    animation: spin-slow 30s linear infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: #9575CD;
+    margin: 0 0 16px;
+  }
+
+  .headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(36px, 9vw, 56px);
+    line-height: 1.15;
+    color: #faf8f3;
+    margin: 0 0 32px;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: #F0C040;
+  }
+
+  .message {
+    max-width: 480px;
+    margin-bottom: 40px;
+  }
+
+  .message p {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    margin: 0 0 16px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 420px;
+    width: 100%;
+    margin-bottom: 40px;
+    text-align: left;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(149,117,205,0.07);
+    border: 0.5px solid rgba(149,117,205,0.2);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: #9575CD;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-title {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    margin: 0 0 4px;
+  }
+
+  .step-sub {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .app-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #b39ddb, #9575CD, #7b52c0);
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 12px;
+    padding: 16px 36px;
+    margin-bottom: 40px;
+    box-shadow: 0 6px 24px rgba(149,117,205,0.35);
+    transition: opacity 0.2s;
+  }
+
+  .app-btn:hover { opacity: 0.85; }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 1px;
+  }
+</style>
