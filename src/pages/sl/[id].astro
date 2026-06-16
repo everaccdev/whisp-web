@@ -9,7 +9,7 @@ const { id } = Astro.params;
 
 const FUNCTION_URL =
   'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedVisionAccess';
+  '.cloudfunctions.net/sharedSignLogAccess';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
@@ -27,31 +27,36 @@ try {
   error = true;
 }
 
-const notFound = error || !data || data?.error;
-const hasImage = !notFound && !!data?.imageUrl;
+const notFound   = error || !data || data?.error;
 
-const weekTitle  = data?.weekTitle  || 'A Weekly Vision';
-const dateRange  = data?.dateRange  || '';
-const keywords   = (data?.keywords  || []) as string[];
-const topSigns   = (data?.topSigns  || []) as { name: string; count: number }[];
-const imageUrl   = data?.imageUrl   || null;
-const ownerName  = data?.ownerDisplayName || null;
+const signValue  = data?.signValue  || 'A sign';
+const signType   = data?.signType   || 'Sign';
+const isDream    = !!(data?.isDreamSign);
+const notes      = data?.notes      || null;
+const reflection = data?.reflection || null;
+const createdAt  = data?.createdAt  || null;
+
+const typeLabel  = isDream ? 'Dream sign' : 'Waking sign';
+
+const formattedDate = createdAt
+  ? new Date(createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : null;
 
 const pageTitle = notFound
-  ? 'A Weekly Vision · Whisp'
-  : `${weekTitle} · A Weekly Vision · Whisp`;
+  ? 'A Sign Noticed · Whisp'
+  : `${signValue} · A Sign Noticed · Whisp`;
 
 const pageDescription = notFound
   ? 'Whisp — a journal for signs, dreams, and synchronicities.'
-  : `Signs noticed during ${dateRange} rendered as a vision. See your own pattern with Whisp.`;
+  : reflection
+    ? `"${signValue}" — ${reflection.slice(0, 140)}…`
+    : `"${signValue}" — a ${signType.toLowerCase()} noticed with Whisp.`;
 ---
 
 <MinimalLayout
   title={pageTitle}
   description={pageDescription}
-  ogImage={hasImage ? imageUrl : '/og-image.jpg'}
-  ogUrl={`https://getwhisp.app/v/${id}`}
-  twitterCard="summary_large_image"
+  ogUrl={`https://getwhisp.app/sl/${id}`}
 >
 
   {notFound && (
@@ -65,70 +70,57 @@ const pageDescription = notFound
           />
         </svg>
       </div>
-      <h1>This vision has faded</h1>
-      <p class="subtext">Weekly visions linger for a while, then dissolve — like the signs themselves.</p>
-      <a href={APP_STORE_URL} class="cta">See your own signs ✦</a>
+      <h1>This sign has passed</h1>
+      <p class="subtext">Signs linger for a while in the record, then release — as all signs do.</p>
+      <a href={APP_STORE_URL} class="cta">Start noticing your signs ✦</a>
       <p class="microcopy">Free to start · Available on iOS</p>
     </section>
   )}
 
   {!notFound && (
-    <article class="vision-page">
+    <article class="sign-page">
 
-      <!-- Hero image -->
+      <!-- Hero -->
       <div class="hero">
-        {hasImage ? (
-          <img src={imageUrl} alt={weekTitle} class="hero-img" />
-        ) : (
-          <div class="hero-gradient-fallback"></div>
-        )}
+        <div class="hero-bg"></div>
         <div class="hero-overlay"></div>
 
         <div class="hero-wordmark">✦ whisp</div>
 
-        <div class="hero-title-block">
-          {ownerName && (
-            <p class="hero-eyebrow">{ownerName}'s weekly vision</p>
-          )}
-          {!ownerName && (
-            <p class="hero-eyebrow">A WEEKLY VISION</p>
-          )}
-          <h1 class="hero-title">{weekTitle}</h1>
-          {dateRange && <p class="hero-date">{dateRange}</p>}
+        <div class="hero-content">
+          <p class="hero-eyebrow">{typeLabel.toUpperCase()} · {signType.toUpperCase()}</p>
+          <h1 class="hero-title">{signValue}</h1>
+          {formattedDate && <p class="hero-date">{formattedDate}</p>}
         </div>
       </div>
 
-      <!-- Body content -->
+      <!-- Body -->
       <div class="body">
 
-        {topSigns.length > 0 && (
-          <div class="signs-section">
-            <p class="section-label">SIGNS NOTICED</p>
-            <div class="sign-pills">
-              {topSigns.slice(0, 6).map((s) => (
-                <div class="sign-pill">
-                  <span class="sign-name">{s.name}</span>
-                  {s.count > 1 && <span class="sign-count">×{s.count}</span>}
-                </div>
-              ))}
-            </div>
+        {notes && (
+          <div class="content-card">
+            <p class="card-eyebrow">✦ NOTES</p>
+            <p class="card-text">{notes}</p>
           </div>
         )}
 
-        {keywords.length > 0 && (
-          <p class="keywords">{keywords.join('  ·  ')}</p>
+        {reflection && (
+          <div class="content-card reflection">
+            <p class="card-eyebrow">✦ REFLECTION</p>
+            <p class="card-text">{reflection}</p>
+          </div>
         )}
 
         <div class="divider"></div>
 
         <div class="convert">
-          <p class="convert-headline">Your signs are building a story.</p>
+          <p class="convert-headline">Signs are the universe speaking.</p>
           <p class="convert-body">
-            Whisp watches for patterns across everything you notice —
-            signs, dreams, synchronicities — then renders them as art
-            at the end of each week.
+            Whisp is a journal for the signs, symbols, and synchronicities
+            you notice every day — with patterns and reflections drawn from
+            your own life.
           </p>
-          <a href={APP_STORE_URL} class="cta">See your own vision ✦</a>
+          <a href={APP_STORE_URL} class="cta">Start noticing your signs ✦</a>
           <p class="microcopy">Free to start · Available on iOS</p>
         </div>
 
@@ -141,7 +133,7 @@ const pageDescription = notFound
 </MinimalLayout>
 
 <style>
-  /* ── Shared ────────────────────────────────────────────────────────────────── */
+  /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
   .wordmark {
     font-family: 'Cormorant Garamond', serif;
@@ -186,7 +178,6 @@ const pageDescription = notFound
     padding: 16px 36px;
     transition: opacity 0.2s;
   }
-
   .cta:hover { opacity: 0.85; }
 
   .microcopy {
@@ -197,7 +188,7 @@ const pageDescription = notFound
     font-style: italic;
   }
 
-  /* ── Expired / not-found ───────────────────────────────────────────────────── */
+  /* ── Expired ────────────────────────────────────────────────────────────────── */
 
   .expired {
     min-height: 100vh;
@@ -207,7 +198,7 @@ const pageDescription = notFound
     justify-content: center;
     text-align: center;
     padding: 60px 24px;
-    background: linear-gradient(180deg, #0a1020 0%, #141c38 60%, #0a1020 100%);
+    background: linear-gradient(180deg, #0e1428 0%, #1a2040 60%, #0e1428 100%);
     color: #faf8f3;
   }
 
@@ -219,11 +210,11 @@ const pageDescription = notFound
     margin: 0 0 16px;
   }
 
-  /* ── Vision page ───────────────────────────────────────────────────────────── */
+  /* ── Sign page ──────────────────────────────────────────────────────────────── */
 
-  .vision-page {
+  .sign-page {
     min-height: 100vh;
-    background: #0a1020;
+    background: linear-gradient(180deg, #0a1628 0%, #152040 40%, #0a1020 100%);
     color: #faf8f3;
   }
 
@@ -231,25 +222,21 @@ const pageDescription = notFound
   .hero {
     position: relative;
     width: 100%;
-    height: 65vh;
-    min-height: 420px;
-    max-height: 640px;
+    height: 52vh;
+    min-height: 320px;
+    max-height: 520px;
     overflow: hidden;
+    display: flex;
+    align-items: flex-end;
   }
 
-  .hero-img {
+  .hero-bg {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-  }
-
-  .hero-gradient-fallback {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 40% 40%, #2D1B4E 0%, #0f0c22 60%, #0a1020 100%);
+    background:
+      radial-gradient(ellipse at 30% 50%, rgba(45, 27, 78, 0.8) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 30%, rgba(201, 168, 76, 0.15) 0%, transparent 50%),
+      linear-gradient(160deg, #0a1628 0%, #1a2448 60%, #0a1020 100%);
   }
 
   .hero-overlay {
@@ -257,10 +244,10 @@ const pageDescription = notFound
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(10, 16, 32, 0.35) 0%,
-      rgba(10, 16, 32, 0.0) 35%,
-      rgba(10, 16, 32, 0.6) 70%,
-      rgba(10, 16, 32, 0.95) 100%
+      rgba(10, 22, 40, 0.2) 0%,
+      rgba(10, 22, 40, 0.0) 30%,
+      rgba(10, 22, 40, 0.7) 75%,
+      rgba(10, 22, 40, 0.97) 100%
     );
   }
 
@@ -272,14 +259,14 @@ const pageDescription = notFound
     font-style: italic;
     font-weight: 300;
     font-size: 22px;
-    color: rgba(255, 248, 235, 0.75);
+    color: rgba(255, 248, 235, 0.7);
     letter-spacing: 1px;
     z-index: 2;
   }
 
-  .hero-title-block {
+  .hero-content {
     position: absolute;
-    bottom: 28px;
+    bottom: 32px;
     left: 0;
     right: 0;
     padding: 0 24px;
@@ -292,28 +279,26 @@ const pageDescription = notFound
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 3px;
-    text-transform: uppercase;
     color: #c9a84c;
-    margin: 0 0 10px;
+    margin: 0 0 12px;
   }
 
   .hero-title {
     font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
     font-weight: 300;
-    font-size: clamp(28px, 7vw, 46px);
-    line-height: 1.15;
+    font-size: clamp(32px, 9vw, 58px);
+    line-height: 1.1;
     color: #faf8f3;
-    margin: 0 0 8px;
-    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+    margin: 0 0 10px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
 
   .hero-date {
     font-family: 'Raleway', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255,255,255,0.38);
     margin: 0;
   }
 
@@ -328,64 +313,44 @@ const pageDescription = notFound
     text-align: center;
   }
 
-  .section-label {
-    font-family: 'Raleway', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(201, 168, 76, 0.6);
-    margin: 0 0 14px;
-  }
-
-  .signs-section {
+  .content-card {
     width: 100%;
-    margin-bottom: 24px;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    text-align: left;
   }
 
-  .sign-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
+  .content-card.reflection {
+    background: rgba(201, 168, 76, 0.05);
+    border-color: rgba(201, 168, 76, 0.2);
   }
 
-  .sign-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    color: #c9a84c;
-    border: 0.5px solid rgba(201, 168, 76, 0.35);
-    background: rgba(201, 168, 76, 0.07);
-    border-radius: 999px;
-    padding: 8px 20px;
-  }
-
-  .sign-count {
+  .card-eyebrow {
     font-family: 'Raleway', sans-serif;
     font-size: 10px;
-    color: rgba(201, 168, 76, 0.55);
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #c9a84c;
+    margin: 0 0 12px;
   }
 
-  .keywords {
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.3);
-    margin: 0 0 32px;
-    line-height: 1.8;
+  .card-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
   }
 
   .divider {
     width: 36px;
     height: 0.5px;
     background: rgba(201, 168, 76, 0.35);
-    margin: 0 auto 36px;
+    margin: 16px auto 36px;
   }
 
   .convert {
@@ -422,7 +387,7 @@ const pageDescription = notFound
   }
 
   @media (max-width: 480px) {
-    .hero { height: 58vh; min-height: 340px; }
-    .hero-title { font-size: 26px; }
+    .hero { height: 44vh; min-height: 280px; }
+    .hero-title { font-size: 30px; }
   }
 </style>

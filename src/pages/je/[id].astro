@@ -9,7 +9,7 @@ const { id } = Astro.params;
 
 const FUNCTION_URL =
   'https://us-central1-life-signs-be094' +
-  '.cloudfunctions.net/sharedVisionAccess';
+  '.cloudfunctions.net/sharedJournalEntryAccess';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
 
@@ -27,31 +27,40 @@ try {
   error = true;
 }
 
-const notFound = error || !data || data?.error;
-const hasImage = !notFound && !!data?.imageUrl;
+const notFound   = error || !data || data?.error;
 
-const weekTitle  = data?.weekTitle  || 'A Weekly Vision';
-const dateRange  = data?.dateRange  || '';
-const keywords   = (data?.keywords  || []) as string[];
-const topSigns   = (data?.topSigns  || []) as { name: string; count: number }[];
-const imageUrl   = data?.imageUrl   || null;
-const ownerName  = data?.ownerDisplayName || null;
+const title      = data?.title     || 'An Entry';
+const body       = data?.body      || null;
+const entryType  = data?.entryType || 'journal';
+const createdAt  = data?.createdAt || null;
+
+const typeLabel  = entryType === 'event' ? 'Event' : 'Journal Entry';
+const accentColor = entryType === 'event' ? '#7ab8d4' : '#c9a84c';
+const accentDim   = entryType === 'event' ? 'rgba(122,184,212,0.3)' : 'rgba(201,168,76,0.3)';
+const bgFrom      = entryType === 'event' ? '#0a1820' : '#0a1220';
+const bgTo        = entryType === 'event' ? '#12243a' : '#1a1832';
+
+const paragraphs = body ? body.split('\n').filter((p: string) => p.trim()) : [];
+
+const formattedDate = createdAt
+  ? new Date(createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : null;
 
 const pageTitle = notFound
-  ? 'A Weekly Vision · Whisp'
-  : `${weekTitle} · A Weekly Vision · Whisp`;
+  ? `${typeLabel} · Whisp`
+  : `${title} · ${typeLabel} · Whisp`;
 
 const pageDescription = notFound
   ? 'Whisp — a journal for signs, dreams, and synchronicities.'
-  : `Signs noticed during ${dateRange} rendered as a vision. See your own pattern with Whisp.`;
+  : body
+    ? body.slice(0, 150) + '…'
+    : `${title} — a ${typeLabel.toLowerCase()} from Whisp.`;
 ---
 
 <MinimalLayout
   title={pageTitle}
   description={pageDescription}
-  ogImage={hasImage ? imageUrl : '/og-image.jpg'}
-  ogUrl={`https://getwhisp.app/v/${id}`}
-  twitterCard="summary_large_image"
+  ogUrl={`https://getwhisp.app/je/${id}`}
 >
 
   {notFound && (
@@ -65,70 +74,49 @@ const pageDescription = notFound
           />
         </svg>
       </div>
-      <h1>This vision has faded</h1>
-      <p class="subtext">Weekly visions linger for a while, then dissolve — like the signs themselves.</p>
-      <a href={APP_STORE_URL} class="cta">See your own signs ✦</a>
+      <h1>This entry has faded</h1>
+      <p class="subtext">Journal entries linger for a while, then return to stillness.</p>
+      <a href={APP_STORE_URL} class="cta">Start your journal ✦</a>
       <p class="microcopy">Free to start · Available on iOS</p>
     </section>
   )}
 
   {!notFound && (
-    <article class="vision-page">
+    <article class="entry-page" style={`--accent:${accentColor};--accent-dim:${accentDim};--bg-from:${bgFrom};--bg-to:${bgTo};`}>
 
-      <!-- Hero image -->
+      <!-- Hero -->
       <div class="hero">
-        {hasImage ? (
-          <img src={imageUrl} alt={weekTitle} class="hero-img" />
-        ) : (
-          <div class="hero-gradient-fallback"></div>
-        )}
+        <div class="hero-bg"></div>
         <div class="hero-overlay"></div>
-
         <div class="hero-wordmark">✦ whisp</div>
-
-        <div class="hero-title-block">
-          {ownerName && (
-            <p class="hero-eyebrow">{ownerName}'s weekly vision</p>
-          )}
-          {!ownerName && (
-            <p class="hero-eyebrow">A WEEKLY VISION</p>
-          )}
-          <h1 class="hero-title">{weekTitle}</h1>
-          {dateRange && <p class="hero-date">{dateRange}</p>}
+        <div class="hero-content">
+          <p class="hero-eyebrow">{typeLabel.toUpperCase()}</p>
+          <h1 class="hero-title">{title}</h1>
+          {formattedDate && <p class="hero-date">{formattedDate}</p>}
         </div>
       </div>
 
-      <!-- Body content -->
+      <!-- Body -->
       <div class="body">
 
-        {topSigns.length > 0 && (
-          <div class="signs-section">
-            <p class="section-label">SIGNS NOTICED</p>
-            <div class="sign-pills">
-              {topSigns.slice(0, 6).map((s) => (
-                <div class="sign-pill">
-                  <span class="sign-name">{s.name}</span>
-                  {s.count > 1 && <span class="sign-count">×{s.count}</span>}
-                </div>
-              ))}
+        {paragraphs.length > 0 && (
+          <div class="entry-card">
+            <p class="card-eyebrow">✦ {typeLabel.toUpperCase()}</p>
+            <div class="entry-text">
+              {paragraphs.map((para: string) => <p>{para}</p>)}
             </div>
           </div>
-        )}
-
-        {keywords.length > 0 && (
-          <p class="keywords">{keywords.join('  ·  ')}</p>
         )}
 
         <div class="divider"></div>
 
         <div class="convert">
-          <p class="convert-headline">Your signs are building a story.</p>
+          <p class="convert-headline">Your journey, documented.</p>
           <p class="convert-body">
-            Whisp watches for patterns across everything you notice —
-            signs, dreams, synchronicities — then renders them as art
-            at the end of each week.
+            Whisp is a journal for signs, synchronicities, dreams, and the
+            moments that matter — with AI insights drawn from your own life.
           </p>
-          <a href={APP_STORE_URL} class="cta">See your own vision ✦</a>
+          <a href={APP_STORE_URL} class="cta">Start journaling ✦</a>
           <p class="microcopy">Free to start · Available on iOS</p>
         </div>
 
@@ -141,7 +129,7 @@ const pageDescription = notFound
 </MinimalLayout>
 
 <style>
-  /* ── Shared ────────────────────────────────────────────────────────────────── */
+  /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
   .wordmark {
     font-family: 'Cormorant Garamond', serif;
@@ -174,7 +162,7 @@ const pageDescription = notFound
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #c9a84c;
+    background: var(--accent, #c9a84c);
     color: #0a1020;
     font-family: 'Raleway', sans-serif;
     font-weight: 700;
@@ -186,7 +174,6 @@ const pageDescription = notFound
     padding: 16px 36px;
     transition: opacity 0.2s;
   }
-
   .cta:hover { opacity: 0.85; }
 
   .microcopy {
@@ -197,7 +184,7 @@ const pageDescription = notFound
     font-style: italic;
   }
 
-  /* ── Expired / not-found ───────────────────────────────────────────────────── */
+  /* ── Expired ────────────────────────────────────────────────────────────────── */
 
   .expired {
     min-height: 100vh;
@@ -207,8 +194,9 @@ const pageDescription = notFound
     justify-content: center;
     text-align: center;
     padding: 60px 24px;
-    background: linear-gradient(180deg, #0a1020 0%, #141c38 60%, #0a1020 100%);
+    background: linear-gradient(180deg, #0a1220 0%, #151830 60%, #0a1020 100%);
     color: #faf8f3;
+    --accent: #c9a84c;
   }
 
   .expired h1 {
@@ -219,11 +207,11 @@ const pageDescription = notFound
     margin: 0 0 16px;
   }
 
-  /* ── Vision page ───────────────────────────────────────────────────────────── */
+  /* ── Entry page ─────────────────────────────────────────────────────────────── */
 
-  .vision-page {
+  .entry-page {
     min-height: 100vh;
-    background: #0a1020;
+    background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-to) 40%, #0a0e20 100%);
     color: #faf8f3;
   }
 
@@ -231,25 +219,20 @@ const pageDescription = notFound
   .hero {
     position: relative;
     width: 100%;
-    height: 65vh;
-    min-height: 420px;
-    max-height: 640px;
+    height: 48vh;
+    min-height: 300px;
+    max-height: 500px;
     overflow: hidden;
+    display: flex;
+    align-items: flex-end;
   }
 
-  .hero-img {
+  .hero-bg {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-  }
-
-  .hero-gradient-fallback {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 40% 40%, #2D1B4E 0%, #0f0c22 60%, #0a1020 100%);
+    background:
+      radial-gradient(ellipse at 25% 50%, rgba(var(--accent), 0.12) 0%, transparent 55%),
+      linear-gradient(160deg, var(--bg-from) 0%, var(--bg-to) 70%, #0a0e20 100%);
   }
 
   .hero-overlay {
@@ -257,10 +240,10 @@ const pageDescription = notFound
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(10, 16, 32, 0.35) 0%,
-      rgba(10, 16, 32, 0.0) 35%,
-      rgba(10, 16, 32, 0.6) 70%,
-      rgba(10, 16, 32, 0.95) 100%
+      rgba(10, 10, 30, 0.2) 0%,
+      rgba(10, 10, 30, 0.0) 30%,
+      rgba(10, 10, 30, 0.65) 70%,
+      rgba(10, 10, 30, 0.97) 100%
     );
   }
 
@@ -272,14 +255,14 @@ const pageDescription = notFound
     font-style: italic;
     font-weight: 300;
     font-size: 22px;
-    color: rgba(255, 248, 235, 0.75);
+    color: rgba(255, 248, 235, 0.7);
     letter-spacing: 1px;
     z-index: 2;
   }
 
-  .hero-title-block {
+  .hero-content {
     position: absolute;
-    bottom: 28px;
+    bottom: 32px;
     left: 0;
     right: 0;
     padding: 0 24px;
@@ -292,99 +275,75 @@ const pageDescription = notFound
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #c9a84c;
-    margin: 0 0 10px;
+    color: var(--accent);
+    margin: 0 0 12px;
   }
 
   .hero-title {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: clamp(28px, 7vw, 46px);
-    line-height: 1.15;
+    font-size: clamp(26px, 7vw, 44px);
+    line-height: 1.2;
     color: #faf8f3;
     margin: 0 0 8px;
-    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
 
   .hero-date {
     font-family: 'Raleway', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255,255,255,0.38);
     margin: 0;
   }
 
   /* Body */
   .body {
-    padding: 36px 24px 64px;
-    max-width: 520px;
+    padding: 36px 24px 72px;
+    max-width: 560px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
   }
 
-  .section-label {
-    font-family: 'Raleway', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(201, 168, 76, 0.6);
-    margin: 0 0 14px;
-  }
-
-  .signs-section {
+  .entry-card {
     width: 100%;
-    margin-bottom: 24px;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-left: 3px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    text-align: left;
   }
 
-  .sign-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-
-  .sign-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    color: #c9a84c;
-    border: 0.5px solid rgba(201, 168, 76, 0.35);
-    background: rgba(201, 168, 76, 0.07);
-    border-radius: 999px;
-    padding: 8px 20px;
-  }
-
-  .sign-count {
+  .card-eyebrow {
     font-family: 'Raleway', sans-serif;
     font-size: 10px;
-    color: rgba(201, 168, 76, 0.55);
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 0 0 16px;
   }
 
-  .keywords {
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.3);
-    margin: 0 0 32px;
-    line-height: 1.8;
+  .entry-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 16px;
   }
+
+  .entry-text p:last-child { margin-bottom: 0; }
 
   .divider {
     width: 36px;
     height: 0.5px;
-    background: rgba(201, 168, 76, 0.35);
+    background: var(--accent-dim);
     margin: 0 auto 36px;
   }
 
@@ -392,6 +351,7 @@ const pageDescription = notFound
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
   }
 
   .convert-headline {
@@ -422,7 +382,8 @@ const pageDescription = notFound
   }
 
   @media (max-width: 480px) {
-    .hero { height: 58vh; min-height: 340px; }
-    .hero-title { font-size: 26px; }
+    .hero { height: 42vh; min-height: 260px; }
+    .hero-title { font-size: 24px; }
+    .entry-text p { font-size: 16px; }
   }
 </style>

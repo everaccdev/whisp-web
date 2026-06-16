@@ -3,6 +3,8 @@ export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 
+Astro.response.headers.set('Cache-Control', 'no-store');
+
 const { id } = Astro.params;
 
 const FUNCTION_URL =
@@ -17,7 +19,7 @@ let error = false;
 try {
   const res = await fetch(
     `${FUNCTION_URL}?id=${encodeURIComponent(id ?? '')}`,
-    { signal: AbortSignal.timeout(8000) }
+    { signal: AbortSignal.timeout(15000) }
   );
   if (res.ok) data = await res.json();
   else error = true;
@@ -29,9 +31,10 @@ const notFound = error || !data || data?.error;
 const hasImage = !notFound && !!data?.imageUrl;
 
 const dreamTitle = data?.dreamTitle || 'A Dream';
-const keywords   = (data?.keywords  || []) as string[];
-const palette    = (data?.palette   || 'purple-gold') as string;
-const imageUrl   = data?.imageUrl   || null;
+const keywords   = (data?.keywords   || []) as string[];
+const palette    = (data?.palette    || 'purple-gold') as string;
+const imageUrl   = data?.imageUrl    || null;
+const reflection = data?.reflection  || null;
 const ownerName  = data?.ownerDisplayName || null;
 
 // Palette-based accent colors
@@ -111,6 +114,13 @@ const pageDescription = notFound
             {keywords.map((k) => (
               <div class="keyword-pill">{k}</div>
             ))}
+          </div>
+        )}
+
+        {reflection && (
+          <div class="reflection-card">
+            <p class="reflection-eyebrow">✦ THE DREAM</p>
+            <p class="reflection-text">{reflection}</p>
           </div>
         )}
 
@@ -336,6 +346,34 @@ const pageDescription = notFound
     background: rgba(255,255,255,0.04);
     border-radius: 999px;
     padding: 8px 20px;
+  }
+
+  .reflection-card {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .reflection-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  .reflection-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
   }
 
   .divider {
