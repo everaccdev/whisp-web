@@ -1,0 +1,404 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const { id } = Astro.params;
+const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
+
+const data = await getDoc('sharedCorrelations', id ?? '');
+const notFound = !data;
+const hasImage = !notFound && !!data?.imageUrl;
+
+const title         = data?.title             || 'A Correlation';
+const ownerName     = data?.ownerDisplayName   || null;
+const items         = (data?.items             || []) as { label: string; type?: string; entryType?: string }[];
+const interpretation = data?.interpretation    || '';
+const imageUrl      = data?.imageUrl           || null;
+
+// Strip markdown headers/bold so the teaser reads as plain prose, matching
+// the in-app share excerpt.
+const cleaned = interpretation
+  .replace(/^#+\s*.*$/gm, '')
+  .replace(/\*\*/g, '')
+  .trim();
+const paragraphs = cleaned.split('\n').filter((p: string) => p.trim());
+
+const pageTitle = `${title} · A Correlation · Whisp`;
+
+const pageDescription = !notFound && cleaned
+  ? cleaned.slice(0, 150) + '…'
+  : 'Whisp — a journal for signs, dreams, and synchronicities.';
+---
+
+<MinimalLayout
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={hasImage ? imageUrl : 'https://getwhisp.app/icon.png'}
+  ogUrl={`https://getwhisp.app/c/${id}`}
+  twitterCard={hasImage ? 'summary_large_image' : 'summary'}
+>
+
+  {notFound && (
+    <section class="page expired">
+      <div class="wordmark">✦ whisp</div>
+      <div class="starburst" aria-hidden="true">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none" stroke="#c9a84c" stroke-width="0.8"
+          />
+        </svg>
+      </div>
+      <h1>This correlation has faded</h1>
+      <p class="subtext">Discovered patterns linger for a while, then dissolve — like the signs themselves.</p>
+      <a href={APP_STORE_URL} class="cta">Find your own patterns ✦</a>
+      <p class="microcopy">Free to start · Available on iOS</p>
+    </section>
+  )}
+
+  {!notFound && (
+    <article class="correlation-page">
+
+      <!-- Hero -->
+      <div class="hero">
+        {hasImage ? (
+          <img src={imageUrl} alt={title} class="hero-img" />
+        ) : (
+          <div class="hero-fallback"></div>
+        )}
+        <div class="hero-overlay"></div>
+
+        <div class="hero-wordmark">✦ whisp</div>
+
+        <div class="hero-title-block">
+          <p class="hero-eyebrow">
+            {ownerName ? `${ownerName} discovered a thread` : 'A DISCOVERED THREAD'}
+          </p>
+          <h1 class="hero-title">{title}</h1>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        {items.length > 0 && (
+          <div class="item-pills">
+            {items.slice(0, 6).map((item) => (
+              <div class="item-pill">{item.label}</div>
+            ))}
+          </div>
+        )}
+
+        {paragraphs.length > 0 && (
+          <div class="interp-card">
+            <p class="interp-eyebrow">✦ WHISP'S READING</p>
+            <div class="interp-text">
+              {paragraphs.map((para: string) => <p>{para}</p>)}
+            </div>
+          </div>
+        )}
+
+        <div class="divider"></div>
+
+        <div class="convert">
+          <p class="convert-headline">Your signs are connected — <em>see how</em>.</p>
+          <p class="convert-body">
+            Whisp finds the threads between your dreams, signs, and journal
+            entries, then helps you understand what they're saying together.
+          </p>
+          <a href={APP_STORE_URL} class="cta">Download Whisp ✦</a>
+          <p class="microcopy">Free to start · Available on iOS</p>
+        </div>
+
+        <p class="footer-mark">getwhisp.app</p>
+      </div>
+
+    </article>
+  )}
+
+</MinimalLayout>
+
+<style>
+  /* ── Shared ─────────────────────────────────────────────────────────────────── */
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .starburst {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 28px;
+    opacity: 0.5;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #c9a84c;
+    color: #0a0e20;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 16px 36px;
+    transition: opacity 0.2s;
+  }
+  .cta:hover { opacity: 0.85; }
+
+  .microcopy {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.28);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  /* ── Expired ────────────────────────────────────────────────────────────────── */
+
+  .expired {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(180deg, #0c1a1e 0%, #102230 60%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  .expired h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: #faf8f3;
+    margin: 0 0 16px;
+  }
+
+  /* ── Correlation page ───────────────────────────────────────────────────────── */
+
+  .correlation-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0c1a1e 0%, #102230 40%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 58vh;
+    min-height: 380px;
+    max-height: 580px;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .hero-fallback {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(80, 160, 180, 0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 60%, rgba(201, 168, 76, 0.2) 0%, transparent 55%),
+      linear-gradient(160deg, #0c1a1e 0%, #123040 50%, #0a1020 100%);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 16, 20, 0.3) 0%,
+      rgba(10, 16, 20, 0.0) 30%,
+      rgba(10, 16, 20, 0.6) 68%,
+      rgba(10, 16, 20, 0.97) 100%
+    );
+  }
+
+  .hero-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.7);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .hero-title-block {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    padding: 0 24px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin: 0 0 12px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(26px, 6.5vw, 42px);
+    line-height: 1.2;
+    color: #faf8f3;
+    margin: 0;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Body */
+  .body {
+    padding: 36px 24px 72px;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .item-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .item-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: #6fc4d4;
+    border: 0.5px solid rgba(111, 196, 212, 0.35);
+    background: rgba(111, 196, 212, 0.07);
+    border-radius: 999px;
+    padding: 7px 18px;
+  }
+
+  .interp-card {
+    width: 100%;
+    background: rgba(111, 196, 212, 0.05);
+    border: 0.5px solid rgba(111, 196, 212, 0.18);
+    border-left: 3px solid rgba(201, 168, 76, 0.5);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+
+  .interp-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #c9a84c;
+    margin: 0 0 16px;
+  }
+
+  .interp-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(16px, 4.2vw, 19px);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 16px;
+  }
+
+  .interp-text p:last-child { margin-bottom: 0; }
+
+  .divider {
+    width: 36px;
+    height: 0.5px;
+    background: rgba(201, 168, 76, 0.4);
+    margin: 0 auto 36px;
+  }
+
+  .convert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .convert-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 25px;
+    line-height: 1.3;
+    color: #faf8f3;
+    margin: 0 0 14px;
+  }
+
+  .convert-headline em {
+    font-style: italic;
+    color: #c9a84c;
+  }
+
+  .convert-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 360px;
+    margin: 0 0 28px;
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 1px;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { height: 52vh; min-height: 320px; }
+    .hero-title { font-size: 24px; }
+    .interp-text p { font-size: 16px; }
+  }
+</style>
