@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-const updated = 'June 2026';
+const updated = 'June 20, 2026';
 ---
 
 <Base
@@ -26,6 +26,9 @@ const updated = 'June 2026';
       <ul>
         <li><strong>Account information:</strong> email address and display name when you create an account.</li>
         <li><strong>Journal content:</strong> sign logs, dreams, symbols, notes, and entries you create in the app. This data is stored in your private account and is not shared with other users.</li>
+        <li><strong>Photos:</strong> images you choose to attach to a sign log or journal entry from your camera or photo library.</li>
+        <li><strong>Voice recordings:</strong> audio captured only when you use voice-to-text, used solely to transcribe your entry and not stored as audio afterward.</li>
+        <li><strong>Location:</strong> if you choose to attach it, the location where you noticed a sign or logged an entry. Location access is optional and only used when you grant permission.</li>
         <li><strong>Beliefs and preferences:</strong> the cosmological frameworks you select (astrology, numerology, etc.) to personalize AI responses.</li>
         <li><strong>Usage data:</strong> basic analytics like app opens and feature usage, collected in aggregate, not linked to your journal content.</li>
         <li><strong>Device information:</strong> device type, OS version, and app version for debugging and support.</li>
