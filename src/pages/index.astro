@@ -49,6 +49,88 @@ import Base from '../layouts/Base.astro';
     </div>
   </section>
 
+  <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
+  <section class="showcase" id="showcase">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Inside Whisp</span>
+        <h2 class="section-title">Every sign has a home</h2>
+        <p class="section-sub">Beautiful, minimal, and built around what you actually believe.</p>
+      </div>
+    </div>
+
+    <div class="appshot-scroll" id="appshot-scroll">
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_01.png" alt="Whisp app screenshot 1" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_02.png" alt="Whisp app screenshot 2" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_03.png" alt="Whisp app screenshot 3" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_04.png" alt="Whisp app screenshot 4" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_05.png" alt="Whisp app screenshot 5" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_06.png" alt="Whisp app screenshot 6" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_07.png" alt="Whisp app screenshot 7" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_08.png" alt="Whisp app screenshot 8" loading="lazy" /></div>
+      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_09.png" alt="Whisp app screenshot 9" loading="lazy" /></div>
+      <div class="slides-spacer"></div>
+    </div>
+
+    <div class="slides-nav">
+      <button class="sc-btn" id="as-prev" aria-label="Previous">←</button>
+      <div class="sc-dots" id="as-dots">
+        <button class="sc-dot active" data-idx="0"></button>
+        <button class="sc-dot" data-idx="1"></button>
+        <button class="sc-dot" data-idx="2"></button>
+        <button class="sc-dot" data-idx="3"></button>
+        <button class="sc-dot" data-idx="4"></button>
+        <button class="sc-dot" data-idx="5"></button>
+        <button class="sc-dot" data-idx="6"></button>
+        <button class="sc-dot" data-idx="7"></button>
+        <button class="sc-dot" data-idx="8"></button>
+      </div>
+      <button class="sc-btn" id="as-next" aria-label="Next">→</button>
+    </div>
+  </section>
+
+  <script>
+    // App screenshot carousel
+    const appshotEl    = document.getElementById('appshot-scroll') as HTMLElement | null;
+    const appshotCards = document.querySelectorAll<HTMLElement>('.appshot-card');
+    const appshotDots  = document.querySelectorAll<HTMLElement>('#as-dots .sc-dot');
+    let appshotCur = 0;
+    const appshotTot = 9;
+
+    function getAppshotPad() {
+      if (!appshotEl) return 0;
+      return parseInt(getComputedStyle(appshotEl).paddingLeft) || 0;
+    }
+
+    function appshotTo(idx: number) {
+      appshotCur = ((idx % appshotTot) + appshotTot) % appshotTot;
+      const card = appshotCards[appshotCur];
+      if (card && appshotEl) {
+        appshotEl.scrollTo({ left: card.offsetLeft - getAppshotPad(), behavior: 'smooth' });
+      }
+      appshotDots.forEach((d, i) => d.classList.toggle('active', i === appshotCur));
+    }
+
+    document.getElementById('as-prev')?.addEventListener('click', () => appshotTo(appshotCur - 1));
+    document.getElementById('as-next')?.addEventListener('click', () => appshotTo(appshotCur + 1));
+    appshotDots.forEach(d => d.addEventListener('click', () => appshotTo(Number(d.dataset.idx))));
+
+    let appshotTimer = setInterval(() => appshotTo(appshotCur + 1), 5000);
+    appshotEl?.addEventListener('pointerdown', () => { clearInterval(appshotTimer); appshotTimer = setInterval(() => appshotTo(appshotCur + 1), 5000); });
+
+    if (typeof IntersectionObserver !== 'undefined' && appshotEl) {
+      const ioShot = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const i = Array.from(appshotCards).indexOf(e.target as HTMLElement);
+            if (i !== -1) { appshotCur = i; appshotDots.forEach((d, j) => d.classList.toggle('active', j === i)); }
+          }
+        });
+      }, { root: appshotEl, threshold: 0.55 });
+      appshotCards.forEach(c => ioShot.observe(c));
+    }
+  </script>
+
   <!-- ═══════════════ APP SLIDES ═══════════════ -->
   <section class="slides" id="slides">
     <div class="container">
@@ -226,179 +308,6 @@ import Base from '../layouts/Base.astro';
       slideCards.forEach(c => io.observe(c));
     }
   </script>
-
-  <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
-  <section class="showcase" id="showcase">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-label">Inside Whisp</span>
-        <h2 class="section-title">Every sign has a home</h2>
-        <p class="section-sub">Beautiful, minimal, and built around what you actually believe.</p>
-      </div>
-    </div>
-
-    <div class="showcase-scroller">
-
-      <!-- Screen 1: Home Screen -->
-      <div class="mock-screen">
-        <div class="ms-top">
-          <span class="ms-wordmark-sm">✦ whisp</span>
-          <span class="ms-spacer"></span>
-          <span class="ms-top-icon">◎</span>
-        </div>
-
-        <!-- Sky strip -->
-        <div class="ms-sky-strip">
-          <span class="ms-sky-glyph">🌙</span>
-          <span class="ms-sky-txt">Waxing · Gemini</span>
-          <div class="ms-sky-sep"></div>
-          <span class="ms-sky-glyph">☀️</span>
-          <span class="ms-sky-txt">Gemini</span>
-          <span class="ms-sky-chev">›</span>
-        </div>
-
-        <!-- Stats row -->
-        <div class="ms-home-stats">
-          <div class="ms-home-stat">
-            <span class="ms-home-n ms-home-gold">47</span>
-            <span class="ms-home-lbl">SIGNS</span>
-          </div>
-          <div class="ms-home-stat">
-            <span class="ms-home-n">12</span>
-            <span class="ms-home-lbl">STREAK</span>
-          </div>
-          <div class="ms-home-stat">
-            <span class="ms-home-n">63</span>
-            <span class="ms-home-lbl">ENTRIES</span>
-          </div>
-        </div>
-
-        <!-- Reflection card -->
-        <div class="ms-home-card">
-          <div class="ms-home-eyebrow">TODAY'S REFLECTION</div>
-          <div class="ms-home-refl">"The crow at your threshold speaks of crossing. Third encounter this month — the pattern is becoming clear."</div>
-          <div class="ms-home-cta">Ask Whisp →</div>
-        </div>
-
-        <!-- Recent signs -->
-        <div class="ms-home-sec-hd">RECENT SIGNS</div>
-        <div class="ms-sign-row">
-          <div class="ms-sign-orb ms-orb-gold">🦅</div>
-          <div class="ms-sign-body">
-            <div class="ms-sign-nm">Black Crow</div>
-            <div class="ms-sign-sub">
-              <span class="ms-sub-badge ms-badge-gold">Animal</span>
-              <span class="ms-sub-txt">Calm · ☽ Waxing</span>
-            </div>
-          </div>
-        </div>
-        <div class="ms-sign-row ms-sign-row-last">
-          <div class="ms-sign-orb ms-orb-gold">
-            <span style="font-size:7px;letter-spacing:-0.5px;font-family:monospace">11:11</span>
-          </div>
-          <div class="ms-sign-body">
-            <div class="ms-sign-nm">Repeating Number</div>
-            <div class="ms-sign-sub">
-              <span class="ms-sub-badge ms-badge-gold">Number</span>
-              <span class="ms-sub-txt">Awe · ☽ Waning</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="ms-screen-label">Home</div>
-      </div>
-
-      <!-- Screen 2: Sign Log Detail (center, featured) -->
-      <div class="mock-screen mock-screen--center">
-        <div class="ms-top">
-          <span class="ms-back">←</span>
-          <div class="ms-waking-badge"><span class="ms-waking-dot"></span>WAKING</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">↗</span>
-            <span class="ms-edit">✎</span>
-          </div>
-        </div>
-
-        <!-- Header -->
-        <div class="ms-detail-hdr">
-          <div class="ms-detail-orb">🦅</div>
-          <div class="ms-detail-name">Black Crow</div>
-          <div class="ms-detail-date">Jun 10, 2025 · Waking Sign</div>
-          <div class="ms-detail-chips">
-            <span class="ms-detail-chip">◎ Animal</span>
-            <span class="ms-detail-chip ms-chip-calm">Calm</span>
-            <span class="ms-detail-chip">☽ Waxing Gibbous</span>
-          </div>
-          <div class="ms-view-sym">◈ view symbol &nbsp;›</div>
-        </div>
-
-        <div class="ms-hdiv"></div>
-
-        <!-- Notes -->
-        <div class="ms-detail-sec">
-          <div class="ms-section-label">SIGN NOTES</div>
-          <div class="ms-detail-note">Saw a crow land directly in front of me twice. Both times at a threshold — a doorway, then the edge of the park path.</div>
-        </div>
-
-        <!-- AI Reflection -->
-        <div class="ms-detail-sec ms-ai-sec">
-          <div class="ms-section-label" style="color:rgba(206,166,54,0.7)">✦ AI REFLECTION</div>
-          <div class="ms-detail-ai">"The crow at thresholds speaks to transition. Your third encounter this month — the pattern is becoming clear."</div>
-          <div class="ms-resonance">
-            <span class="ms-res-yes">✓ resonates</span>
-            <span class="ms-res-no">✗ doesn't fit</span>
-          </div>
-        </div>
-
-        <div class="ms-screen-label">Sign Log Detail</div>
-      </div>
-
-      <!-- Screen 3: Symbol Profile -->
-      <div class="mock-screen">
-        <div class="ms-top">
-          <span class="ms-back">←</span>
-          <span class="ms-nav">SYMBOL PROFILE</span>
-          <span style="width:20px"></span>
-        </div>
-
-        <!-- Symbol header -->
-        <div class="ms-sym-hdr">
-          <div class="ms-sym-icon-lg">🦅</div>
-          <div class="ms-sym-name">Black Crow</div>
-          <div class="ms-sym-freq">×14 sightings · since March 2025</div>
-        </div>
-
-        <!-- Personal meaning -->
-        <div class="ms-sym-card">
-          <div class="ms-section-label" style="color:rgba(206,166,54,0.65);margin-bottom:7px">PERSONAL MEANING</div>
-          <div class="ms-sym-meaning">"For you, crow signals transition — especially at thresholds. It first appeared before your job change and has returned before every major decision since."</div>
-        </div>
-
-        <!-- Mood context -->
-        <div class="ms-sym-card">
-          <div class="ms-section-label" style="margin-bottom:8px">APPEARS WHEN YOU FEEL</div>
-          <div class="ms-mood-row">
-            <span class="ms-mood-lbl">Calm</span>
-            <div class="ms-mood-track"><div class="ms-mood-fill" style="width:75%"></div></div>
-            <span class="ms-mood-pct">75%</span>
-          </div>
-          <div class="ms-mood-row">
-            <span class="ms-mood-lbl">Awe</span>
-            <div class="ms-mood-track"><div class="ms-mood-fill ms-mood-dim" style="width:42%"></div></div>
-            <span class="ms-mood-pct">42%</span>
-          </div>
-          <div class="ms-mood-row">
-            <span class="ms-mood-lbl">Curious</span>
-            <div class="ms-mood-track"><div class="ms-mood-fill ms-mood-dim" style="width:28%"></div></div>
-            <span class="ms-mood-pct">28%</span>
-          </div>
-        </div>
-
-        <div class="ms-screen-label">Symbol Profile</div>
-      </div>
-
-    </div>
-  </section>
 
   <!-- ═══════════════ FEATURES ═══════════════ -->
   <section class="features" id="features">
@@ -1601,468 +1510,31 @@ import Base from '../layouts/Base.astro';
     padding: var(--section-pad) 0 0;
     overflow: hidden;
   }
-  .showcase-scroller {
+  .appshot-scroll {
     display: flex;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-end;
-    margin-top: 64px;
-    padding: 0 clamp(24px,5vw,64px) 0;
+    gap: 18px;
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    margin-top: 56px;
+    padding: 0 clamp(24px, 6vw, 80px);
+    -webkit-overflow-scrolling: touch;
   }
-  .showcase-scroller::-webkit-scrollbar { display: none; }
-
-  .mock-screen {
-    flex: 0 0 250px;
-    height: 460px;
-    background: #090c1a;
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.1);
+  .appshot-scroll::-webkit-scrollbar { display: none; }
+  .appshot-card {
+    flex: 0 0 240px;
+    aspect-ratio: 1284 / 2778;
+    border-radius: 28px;
     overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    transform: scale(0.88) translateY(28px);
-    opacity: 0.55;
-    transition: all 0.3s;
+    scroll-snap-align: start;
+    background: #06080f;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
   }
-  .mock-screen--center {
-    flex: 0 0 270px;
-    height: 500px;
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    border-color: rgba(201,168,76,0.22);
-    box-shadow: 0 28px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,168,76,0.07);
-  }
-
-  /* Nav bar */
-  .ms-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px 8px;
-    background: rgba(9,12,26,0.98);
-    border-bottom: 0.5px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-  }
-  .ms-nav {
-    font-family: var(--font-display);
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    color: rgba(255,255,255,0.65);
-  }
-  .ms-back, .ms-edit, .ms-spacer {
-    font-size: 13px;
-    color: rgba(255,255,255,0.3);
-    width: 20px;
-    text-align: center;
-  }
-
-  /* ms-section-label shared across screens */
-  .ms-section-label {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.18em;
-    color: rgba(201,168,76,0.55);
-    text-transform: uppercase;
-  }
-
-  /* Screen label footer */
-  .ms-screen-label {
-    margin-top: auto;
-    padding: 8px 14px;
-    font-family: var(--font-display);
-    font-size: 7.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(200,196,184,0.3);
-    text-align: center;
-    border-top: 0.5px solid rgba(255,255,255,0.05);
-    flex-shrink: 0;
-  }
-  .mock-screen--center .ms-screen-label {
-    color: rgba(201,168,76,0.45);
-    border-top-color: rgba(201,168,76,0.1);
-  }
-
-  /* ── HOME SCREEN mock ── */
-  .ms-wordmark-sm {
-    font-family: var(--font-heading);
-    font-style: italic;
-    font-size: 14px;
-    color: rgba(255,248,235,0.7);
-    letter-spacing: 0.04em;
-  }
-  .ms-top-icon {
-    font-size: 12px;
-    color: rgba(255,255,255,0.22);
-    width: 20px;
-    text-align: center;
-  }
-  .ms-sky-strip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 13px;
-    background: rgba(255,255,255,0.05);
-    border-bottom: 0.5px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-  }
-  .ms-sky-glyph { font-size: 9px; line-height: 1; }
-  .ms-sky-txt {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.45);
-  }
-  .ms-sky-sep {
-    width: 0.5px;
-    height: 10px;
-    background: rgba(255,255,255,0.12);
-    margin: 0 2px;
-  }
-  .ms-sky-chev {
-    margin-left: auto;
-    font-size: 10px;
-    color: rgba(255,255,255,0.2);
-  }
-  .ms-home-stats {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 14px 8px;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-  .ms-home-stat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    background: rgba(255,255,255,0.08);
-    border: 0.5px solid rgba(255,255,255,0.12);
-    border-radius: 8px;
-    padding: 7px 4px 5px;
-  }
-  .ms-home-n {
-    font-family: var(--font-heading);
-    font-size: 18px;
-    font-weight: 300;
-    color: rgba(255,248,235,0.8);
-    line-height: 1;
-  }
-  .ms-home-gold { color: rgba(206,166,54,0.9); }
-  .ms-home-lbl {
-    font-family: var(--font-display);
-    font-size: 6px;
-    letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-  }
-  .ms-home-card {
-    margin: 0 10px 8px;
-    padding: 10px 11px;
-    background: rgba(255,255,255,0.07);
-    border: 0.5px solid rgba(255,255,255,0.12);
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
-  .ms-home-eyebrow {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    letter-spacing: 0.18em;
-    color: rgba(201,168,76,0.6);
-    text-transform: uppercase;
-    margin-bottom: 5px;
-  }
-  .ms-home-refl {
-    font-family: var(--font-heading);
-    font-size: 10px;
-    font-style: italic;
-    line-height: 1.5;
-    color: rgba(255,248,235,0.65);
-  }
-  .ms-home-cta {
-    margin-top: 6px;
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.1em;
-    color: rgba(201,168,76,0.75);
-  }
-  .ms-home-sec-hd {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    letter-spacing: 0.2em;
-    color: rgba(255,255,255,0.22);
-    text-transform: uppercase;
-    padding: 0 13px 5px;
-    flex-shrink: 0;
-  }
-  .ms-sign-row {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 6px 12px;
-    border-top: 0.5px solid rgba(255,255,255,0.05);
-    flex-shrink: 0;
-  }
-  .ms-sign-row-last { border-bottom: 0.5px solid rgba(255,255,255,0.05); }
-  .ms-sign-orb {
-    width: 28px;
-    height: 28px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
-    border: 0.5px solid rgba(255,255,255,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-  }
-  .ms-orb-gold { border-color: rgba(201,168,76,0.25); background: rgba(201,168,76,0.06); }
-  .ms-sign-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .ms-sign-nm {
-    font-family: var(--font-heading);
-    font-size: 11px;
-    color: rgba(255,248,235,0.82);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .ms-sign-sub {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .ms-sub-badge {
-    font-family: var(--font-display);
-    font-size: 6px;
-    letter-spacing: 0.06em;
-    padding: 2px 6px;
-    border-radius: 3px;
-    border: 0.5px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.4);
-  }
-  .ms-badge-gold {
-    border-color: rgba(201,168,76,0.3);
-    background: rgba(201,168,76,0.06);
-    color: rgba(201,168,76,0.8);
-  }
-  .ms-sub-txt {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    letter-spacing: 0.05em;
-    color: rgba(255,255,255,0.25);
-  }
-
-  /* ── SIGN DETAIL mock ── */
-  .ms-waking-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.12em;
-    color: rgba(255,255,255,0.45);
-    border: 0.5px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 3px 8px;
-  }
-  .ms-waking-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    border: 0.5px solid rgba(255,255,255,0.4);
-  }
-  .ms-detail-hdr {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px 14px 10px;
-    flex-shrink: 0;
-  }
-  .ms-detail-orb {
-    font-size: 26px;
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-  .ms-detail-name {
-    font-family: var(--font-heading);
-    font-size: 17px;
-    font-weight: 400;
-    color: rgba(255,248,235,0.9);
-    margin-bottom: 2px;
-  }
-  .ms-detail-date {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.3);
-    margin-bottom: 7px;
-  }
-  .ms-detail-chips {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 7px;
-  }
-  .ms-detail-chip {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    letter-spacing: 0.07em;
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 0.5px solid rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.5);
-  }
-  .ms-chip-calm {
-    border-color: rgba(100,180,150,0.3);
-    background: rgba(100,180,150,0.07);
-    color: rgba(120,200,160,0.7);
-  }
-  .ms-view-sym {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.1em;
-    color: rgba(201,168,76,0.7);
-    padding: 4px 12px;
-    border: 0.5px solid rgba(201,168,76,0.25);
-    border-radius: 20px;
-    background: rgba(201,168,76,0.05);
-  }
-  .ms-hdiv {
-    height: 0.5px;
-    background: rgba(255,255,255,0.06);
-    margin: 0 12px;
-    flex-shrink: 0;
-  }
-  .ms-detail-sec {
-    padding: 8px 13px 6px;
-    flex-shrink: 0;
-  }
-  .ms-ai-sec {
-    background: rgba(201,168,76,0.025);
-    border-top: 0.5px solid rgba(201,168,76,0.08);
-  }
-  .ms-detail-note {
-    font-family: var(--font-heading);
-    font-size: 10px;
-    font-style: italic;
-    line-height: 1.55;
-    color: rgba(255,248,235,0.6);
-    margin-top: 5px;
-  }
-  .ms-detail-ai {
-    font-family: var(--font-heading);
-    font-size: 10px;
-    font-style: italic;
-    line-height: 1.55;
-    color: rgba(255,248,235,0.5);
-    margin-top: 5px;
-    margin-bottom: 8px;
-  }
-  .ms-resonance {
-    display: flex;
-    gap: 6px;
-  }
-  .ms-res-yes, .ms-res-no {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.06em;
-    padding: 4px 9px;
-    border-radius: 20px;
-  }
-  .ms-res-yes {
-    border: 0.5px solid rgba(100,180,130,0.3);
-    background: rgba(100,180,130,0.06);
-    color: rgba(120,200,150,0.7);
-  }
-  .ms-res-no {
-    border: 0.5px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-    color: rgba(255,255,255,0.28);
-  }
-
-  /* ── SYMBOL PROFILE mock ── */
-  .ms-sym-hdr {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 14px 8px;
-    flex-shrink: 0;
-  }
-  .ms-sym-icon-lg {
-    font-size: 34px;
-    line-height: 1;
-    margin-bottom: 5px;
-  }
-  .ms-sym-name {
-    font-family: var(--font-heading);
-    font-size: 16px;
-    color: rgba(255,248,235,0.88);
-    margin-bottom: 2px;
-  }
-  .ms-sym-freq {
-    font-family: var(--font-display);
-    font-size: 7px;
-    letter-spacing: 0.1em;
-    color: rgba(201,168,76,0.55);
-  }
-  .ms-sym-card {
-    margin: 0 10px 7px;
-    padding: 9px 11px;
-    background: rgba(255,255,255,0.06);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 9px;
-    flex-shrink: 0;
-  }
-  .ms-sym-meaning {
-    font-family: var(--font-heading);
-    font-size: 10px;
-    font-style: italic;
-    line-height: 1.55;
-    color: rgba(255,248,235,0.55);
-    margin-top: 4px;
-  }
-  .ms-mood-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 5px;
-  }
-  .ms-mood-lbl {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    letter-spacing: 0.05em;
-    color: rgba(255,255,255,0.4);
-    width: 36px;
-    flex-shrink: 0;
-  }
-  .ms-mood-track {
-    flex: 1;
-    height: 3px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .ms-mood-fill {
+  .appshot-img {
+    width: 100%;
     height: 100%;
-    background: rgba(201,168,76,0.55);
-    border-radius: 2px;
-  }
-  .ms-mood-dim { background: rgba(201,168,76,0.25); }
-  .ms-mood-pct {
-    font-family: var(--font-display);
-    font-size: 6.5px;
-    color: rgba(255,255,255,0.25);
-    width: 24px;
-    text-align: right;
-    flex-shrink: 0;
+    object-fit: cover;
+    display: block;
   }
 
   /* ── WHAT'S NEW ── */
@@ -2175,12 +1647,10 @@ import Base from '../layouts/Base.astro';
   }
   @media (max-width: 900px) {
     .wn-grid { grid-template-columns: repeat(2, 1fr); }
-    .showcase-scroller { justify-content: flex-start; }
   }
   @media (max-width: 640px) {
     .wn-grid { grid-template-columns: 1fr 1fr; }
-    .mock-screen:not(.mock-screen--center) { display: none; }
-    .showcase-scroller { justify-content: center; padding: 0 24px; }
+    .appshot-card { flex: 0 0 180px; }
   }
   @media (max-width: 480px) {
     .wn-grid { grid-template-columns: 1fr; }
