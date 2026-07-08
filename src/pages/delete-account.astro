@@ -1,0 +1,156 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+const updated = 'July 8, 2026';
+---
+
+<Base
+  title="Delete Your Account — Whisp"
+  description="How to delete your Whisp account and what happens to your data."
+>
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Account</span>
+      <h1>Delete Your Account</h1>
+      <p class="page-meta">Last updated: {updated}</p>
+    </div>
+  </div>
+
+  <div class="container legal-body">
+    <div class="legal-content">
+
+      <p class="lead">Your data belongs to you. Here is exactly what happens when you delete your account.</p>
+
+      <h2>How to request deletion</h2>
+      <p>You can delete your account directly inside the app:</p>
+      <ol>
+        <li>Open <strong>Whisp</strong> on your device.</li>
+        <li>Tap the <strong>More</strong> tab (bottom right).</li>
+        <li>Go to <strong>Settings → Privacy</strong>.</li>
+        <li>Tap <strong>Delete Account</strong> and confirm.</li>
+      </ol>
+      <p>
+        If you cannot access the app, email us at
+        <a href="mailto:hello@eyeswidewellness.com" class="inline-link">hello@eyeswidewellness.com</a>
+        from the address associated with your account and we will process the deletion manually.
+      </p>
+
+      <h2>What happens immediately</h2>
+      <p>
+        When you confirm deletion, your account is flagged for removal and you are signed out.
+        Any data cached on your device (journal entries, symbol images, log attachments) is
+        cleared from local storage right away. Your account enters a <strong>30-day grace period</strong>
+        during which no new data is written on your behalf.
+      </p>
+
+      <h2>Cancelling within 30 days</h2>
+      <p>
+        Changed your mind? You can cancel the deletion request within the 30-day window by
+        signing back in to Whisp and choosing <strong>Cancel Deletion</strong> from the same
+        Privacy settings screen. Your account and all data will be fully restored.
+      </p>
+
+      <h2>Permanent deletion after 30 days</h2>
+      <p>
+        Once the 30-day grace period expires, deletion is permanent and cannot be undone.
+        The following data is purged from our servers:
+      </p>
+      <ul>
+        <li>Sign logs and journal entries</li>
+        <li>Intentions and reflections</li>
+        <li>AI-generated insights and pattern analysis</li>
+        <li>Symbol reflections and symbol stats</li>
+        <li>Weekly and monthly memory summaries</li>
+        <li>Weekly visions and weekly check-ins</li>
+        <li>Life events and significant dates</li>
+        <li>Dream cards and correlations</li>
+        <li>Notification history</li>
+        <li>Streak rewards and daily usage records</li>
+        <li>Your user profile and account document</li>
+        <li>Your Firebase Authentication record (email, sign-in credentials)</li>
+      </ul>
+      <p>
+        After deletion, your email address and credentials can no longer be used to log in.
+        Creating a new account will start fresh with no prior data.
+      </p>
+
+      <h2>What is not deleted</h2>
+      <p>
+        <strong>Subscription and billing data</strong> is managed by Apple (App Store) or Google
+        (Google Play), not by Whisp. Their records are governed by their own privacy policies and
+        are not under our control to delete. If you have an active subscription, cancel it through
+        your device's subscription settings before or after deleting your account to avoid future charges.
+      </p>
+      <p>
+        Subscription management data held by <strong>Adapty</strong> (our subscription platform)
+        is retained per <a href="https://adapty.io/privacy/" target="_blank" rel="noopener" class="inline-link">Adapty's privacy policy</a>.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about account deletion or data removal? Reach us at
+        <a href="mailto:hello@eyeswidewellness.com" class="inline-link">hello@eyeswidewellness.com</a>.
+      </p>
+
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page-hero {
+    padding: 160px 0 64px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .page-hero .section-label { display: block; margin-bottom: 16px; }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 12px;
+  }
+  .page-meta {
+    font-size: 0.8rem;
+    color: rgba(200,196,184,0.35);
+    letter-spacing: 0.05em;
+  }
+
+  .legal-body { padding-top: 64px; padding-bottom: 120px; }
+  .legal-content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .lead {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .legal-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-top: 20px;
+  }
+  .legal-content p, .legal-content li {
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+    line-height: 1.9;
+  }
+  .legal-content ol, .legal-content ul {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .legal-content strong { color: var(--cream); font-weight: 500; }
+  .inline-link {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+  .inline-link:hover { border-color: var(--gold); }
+</style>
