@@ -1,16 +1,31 @@
 ---
+// This project defaults to static prerendering (astro.config.mjs:
+// output: 'hybrid'). Without this, the founder count fetched below would
+// be baked in at BUILD time and never update again — the whole point of a
+// "live" counter — so this page must opt out, same as founders/success.astro
+// and the r/[id] share pages already do.
+export const prerender = false;
+
 import MinimalLayout from '../layouts/MinimalLayout.astro';
+import { getFounderCount, FOUNDER_CAP } from '../lib/founderCount';
+
+// Server-rendered initial value so the page never flashes "0 of 500" before
+// JS loads — the client script (below) re-fetches on load to stay current
+// with the 5-minute cache, but this gives a correct number on first paint.
+const founderStatus = await getFounderCount(import.meta.env.STRIPE_SECRET_KEY as string);
+const initialRemaining = founderStatus?.remaining ?? null;
+const initialCapReached = founderStatus?.capReached ?? false;
 ---
 
 <MinimalLayout
   title="Founders Access · Whisp"
-  description="Lock in premium access at the founders price — before Whisp goes wide."
+  description="Lock in premium access at the founders price — $39.97/year, capped at 500 members — before Whisp goes wide."
   ogUrl="https://getwhisp.app/founders"
 >
 
 <section class="founders-page">
 
-  <!-- Hero -->
+  <!-- ═══ 1. HERO ═══ -->
   <div class="hero">
     <div class="hero-bg"></div>
     <div class="hero-wordmark">✦ whisp</div>
@@ -22,43 +37,99 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
       </h1>
       <p class="sub">
         Lock in full premium — journals, AI reflections, dream archetypes,
-        celestial context, and everything we build next. At the founders rate.
+        celestial context, and everything we build next — at the founders rate.
       </p>
+      <div class="hero-price">
+        <span class="hero-price-amount">$39.97</span>
+        <span class="hero-price-note">/year, founders rate</span>
+      </div>
+      <div class="counter-pill" id="counter-pill-hero" data-state={initialCapReached ? 'capped' : 'open'}>
+        {initialRemaining !== null ? (
+          initialCapReached ? (
+            <span>All 500 founding spots are taken</span>
+          ) : (
+            <span><strong id="counter-num-hero">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+          )
+        ) : (
+          <span>Founders access is limited to {FOUNDER_CAP} members</span>
+        )}
+      </div>
+      <a href="#offer" class="btn-hero-cta">Get Founders Access ✦</a>
     </div>
   </div>
 
-  <!-- Offer card -->
-  <div class="offer-wrap">
+  <!-- ═══ 2. PROOF IT'S REAL ═══ -->
+  <div class="proof">
+    <p class="proof-note">Whisp is live now on iOS and Android — this isn't a waitlist for something that doesn't exist yet.</p>
+    <div class="proof-shots">
+      <img src="/whisp_appstore_01.png" alt="Whisp sign log" loading="lazy" />
+      <img src="/whisp_appstore_03.png" alt="Whisp AI reflection" loading="lazy" />
+      <img src="/whisp_appstore_05.png" alt="Whisp pattern insights" loading="lazy" />
+    </div>
+    <div class="proof-links">
+      <a href="https://apps.apple.com/app/id6777561873" class="store-link">App Store ↗</a>
+      <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_founders" class="store-link">Google Play ↗</a>
+    </div>
+  </div>
+
+  <!-- ═══ 3. WHAT PREMIUM UNLOCKS — outcomes, not features ═══ -->
+  <div class="outcomes">
+    <p class="section-eyebrow">WHAT CHANGES WITH PREMIUM</p>
+    <ul class="outcomes-list">
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Every sign gets a reading</strong> — never rationed to a handful a month.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Your whole history stays visible</strong> — not just the last 90 days.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>See what's been repeating before you'd have noticed it yourself</strong> — weekly pattern summaries across your signs and dreams.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Dreams get read in depth</strong> — archetypes, recurring symbols, and how they echo your waking signs.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>A picture for what a sign or dream evokes</strong> — AI-generated imagery, not a stock icon.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Celestial and sacred context on everything you log</strong> — moon phase, retrogrades, and (if it's part of how you understand your life) scripture that actually speaks to the moment.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Share a reading with someone you love</strong> — gifted readings, no account needed on their end.</div>
+      </li>
+      <li>
+        <span class="outcome-mark">✦</span>
+        <div><strong>Everything we ship next</strong> — included, not upsold separately.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ═══ 4. PRICE — annual first ═══ -->
+  <div class="offer-wrap" id="offer">
     <div class="offer-card">
       <p class="offer-eyebrow">✦ FOUNDERS PRICE</p>
 
-      <!-- Plan toggle -->
       <div class="plan-toggle">
-        <button class="plan-btn active" id="btn-monthly" data-plan="monthly">
-          Monthly
+        <button class="plan-btn active" id="btn-annual" data-plan="annual">
+          Annual <span class="save-badge">SAVE 58%</span>
         </button>
-        <button class="plan-btn" id="btn-annual" data-plan="annual">
-          Annual <span class="save-badge">SAVE 17%</span>
+        <button class="plan-btn" id="btn-monthly" data-plan="monthly">
+          Monthly
         </button>
       </div>
 
       <div class="price-row">
-        <span class="price" id="price-display">$3.99</span>
-        <span class="price-note" id="price-note">/month · cancel anytime</span>
+        <span class="price" id="price-display">$39.97</span>
+        <span class="price-note" id="price-note">/year · cancel anytime</span>
       </div>
-
-      <ul class="features">
-        <li><span class="check">✓</span> Unlimited AI reflections on every sign &amp; dream</li>
-        <li><span class="check">✓</span> Personalized daily insights</li>
-        <li><span class="check">✓</span> Weekly AI pattern summaries</li>
-        <li><span class="check">✓</span> Deep symbol &amp; archetype meanings</li>
-        <li><span class="check">✓</span> AI-generated dream &amp; vision imagery</li>
-        <li><span class="check">✓</span> Celestial &amp; sacred context on every log</li>
-        <li><span class="check">✓</span> Sign correlations &amp; dream archetype mapping</li>
-        <li><span class="check">✓</span> Full sign &amp; dream history — all time</li>
-        <li><span class="check">✓</span> Gifted readings for people you love</li>
-        <li><span class="check">✓</span> Everything we ship next, included</li>
-      </ul>
+      <p class="price-compare" id="price-compare">Standard pricing is $7.99/mo ($95.88/yr) — founders annual is roughly 58% less.</p>
 
       <form id="checkout-form">
         <input
@@ -76,44 +147,112 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
 
       <p class="fine">
         Secure checkout via Stripe · Your account is created automatically after payment ·
-        You'll receive an email to set your password.
+        You'll receive an email to set your password. The founders rate is locked in for as long as your subscription stays active.
       </p>
     </div>
-
-    <p class="founders-note">
-      ✦ Founders pricing is limited and will close when early access ends.
-      Standard premium after that is $7.99/mo — this rate locks you in.
-    </p>
   </div>
 
-  <!-- Footer -->
+  <!-- ═══ 5. HONEST SCARCITY ═══ -->
+  <div class="scarcity">
+    <div class="counter-pill counter-pill--large" id="counter-pill-scarcity" data-state={initialCapReached ? 'capped' : 'open'}>
+      {initialRemaining !== null ? (
+        initialCapReached ? (
+          <span>All 500 founding spots are taken</span>
+        ) : (
+          <span><strong id="counter-num-scarcity">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+        )
+      ) : (
+        <span>Founders access is limited to {FOUNDER_CAP} members</span>
+      )}
+    </div>
+    <p class="scarcity-note">Once the 500 are gone, standard pricing applies to anyone who joins after — the founders rate doesn't come back.</p>
+  </div>
+
+  <!-- ═══ 6. FAQ ═══ -->
+  <div class="faq-wrap">
+    <p class="section-eyebrow">QUESTIONS</p>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-q">What happens after I pay?</summary>
+        <p class="faq-a">Your account is created automatically and premium is active immediately. You'll get an email within a few minutes with a link to set your password — sign in with the same email address and download the app.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Does this work on both iOS and Android?</summary>
+        <p class="faq-a">Yes. Whisp is live on both the App Store and Google Play, and premium works identically on either.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">What if I already downloaded the free app?</summary>
+        <p class="faq-a">Use the same email address at checkout. Premium attaches to your existing account — you won't end up with a duplicate, and everything you've already logged stays exactly where it is.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Can I cancel? What happens to my data?</summary>
+        <p class="faq-a">Cancel anytime from the app or your Stripe receipt — no phone call, no retention flow. Your data stays yours: full export is available, and permanent deletion is available on request. Nothing is sold to third parties.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Is the founders rate really locked?</summary>
+        <p class="faq-a">Yes — as long as your subscription stays active, you keep paying the founders rate even after standard pricing rises. Cancelling and resubscribing later would be at whatever the current rate is then.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Do I have to be spiritual or religious to use Whisp?</summary>
+        <p class="faq-a">Not at all. Whisp is belief-aware, not belief-prescriptive — you choose which frameworks (if any) the AI draws on. Plenty of people use it purely as a pattern journal.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═══ 7. RISK REVERSAL ═══ -->
+  <div class="risk-reversal">
+    <div class="risk-item"><span class="risk-mark">✓</span> Cancel anytime, no retention flow</div>
+    <div class="risk-item"><span class="risk-mark">✓</span> Full data export on request</div>
+    <div class="risk-item"><span class="risk-mark">✓</span> Permanent deletion available</div>
+    <div class="risk-item"><span class="risk-mark">✓</span> Your data is never sold</div>
+  </div>
+
+  <!-- ═══ 8. FINAL CTA ═══ -->
+  <div class="final-cta">
+    <p class="final-cta-headline">312 spots or 3 — the offer is the same either way.<br/>The number just tells you how much longer it lasts.</p>
+    <div class="counter-pill" id="counter-pill-final" data-state={initialCapReached ? 'capped' : 'open'}>
+      {initialRemaining !== null ? (
+        initialCapReached ? (
+          <span>All 500 founding spots are taken</span>
+        ) : (
+          <span><strong id="counter-num-final">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+        )
+      ) : (
+        <span>Founders access is limited to {FOUNDER_CAP} members</span>
+      )}
+    </div>
+    <a href="#offer" class="btn-hero-cta">Get Founders Access ✦</a>
+  </div>
+
   <p class="footer-mark">getwhisp.app</p>
 
 </section>
 
 <script>
-  let selectedPlan = 'monthly';
+  let selectedPlan = 'annual';
 
   const btnMonthly = document.getElementById('btn-monthly') as HTMLButtonElement;
   const btnAnnual  = document.getElementById('btn-annual')  as HTMLButtonElement;
   const priceEl    = document.getElementById('price-display') as HTMLSpanElement;
   const noteEl     = document.getElementById('price-note')   as HTMLSpanElement;
+  const compareEl  = document.getElementById('price-compare') as HTMLParagraphElement;
 
-  btnMonthly.addEventListener('click', () => {
-    selectedPlan = 'monthly';
-    btnMonthly.classList.add('active');
-    btnAnnual.classList.remove('active');
-    priceEl.textContent = '$3.99';
-    noteEl.textContent  = '/month · cancel anytime';
-  });
+  const PRICE_COPY = {
+    annual:  { price: '$39.97', note: '/year · cancel anytime',  compare: 'Standard pricing is $7.99/mo ($95.88/yr) — founders annual is roughly 58% less.' },
+    monthly: { price: '$3.99',  note: '/month · cancel anytime', compare: 'Standard pricing is $7.99/mo — founders monthly is roughly 50% less.' },
+  };
 
-  btnAnnual.addEventListener('click', () => {
-    selectedPlan = 'annual';
-    btnAnnual.classList.add('active');
-    btnMonthly.classList.remove('active');
-    priceEl.textContent = '$39.97';
-    noteEl.textContent  = '/year · cancel anytime';
-  });
+  function selectPlan(plan: 'annual' | 'monthly') {
+    selectedPlan = plan;
+    btnAnnual.classList.toggle('active', plan === 'annual');
+    btnMonthly.classList.toggle('active', plan === 'monthly');
+    priceEl.textContent = PRICE_COPY[plan].price;
+    noteEl.textContent = PRICE_COPY[plan].note;
+    compareEl.textContent = PRICE_COPY[plan].compare;
+  }
+
+  btnAnnual.addEventListener('click', () => selectPlan('annual'));
+  btnMonthly.addEventListener('click', () => selectPlan('monthly'));
 
   const form        = document.getElementById('checkout-form') as HTMLFormElement;
   const checkoutBtn = document.getElementById('checkout-btn')  as HTMLButtonElement;
@@ -139,6 +278,12 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.error === 'cap_reached') {
+        alert(data.message || 'Founders access has reached its cap.');
+        checkoutBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpin.style.display = 'none';
+        window.location.reload(); // re-fetch so the page reflects the cap
       } else {
         throw new Error(data.error || 'Unknown error');
       }
@@ -149,6 +294,27 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
       btnSpin.style.display = 'none';
     }
   });
+
+  // Re-fetch the live count on load — the server-rendered number above is
+  // correct at request time, but this keeps a page left open in a tab from
+  // drifting more than the 5-minute cache window.
+  fetch('/api/founder-count')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.available) return; // Stripe was unreachable — leave the server-rendered value as-is
+      const pills = ['hero', 'scarcity', 'final'].map(id => document.getElementById(`counter-pill-${id}`));
+      const nums  = ['hero', 'scarcity', 'final'].map(id => document.getElementById(`counter-num-${id}`));
+      pills.forEach((pill, i) => {
+        if (!pill) return;
+        if (data.capReached) {
+          pill.dataset.state = 'capped';
+          pill.innerHTML = '<span>All 500 founding spots are taken</span>';
+        } else if (nums[i]) {
+          nums[i]!.textContent = String(data.remaining);
+        }
+      });
+    })
+    .catch(() => {}); // silent — server-rendered value stays as the fallback
 </script>
 
 </MinimalLayout>
@@ -167,7 +333,7 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
   .hero {
     position: relative;
     width: 100%;
-    padding: 80px 24px 64px;
+    padding: 80px 24px 56px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,14 +393,139 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     line-height: 1.7;
     color: rgba(255,255,255,0.55);
     max-width: 460px;
-    margin: 0 auto;
+    margin: 0 auto 28px;
   }
+
+  .hero-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .hero-price-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 44px;
+    color: #F0C040;
+  }
+  .hero-price-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .counter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(240,192,64,0.08);
+    border: 0.5px solid rgba(240,192,64,0.3);
+    font-family: 'Raleway', sans-serif;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 24px;
+  }
+  .counter-pill strong { color: #F0C040; font-weight: 700; }
+  .counter-pill[data-state="capped"] {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+  }
+  .counter-pill--large { font-size: 14px; padding: 10px 20px; margin-bottom: 12px; }
+
+  .btn-hero-cta {
+    display: inline-block;
+    background: #F0C040;
+    color: #0a0618;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    padding: 15px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+  }
+
+  /* ── Proof ─────────────────────────────────────────────────────────────── */
+  .proof {
+    width: 100%;
+    max-width: 720px;
+    padding: 20px 24px 56px;
+    text-align: center;
+  }
+  .proof-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 20px;
+  }
+  .proof-shots {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .proof-shots img {
+    width: 140px;
+    border-radius: 14px;
+    border: 0.5px solid rgba(255,255,255,0.12);
+  }
+  .proof-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  .store-link {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: underline;
+  }
+
+  /* ── Outcomes ──────────────────────────────────────────────────────────── */
+  .outcomes {
+    width: 100%;
+    max-width: 560px;
+    padding: 16px 24px 56px;
+  }
+  .section-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: #9575CD;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .outcomes-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .outcomes-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.7);
+  }
+  .outcomes-list strong { color: #faf8f3; font-weight: 600; }
+  .outcome-mark { color: #F0C040; flex-shrink: 0; margin-top: 1px; }
 
   /* ── Offer card ────────────────────────────────────────────────────────── */
   .offer-wrap {
     width: 100%;
     max-width: 520px;
-    padding: 0 24px 60px;
+    padding: 0 24px 40px;
+    scroll-margin-top: 40px;
   }
 
   .offer-card {
@@ -242,7 +533,6 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     border: 0.5px solid rgba(149,117,205,0.3);
     border-radius: 20px;
     padding: 32px 28px;
-    margin-bottom: 20px;
   }
 
   .offer-eyebrow {
@@ -254,7 +544,6 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
     margin: 0 0 20px;
   }
 
-  /* Plan toggle */
   .plan-toggle {
     display: flex;
     gap: 8px;
@@ -299,123 +588,155 @@ import MinimalLayout from '../layouts/MinimalLayout.astro';
   .price-row {
     display: flex;
     align-items: baseline;
-    gap: 10px;
-    margin-bottom: 28px;
-    border-bottom: 0.5px solid rgba(149,117,205,0.2);
-    padding-bottom: 24px;
+    gap: 8px;
+    margin-bottom: 8px;
   }
-
   .price {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 56px;
-    font-weight: 300;
-    color: #F0C040;
-    line-height: 1;
+    font-size: 40px;
+    color: #faf8f3;
   }
-
   .price-note {
     font-family: 'Raleway', sans-serif;
     font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    line-height: 1.5;
+    color: rgba(255,255,255,0.45);
   }
-
-  .features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .features li {
+  .price-compare {
     font-family: 'Raleway', sans-serif;
-    font-size: 13px;
-    color: rgba(255,255,255,0.75);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    line-height: 1.5;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
   }
 
-  .check {
-    color: #F0C040;
-    font-size: 12px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  /* Form */
   #checkout-form {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-
   #email-input {
-    background: rgba(255,255,255,0.06);
-    border: 0.5px solid rgba(149,117,205,0.35);
-    border-radius: 10px;
     padding: 14px 16px;
+    border-radius: 10px;
+    border: 0.5px solid rgba(149,117,205,0.3);
+    background: rgba(255,255,255,0.04);
+    color: #faf8f3;
     font-family: 'Raleway', sans-serif;
     font-size: 14px;
-    color: #faf8f3;
-    outline: none;
-    transition: border-color 0.2s;
   }
-
-  #email-input::placeholder { color: rgba(255,255,255,0.25); }
-  #email-input:focus { border-color: rgba(149,117,205,0.65); }
-
+  #email-input::placeholder { color: rgba(255,255,255,0.3); }
   #checkout-btn {
-    background: linear-gradient(135deg, #b39ddb, #9575CD, #7b52c0);
-    border: none;
-    border-radius: 12px;
-    padding: 16px 24px;
+    background: #F0C040;
+    color: #0a0618;
     font-family: 'Raleway', sans-serif;
     font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: white;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
-    transition: opacity 0.2s;
-    box-shadow: 0 6px 24px rgba(149,117,205,0.4);
   }
-
-  #checkout-btn:hover:not(:disabled) { opacity: 0.88; }
-  #checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  #checkout-btn:disabled { opacity: 0.6; cursor: default; }
 
   .fine {
     font-family: 'Raleway', sans-serif;
     font-size: 11px;
-    color: rgba(255,255,255,0.28);
-    text-align: center;
+    color: rgba(255,255,255,0.35);
     line-height: 1.6;
     margin-top: 16px;
+    text-align: center;
   }
 
-  .founders-note {
+  /* ── Scarcity ──────────────────────────────────────────────────────────── */
+  .scarcity {
+    width: 100%;
+    max-width: 480px;
+    padding: 8px 24px 56px;
+    text-align: center;
+  }
+  .scarcity-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+  }
+
+  /* ── FAQ ───────────────────────────────────────────────────────────────── */
+  .faq-wrap {
+    width: 100%;
+    max-width: 640px;
+    padding: 16px 24px 56px;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .faq-item {
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .faq-q {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #faf8f3;
+    cursor: pointer;
+  }
+  .faq-a {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.55);
+    margin: 12px 0 0;
+  }
+
+  /* ── Risk reversal ─────────────────────────────────────────────────────── */
+  .risk-reversal {
+    width: 100%;
+    max-width: 560px;
+    padding: 8px 24px 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .risk-item {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .risk-mark { color: #4ecdc4; }
+
+  /* ── Final CTA ─────────────────────────────────────────────────────────── */
+  .final-cta {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px 24px 64px;
+    text-align: center;
+  }
+  .final-cta-headline {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 14px;
-    color: rgba(255,255,255,0.38);
-    text-align: center;
-    line-height: 1.6;
+    font-size: 17px;
+    line-height: 1.5;
+    color: rgba(255,248,235,0.75);
+    margin-bottom: 20px;
   }
 
   .footer-mark {
     font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    color: rgba(255,255,255,0.15);
+    font-size: 10px;
     letter-spacing: 1px;
-    margin-bottom: 40px;
+    color: rgba(255,255,255,0.25);
+    padding-bottom: 40px;
   }
 
   @media (max-width: 480px) {
-    .hero { padding: 60px 20px 48px; }
-    .offer-card { padding: 24px 20px; }
-    .price { font-size: 44px; }
+    .risk-reversal { grid-template-columns: 1fr; }
+    .proof-shots img { width: 100px; }
   }
 </style>
