@@ -35,8 +35,14 @@ import Base from '../layouts/Base.astro';
 
       <div class="hero-cta fade-up" style="animation-delay:0.36s">
         <a href="/founders" class="btn btn-primary hero-founder-btn">Claim Founder Pricing ✦</a>
-        <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline hero-dl-btn">Download for iOS</a>
-        <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="btn btn-outline hero-dl-btn">Download for Android</a>
+        <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline hero-dl-btn">
+          <svg class="btn-icon" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          Download for iOS
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="btn btn-outline hero-dl-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3.5v17a1 1 0 0 0 1.5.87l14-8.5a1 1 0 0 0 0-1.74l-14-8.5A1 1 0 0 0 3 3.5z"/></svg>
+          Download for Android
+        </a>
       </div>
 
       <p class="hero-note fade-up" style="animation-delay:0.44s">
@@ -376,6 +382,34 @@ import Base from '../layouts/Base.astro';
           <span class="wn-period-line"></span>
         </div>
         <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">⟠</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Interpretive Lens</h3>
+            <p class="wn-desc">Add a lens — Jungian Archetypes, Human Design, Shadow Work, Parts Work, and more — and your dreams, sign log reflections, and Weave gain an extra read through that framework, sitting alongside your primary reading rather than replacing it.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◉</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">My Perspectives</h3>
+            <p class="wn-desc">See every lens you've added in one place, tell Whisp when an interpretation actually landed, and keep exactly the perspectives that serve you — nothing added stays if it isn't useful.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⟢</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">The Weave, Only When It's Real</h3>
+            <p class="wn-desc">If a week doesn't have enough of your own words behind it, Whisp says so instead of writing something hollow to fill the space — and a quiet regenerate is always there when you want a fresh read.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">☊</div>
+            <div class="wn-label wn-label--sacred">Enhanced · Sacred</div>
+            <h3 class="wn-title">Human Design, Actually Calculated</h3>
+            <p class="wn-desc">Your Human Design profile — Authority, Type, Profile, defined centers — is now calculated from your real birth data instead of relying on what you self-reported, so any reading that references it is grounded in your actual chart.</p>
+          </div>
 
           <div class="wn-card">
             <div class="wn-icon">⟡</div>
@@ -865,9 +899,15 @@ import Base from '../layouts/Base.astro';
             <li>✓ 3 reflections / month</li>
             <li>✓ 90-day sign & dream history</li>
           </ul>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline" style="width:100%; justify-content:center;">Download for iOS</a>
-            <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="btn btn-outline" style="width:100%; justify-content:center;">Download for Android</a>
+          <div class="dl-btn-row">
+            <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline dl-btn-half">
+              <svg class="btn-icon" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+              iOS
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="btn btn-outline dl-btn-half">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3.5v17a1 1 0 0 0 1.5.87l14-8.5a1 1 0 0 0 0-1.74l-14-8.5A1 1 0 0 0 3 3.5z"/></svg>
+              Android
+            </a>
           </div>
         </div>
 
@@ -1088,6 +1128,9 @@ import Base from '../layouts/Base.astro';
   .hero-cta { width: 100%; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
   .hero-founder-btn { padding: 16px 32px; font-size: 0.9rem; }
   .hero-dl-btn { padding: 16px 28px; font-size: 0.9rem; }
+  .btn-icon { width: 15px; height: 15px; flex-shrink: 0; }
+  .dl-btn-row { display: flex; gap: 8px; }
+  .dl-btn-half { flex: 1; justify-content: center; padding-left: 12px; padding-right: 12px; }
   .hero-note {
     font-size: 0.75rem;
     color: rgba(200,196,184,0.4);
