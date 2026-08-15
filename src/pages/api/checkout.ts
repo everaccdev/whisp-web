@@ -29,6 +29,16 @@ export const POST: APIRoute = async ({ request }) => {
     const plan  = (body?.plan === 'annual') ? 'annual' : 'monthly';
     const { priceId } = PLANS[plan];
 
+    // First-touch UTM the client persisted at landing time (see
+    // Analytics.astro) — carried into Stripe metadata so stripeWebhook can
+    // write acquisition source onto the user doc, and so a purchase is
+    // attributable to a campaign without cross-referencing PostHog.
+    const utm = body?.utm && typeof body.utm === 'object' ? body.utm : {};
+    const utmMetadata: Record<string, string> = {};
+    for (const key of ['utm_source', 'utm_medium', 'utm_campaign']) {
+      if (typeof utm[key] === 'string' && utm[key]) utmMetadata[key] = String(utm[key]).slice(0, 200);
+    }
+
     // Hard cap enforcement — the whole point of "500 founding spots" is
     // that it's a real number, not a marketing device. If the count is
     // unavailable (Stripe unreachable), we deliberately fail closed here
@@ -63,7 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
       // the Stripe webhook (which reads session.metadata?.plan) keep
       // working exactly as before — the switch to real Price IDs doesn't
       // change what either of those read.
-      metadata: { source: 'founders_page', plan, tier: 'founders' },
+      metadata: { source: 'founders_page', plan, tier: 'founders', ...utmMetadata },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {

@@ -288,11 +288,16 @@ const initialCapReached = founderStatus?.capReached ?? false;
     btnText.style.display = 'none';
     btnSpin.style.display = 'inline';
 
+    let utm = null;
+    try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (e) {}
+
+    (window as any).posthog?.capture('website_checkout_started', { plan: selectedPlan });
+
     try {
       const res  = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, plan: selectedPlan }),
+        body: JSON.stringify({ email, plan: selectedPlan, utm }),
       });
       const data = await res.json();
       if (data.url) {

@@ -128,11 +128,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
     const turnstileField = form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null;
 
+    let utm = null;
+    try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (e) {}
+
     submitBtn.disabled = true;
     submitText.style.display = 'none';
     submitSpin.style.display = 'inline';
 
     try {
+      const hadContext = !!(signInput.value.trim() || dreamInput.value.trim() || situationInput.value.trim());
+      (window as any).posthog?.capture('website_reading_requested', { had_context: hadContext });
+
       const res = await fetch('/api/lead-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -143,6 +149,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
           dream: dreamInput.value.trim(),
           situation: situationInput.value.trim(),
           turnstileToken: turnstileField?.value || '',
+          utm,
         }),
       });
       const data = await res.json();

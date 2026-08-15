@@ -62,6 +62,17 @@ import MinimalLayout from '../../layouts/MinimalLayout.astro';
   <p class="footer-mark">getwhisp.app</p>
 </section>
 
+<script>
+  // Conversion event for the funnel. session_id in the URL is Stripe's own
+  // {CHECKOUT_SESSION_ID} substitution on the success_url — its presence is
+  // enough signal that this page was reached via a real completed checkout,
+  // not direct navigation.
+  const sessionId = new URLSearchParams(window.location.search).get('session_id');
+  if (sessionId) {
+    (window as any).posthog?.capture('website_checkout_completed', { session_id: sessionId });
+  }
+</script>
+
 </MinimalLayout>
 
 <style>
