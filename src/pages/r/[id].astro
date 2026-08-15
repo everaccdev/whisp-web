@@ -19,6 +19,10 @@ const noticing       = (data?.noticing        || {}) as Record<string, any>;
 const signs          = (noticing.signs        || []) as string[];
 const reading        = data?.reading          || '';
 const imageUrl       = data?.imageUrl         || null;
+// Readings generated through the /reading lead-magnet funnel are self-
+// requested, not gifted by a friend — the hero copy and closing CTA differ
+// accordingly (point toward the founders offer, not a cold app-store link).
+const isFunnelReading = data?.source === 'reading_funnel';
 
 // Build context sentence
 const noticingParts: string[] = [];
@@ -102,7 +106,9 @@ const pageDescription = !notFound && reading
 
         <div class="hero-title-block">
           <p class="hero-eyebrow">
-            {ownerName ? `${ownerName} thought of you` : 'Someone thought of you'}
+            {isFunnelReading
+              ? 'From Whisp'
+              : (ownerName ? `${ownerName} thought of you` : 'Someone thought of you')}
           </p>
           <h1 class="hero-title">
             {recipientName
@@ -137,14 +143,29 @@ const pageDescription = !notFound && reading
         <div class="divider"></div>
 
         <div class="convert">
-          <p class="convert-headline">Curious what <em>your</em> signs mean?</p>
-          <p class="convert-body">
-            Whisp is a journal for the signs, symbols, and synchronicities
-            you notice every day — with personal AI readings drawn from your
-            own life and beliefs.
-          </p>
-          <a href={APP_STORE_URL} class="cta">Download Whisp ✦</a>
-          <p class="microcopy">Free to start · Available on iOS</p>
+          {isFunnelReading ? (
+            <>
+              <p class="convert-headline">This was <em>one</em> reading.</p>
+              <p class="convert-body">
+                Whisp is a journal for every sign, symbol, dream, and synchronicity
+                you notice — with personal AI readings drawn from your own life
+                and beliefs, not a single one-off preview.
+              </p>
+              <a href="https://getwhisp.app/founders" class="cta">Claim Founders Access ✦</a>
+              <p class="microcopy">Free to start · iOS & Android · Founder rate locked for early members</p>
+            </>
+          ) : (
+            <>
+              <p class="convert-headline">Curious what <em>your</em> signs mean?</p>
+              <p class="convert-body">
+                Whisp is a journal for the signs, symbols, and synchronicities
+                you notice every day — with personal AI readings drawn from your
+                own life and beliefs.
+              </p>
+              <a href={APP_STORE_URL} class="cta">Download Whisp ✦</a>
+              <p class="microcopy">Free to start · Available on iOS</p>
+            </>
+          )}
         </div>
 
         <p class="footer-mark">getwhisp.app</p>
