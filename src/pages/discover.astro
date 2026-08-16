@@ -25,7 +25,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 >
 
 <section class="quiz-page">
-  <div class="quiz-bg"></div>
+  <div class="quiz-bg">
+    <div class="nebula-blob nebula-blob--a"></div>
+    <div class="nebula-blob nebula-blob--b"></div>
+    <div class="nebula-blob nebula-blob--c"></div>
+    <svg class="bg-starburst" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon
+        points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+        fill="none" stroke="#c9a84c" stroke-width="0.5"
+      />
+    </svg>
+  </div>
 
   <div class="quiz-shell">
     <button type="button" id="back-btn" class="back-btn" hidden aria-label="Back">←</button>
@@ -36,7 +46,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
     <!-- ═══ INTRO ═══ -->
     <div class="quiz-step" data-step="intro">
+      <div class="intro-glow"></div>
       <div class="intro-wordmark">✦ whisp</div>
+      <div class="intro-emblem" aria-hidden="true">{campaignSymbol ? campaignSymbol.family === 'number' ? '✦' : '⟡' : '✧'}</div>
       <h1 class="intro-headline">{introHeadline}</h1>
       <p class="intro-sub">{introSub}</p>
       <button type="button" class="cta-btn" id="begin-btn">Begin ✦</button>
@@ -46,12 +58,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <div class="quiz-step" data-step="s1" hidden>
       <h2 class="q-title">What keeps showing up for you?</h2>
       <div class="q-options" id="s1-options" data-field="step1">
-        <button type="button" class="opt-btn" data-value="A repeating number">A repeating number</button>
-        <button type="button" class="opt-btn" data-value="An animal or bird">An animal or bird</button>
-        <button type="button" class="opt-btn" data-value="A dream that stayed with you">A dream that stayed with you</button>
-        <button type="button" class="opt-btn" data-value="A word, name, or phrase">A word, name, or phrase</button>
-        <button type="button" class="opt-btn" data-value="A feeling I can't explain">A feeling I can't explain</button>
-        <button type="button" class="opt-btn" data-value="Something else">Something else</button>
+        <button type="button" class="opt-btn" data-value="A repeating number"><span class="opt-glyph">✦</span><span class="opt-label">A repeating number</span></button>
+        <button type="button" class="opt-btn" data-value="An animal or bird"><span class="opt-glyph">⟡</span><span class="opt-label">An animal or bird</span></button>
+        <button type="button" class="opt-btn" data-value="A dream that stayed with you"><span class="opt-glyph">☾</span><span class="opt-label">A dream that stayed with you</span></button>
+        <button type="button" class="opt-btn" data-value="A word, name, or phrase"><span class="opt-glyph">✎</span><span class="opt-label">A word, name, or phrase</span></button>
+        <button type="button" class="opt-btn" data-value="A feeling I can't explain"><span class="opt-glyph">◐</span><span class="opt-label">A feeling I can't explain</span></button>
+        <button type="button" class="opt-btn" data-value="Something else"><span class="opt-glyph">◇</span><span class="opt-label">Something else</span></button>
       </div>
     </div>
 
@@ -81,12 +93,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <div class="quiz-step" data-step="s4" hidden>
       <h2 class="q-title">What's going on in your life right now?</h2>
       <div class="q-options" id="s4-options" data-field="lifeContext">
-        <button type="button" class="opt-btn" data-value="A big decision">A big decision</button>
-        <button type="button" class="opt-btn" data-value="A relationship">A relationship</button>
-        <button type="button" class="opt-btn" data-value="Work or purpose">Work or purpose</button>
-        <button type="button" class="opt-btn" data-value="An ending">An ending</button>
-        <button type="button" class="opt-btn" data-value="A new beginning">A new beginning</button>
-        <button type="button" class="opt-btn" data-value="I'm not sure yet">I'm not sure yet</button>
+        <button type="button" class="opt-btn" data-value="A big decision"><span class="opt-glyph">⟐</span><span class="opt-label">A big decision</span></button>
+        <button type="button" class="opt-btn" data-value="A relationship"><span class="opt-glyph">◈</span><span class="opt-label">A relationship</span></button>
+        <button type="button" class="opt-btn" data-value="Work or purpose"><span class="opt-glyph">⊹</span><span class="opt-label">Work or purpose</span></button>
+        <button type="button" class="opt-btn" data-value="An ending"><span class="opt-glyph">◑</span><span class="opt-label">An ending</span></button>
+        <button type="button" class="opt-btn" data-value="A new beginning"><span class="opt-glyph">✧</span><span class="opt-label">A new beginning</span></button>
+        <button type="button" class="opt-btn" data-value="I'm not sure yet"><span class="opt-glyph">◔</span><span class="opt-label">I'm not sure yet</span></button>
       </div>
     </div>
 
@@ -94,12 +106,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <div class="quiz-step" data-step="s5" hidden>
       <h2 class="q-title">How do you tend to make sense of things?</h2>
       <div class="q-options" id="s5-options" data-field="lens">
-        <button type="button" class="opt-btn" data-value="Signs & synchronicity">Signs &amp; synchronicity</button>
-        <button type="button" class="opt-btn" data-value="Astrology">Astrology</button>
-        <button type="button" class="opt-btn" data-value="Dreams & symbols">Dreams &amp; symbols</button>
-        <button type="button" class="opt-btn" data-value="Intuition">Intuition</button>
-        <button type="button" class="opt-btn" data-value="Faith or scripture">Faith or scripture</button>
-        <button type="button" class="opt-btn" data-value="Just curious">Just curious</button>
+        <button type="button" class="opt-btn" data-value="Signs & synchronicity"><span class="opt-glyph">✦</span><span class="opt-label">Signs &amp; synchronicity</span></button>
+        <button type="button" class="opt-btn" data-value="Astrology"><span class="opt-glyph">☊</span><span class="opt-label">Astrology</span></button>
+        <button type="button" class="opt-btn" data-value="Dreams & symbols"><span class="opt-glyph">☾</span><span class="opt-label">Dreams &amp; symbols</span></button>
+        <button type="button" class="opt-btn" data-value="Intuition"><span class="opt-glyph">◐</span><span class="opt-label">Intuition</span></button>
+        <button type="button" class="opt-btn" data-value="Faith or scripture"><span class="opt-glyph">⊹</span><span class="opt-label">Faith or scripture</span></button>
+        <button type="button" class="opt-btn" data-value="Just curious"><span class="opt-glyph">◇</span><span class="opt-label">Just curious</span></button>
       </div>
     </div>
 
@@ -339,6 +351,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   const s2AnotherWrap = document.getElementById('s2-another-wrap') as HTMLDivElement;
   const s2Another = document.getElementById('s2-another') as HTMLInputElement;
 
+  // symbolType-keyed default glyph, matching the static Step 1 icon for the
+  // same family, plus a couple of asked-for standouts — kept simple rather
+  // than a per-word icon library.
+  const FAMILY_GLYPH: Record<string, string> = { number: '✦', animal: '⟡', feeling: '◐' };
+  const GLYPH_OVERRIDES: Record<string, string> = { Another: '◇' };
+
   function buildTapList(options: readonly string[], symbolType: string) {
     s2Options.innerHTML = '';
     s2Options.hidden = false;
@@ -346,7 +364,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'opt-btn';
-      btn.textContent = opt;
+      const glyph = GLYPH_OVERRIDES[opt] || FAMILY_GLYPH[symbolType] || '✦';
+      btn.innerHTML = `<span class="opt-glyph">${glyph}</span><span class="opt-label">${opt}</span>`;
       btn.addEventListener('click', () => {
         if (opt === 'Another') {
           s2Options.hidden = true;
@@ -606,19 +625,79 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     flex-direction: column;
     align-items: center;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
   }
   .quiz-bg {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(149,117,205,0.22) 0%, transparent 60%),
-      radial-gradient(ellipse at 30% 90%, rgba(240,192,64,0.07) 0%, transparent 55%);
+    overflow: hidden;
     pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Slow-drifting nebula — the "moving geometrics" atmosphere. Three soft
+     blobs on independent, very slow loops so the motion never reads as
+     mechanical or distracting from the actual question. */
+  .nebula-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+  }
+  .nebula-blob--a {
+    width: 60vw; height: 60vw;
+    top: -10%; left: -15%;
+    background: radial-gradient(circle, rgba(149,117,205,0.35) 0%, transparent 70%);
+    animation: driftA 26s ease-in-out infinite;
+  }
+  .nebula-blob--b {
+    width: 50vw; height: 50vw;
+    bottom: -15%; right: -10%;
+    background: radial-gradient(circle, rgba(240,192,64,0.14) 0%, transparent 70%);
+    animation: driftB 32s ease-in-out infinite;
+  }
+  .nebula-blob--c {
+    width: 40vw; height: 40vw;
+    top: 40%; left: 60%;
+    background: radial-gradient(circle, rgba(149,117,205,0.18) 0%, transparent 70%);
+    animation: driftC 38s ease-in-out infinite;
+  }
+  @keyframes driftA {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(6vw, 4vh) scale(1.08); }
+  }
+  @keyframes driftB {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-5vw, -6vh) scale(1.1); }
+  }
+  @keyframes driftC {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-4vw, 3vh) scale(0.94); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nebula-blob { animation: none; }
+  }
+
+  /* Faint sacred-geometry watermark, same mark used on r/[id].astro and
+     the founders success page — a slow full rotation ties /discover
+     visually to the rest of the brand rather than feeling like a bolted-
+     on funnel page. */
+  .bg-starburst {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 140vw; height: 140vw;
+    transform: translate(-50%, -50%);
+    opacity: 0.05;
+    animation: starburstSpin 180s linear infinite;
+  }
+  @keyframes starburstSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-starburst { animation: none; }
   }
 
   .quiz-shell {
     position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 440px;
     min-height: 100vh;
@@ -674,6 +753,35 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     color: rgba(255,248,235,0.6);
     text-align: center;
     margin-bottom: 40px;
+    position: relative;
+  }
+  /* A soft pulsing glow behind the emblem — the visual "moment" before the
+     first question, replacing what used to be a flat wall of text. */
+  .intro-glow {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    width: 200px; height: 200px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(240,192,64,0.22) 0%, transparent 70%);
+    filter: blur(20px);
+    animation: introPulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes introPulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro-glow { animation: none; }
+  }
+  .intro-emblem {
+    position: relative;
+    font-size: 42px;
+    color: #F0C040;
+    text-align: center;
+    margin-bottom: 24px;
+    text-shadow: 0 0 24px rgba(240,192,64,0.5);
   }
   .intro-headline {
     font-family: 'Cormorant Garamond', serif;
@@ -712,8 +820,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     flex-direction: column;
     gap: 10px;
   }
-  .opt-btn {
+  /* :global() on every .opt-btn/.opt-glyph/.opt-label rule below is
+     required, not stylistic — Astro's per-component CSS scoping works by
+     injecting a data-astro-cid-* attribute into server-rendered markup at
+     build time. Step 2's option buttons are built at runtime via
+     document.createElement (buildTapList, in the script below) and so
+     never receive that attribute — scoped selectors silently fail to
+     match them, which is exactly what happened (unstyled, default browser
+     buttons, no glyph spacing) until this was caught in a real headless
+     click-through and compared against a screenshot. */
+  :global(.opt-btn) {
     min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     text-align: left;
     background: rgba(255,255,255,0.04);
     border: 0.5px solid rgba(149,117,205,0.3);
@@ -725,11 +845,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
   }
-  .opt-btn:hover, .opt-btn:focus-visible {
+  :global(.opt-glyph) {
+    font-size: 16px;
+    color: #F0C040;
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  :global(.opt-btn:hover), :global(.opt-btn:focus-visible) {
     background: rgba(149,117,205,0.15);
     border-color: rgba(149,117,205,0.6);
   }
-  .opt-btn:active { background: rgba(240,192,64,0.15); border-color: rgba(240,192,64,0.5); }
+  :global(.opt-btn:active) { background: rgba(240,192,64,0.15); border-color: rgba(240,192,64,0.5); }
 
   .q-text-wrap { display: flex; flex-direction: column; gap: 16px; }
   .q-input {
@@ -784,25 +911,32 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   }
   .teaser-card {
     background: rgba(149,117,205,0.08);
-    border: 0.5px solid rgba(149,117,205,0.3);
+    border: 0.5px solid rgba(149,117,205,0.35);
     border-radius: 20px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    box-shadow: 0 0 40px rgba(149,117,205,0.15), 0 0 80px rgba(240,192,64,0.06);
   }
-  .teaser-row { display: flex; align-items: center; gap: 14px; }
-  .teaser-glyph { font-size: 24px; color: #F0C040; width: 32px; text-align: center; flex-shrink: 0; }
-  .teaser-row div { display: flex; flex-direction: column; gap: 2px; }
-  .teaser-row strong { font-family: 'Cormorant Garamond', serif; font-size: 18px; }
-  .teaser-row span { font-family: 'Raleway', sans-serif; font-size: 11.5px; color: rgba(255,255,255,0.5); }
-  .teaser-meaning, .teaser-connector {
+  /* :global() required — #teaser-card's contents are built via
+     card.innerHTML in buildTeaser() (script below), so like Step 2's
+     option buttons, none of it gets Astro's scoped data-astro-cid-*
+     attribute. Caught the same way: a real screenshot showed "Scorpio"
+     and "Your sun sign" running together with none of this layout
+     actually applying. */
+  :global(.teaser-row) { display: flex; align-items: center; gap: 14px; }
+  :global(.teaser-glyph) { font-size: 24px; color: #F0C040; width: 32px; text-align: center; flex-shrink: 0; }
+  :global(.teaser-row div) { display: flex; flex-direction: column; gap: 2px; }
+  :global(.teaser-row strong) { font-family: 'Cormorant Garamond', serif; font-size: 18px; }
+  :global(.teaser-row span) { font-family: 'Raleway', sans-serif; font-size: 11.5px; color: rgba(255,255,255,0.5); }
+  :global(.teaser-meaning), :global(.teaser-connector) {
     font-family: 'Raleway', sans-serif;
     font-size: 13.5px;
     line-height: 1.6;
     color: rgba(255,255,255,0.75);
   }
-  .teaser-meaning strong { color: #F0C040; }
+  :global(.teaser-meaning strong) { color: #F0C040; }
   .teaser-note {
     font-family: 'Raleway', sans-serif;
     font-size: 11.5px;
@@ -860,6 +994,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     padding-bottom: 24px;
     position: relative;
   }
+
+  /* Critical: .quiz-step/.q-options/.q-text-wrap all set `display` for
+     their visible state. At equal CSS specificity, an author rule that
+     sets `display` wins over the browser's built-in `[hidden] { display:
+     none }` — meaning every step was rendering at once, stacked, instead
+     of one at a time. This makes `hidden` win unconditionally regardless
+     of what any other rule on the page sets `display` to. */
+  [hidden] { display: none !important; }
 </style>
 
 </MinimalLayout>

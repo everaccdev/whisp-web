@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "playwright-chromium": "^1.62.1",
     "typescript": "^5.9.3"
   }
 }
