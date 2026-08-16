@@ -1,0 +1,865 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../layouts/MinimalLayout.astro';
+import { CAMPAIGN_SYMBOLS, VARIANT_COPY } from '../lib/quizConfig';
+
+const symbolParam = Astro.url.searchParams.get('symbol');
+const variantParam = Astro.url.searchParams.get('variant');
+
+const campaignSymbol = symbolParam && CAMPAIGN_SYMBOLS[symbolParam] ? { key: symbolParam, ...CAMPAIGN_SYMBOLS[symbolParam] } : null;
+const variantCopy = (variantParam && VARIANT_COPY[variantParam]) || VARIANT_COPY.default;
+
+const introHeadline = campaignSymbol ? campaignSymbol.reflected : variantCopy.headline;
+const introSub = campaignSymbol
+  ? "A few quick questions, then a real reading — not a template."
+  : variantCopy.sub;
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+---
+
+<MinimalLayout
+  title="Discover · Whisp"
+  description="A few quick questions, then a real reading — not a template."
+  ogUrl="https://getwhisp.app/discover"
+>
+
+<section class="quiz-page">
+  <div class="quiz-bg"></div>
+
+  <div class="quiz-shell">
+    <button type="button" id="back-btn" class="back-btn" hidden aria-label="Back">←</button>
+    <div class="progress-wrap" id="progress-wrap" hidden>
+      <p class="progress-label" id="progress-label">1 of 5</p>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- ═══ INTRO ═══ -->
+    <div class="quiz-step" data-step="intro">
+      <div class="intro-wordmark">✦ whisp</div>
+      <h1 class="intro-headline">{introHeadline}</h1>
+      <p class="intro-sub">{introSub}</p>
+      <button type="button" class="cta-btn" id="begin-btn">Begin ✦</button>
+    </div>
+
+    <!-- ═══ STEP 1 — hook ═══ -->
+    <div class="quiz-step" data-step="s1" hidden>
+      <h2 class="q-title">What keeps showing up for you?</h2>
+      <div class="q-options" id="s1-options" data-field="step1">
+        <button type="button" class="opt-btn" data-value="A repeating number">A repeating number</button>
+        <button type="button" class="opt-btn" data-value="An animal or bird">An animal or bird</button>
+        <button type="button" class="opt-btn" data-value="A dream that stayed with you">A dream that stayed with you</button>
+        <button type="button" class="opt-btn" data-value="A word, name, or phrase">A word, name, or phrase</button>
+        <button type="button" class="opt-btn" data-value="A feeling I can't explain">A feeling I can't explain</button>
+        <button type="button" class="opt-btn" data-value="Something else">Something else</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2 — conditional specificity ═══ -->
+    <div class="quiz-step" data-step="s2" hidden>
+      <h2 class="q-title" id="s2-title">Which one?</h2>
+      <div class="q-options" id="s2-options" data-field="sign" hidden></div>
+      <div class="q-text-wrap" id="s2-text-wrap" hidden>
+        <input type="text" id="s2-text" class="q-input" maxlength="120" placeholder="Type it here" />
+        <button type="button" class="cta-btn" id="s2-text-continue">Continue</button>
+      </div>
+      <div class="q-text-wrap" id="s2-another-wrap" hidden>
+        <input type="text" id="s2-another" class="q-input" maxlength="80" placeholder="Type it here" />
+        <button type="button" class="cta-btn" id="s2-another-continue">Continue</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3 — birth date ═══ -->
+    <div class="quiz-step" data-step="s3" hidden>
+      <h2 class="q-title">When were you born?</h2>
+      <p class="q-note">This powers your sun sign and Life Path number in the reading below.</p>
+      <input type="date" id="birthdate-input" class="q-input q-date" min="1920-01-01" />
+      <button type="button" class="cta-btn" id="s3-continue" disabled>Continue</button>
+    </div>
+
+    <!-- ═══ STEP 4 — life context ═══ -->
+    <div class="quiz-step" data-step="s4" hidden>
+      <h2 class="q-title">What's going on in your life right now?</h2>
+      <div class="q-options" id="s4-options" data-field="lifeContext">
+        <button type="button" class="opt-btn" data-value="A big decision">A big decision</button>
+        <button type="button" class="opt-btn" data-value="A relationship">A relationship</button>
+        <button type="button" class="opt-btn" data-value="Work or purpose">Work or purpose</button>
+        <button type="button" class="opt-btn" data-value="An ending">An ending</button>
+        <button type="button" class="opt-btn" data-value="A new beginning">A new beginning</button>
+        <button type="button" class="opt-btn" data-value="I'm not sure yet">I'm not sure yet</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 5 — interpretive lens ═══ -->
+    <div class="quiz-step" data-step="s5" hidden>
+      <h2 class="q-title">How do you tend to make sense of things?</h2>
+      <div class="q-options" id="s5-options" data-field="lens">
+        <button type="button" class="opt-btn" data-value="Signs & synchronicity">Signs &amp; synchronicity</button>
+        <button type="button" class="opt-btn" data-value="Astrology">Astrology</button>
+        <button type="button" class="opt-btn" data-value="Dreams & symbols">Dreams &amp; symbols</button>
+        <button type="button" class="opt-btn" data-value="Intuition">Intuition</button>
+        <button type="button" class="opt-btn" data-value="Faith or scripture">Faith or scripture</button>
+        <button type="button" class="opt-btn" data-value="Just curious">Just curious</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 6 — optional ═══ -->
+    <div class="quiz-step" data-step="s6" hidden>
+      <h2 class="q-title">Anything else you want to add?</h2>
+      <p class="q-note">Optional — helps Whisp read more specifically.</p>
+      <input type="text" id="s6-text" class="q-input" maxlength="200" placeholder="Totally optional..." />
+      <button type="button" class="cta-btn" id="s6-continue">Continue</button>
+      <button type="button" class="skip-btn" id="s6-skip">Skip this</button>
+    </div>
+
+    <!-- ═══ TEASER ═══ -->
+    <div class="quiz-step" data-step="teaser" hidden>
+      <p class="teaser-eyebrow">A FIRST GLANCE</p>
+      <div class="teaser-card" id="teaser-card"></div>
+      <p class="teaser-note">This is a glimpse, not the full reading.</p>
+      <button type="button" class="cta-btn" id="teaser-continue">See My Full Reading ✦</button>
+    </div>
+
+    <!-- ═══ EMAIL GATE ═══ -->
+    <div class="quiz-step" data-step="gate" hidden>
+      <h2 class="q-title">Your full reading is ready.</h2>
+      <p class="q-note">Where should we send it?</p>
+      <form id="gate-form">
+        <input type="text" id="gate-name" class="q-input" placeholder="Your name" autocomplete="name" required maxlength="80" />
+        <input type="email" id="gate-email" class="q-input" placeholder="your@email.com" autocomplete="email" required maxlength="200" />
+        {turnstileSiteKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark"></div>
+        )}
+        <button type="submit" class="cta-btn" id="gate-submit">Send My Reading ✦</button>
+        <p class="fine">
+          We'll email you the reading and occasional notes from Whisp. Unsubscribe any time —
+          see our <a href="/privacy">privacy policy</a>.
+        </p>
+        <p id="gate-error" class="form-error" hidden></p>
+      </form>
+    </div>
+
+    <!-- ═══ LOADING ═══ -->
+    <div class="quiz-step" data-step="loading" hidden>
+      <div class="loading-spinner"></div>
+      <p class="loading-text" id="loading-text">Reading your signs…</p>
+    </div>
+
+  </div>
+
+  <p class="footer-mark">getwhisp.app</p>
+</section>
+
+<script is:inline define:vars={{ campaignSymbolJson: campaignSymbol ? JSON.stringify(campaignSymbol) : null, symbolParam, variantParam }}>
+  window.__DISCOVER_CAMPAIGN__ = campaignSymbolJson ? JSON.parse(campaignSymbolJson) : null;
+  window.__DISCOVER_PARAMS__ = { symbol: symbolParam || null, variant: variantParam || null };
+</script>
+
+<script>
+  import { computeLifePathNumber, getSunSign, SUN_SIGN_GLYPHS } from '../lib/quizMath';
+  import { ANIMAL_OPTIONS, NUMBER_OPTIONS, FEELING_OPTIONS } from '../lib/quizConfig';
+
+  type SymbolFamily = 'number' | 'animal' | 'object';
+  interface CampaignSymbol { key: string; reflected: string; family: SymbolFamily; cacheKey: string; step2Value: string; }
+
+  const campaign: CampaignSymbol | null = (window as any).__DISCOVER_CAMPAIGN__ || null;
+  const urlParams: { symbol: string | null; variant: string | null } = (window as any).__DISCOVER_PARAMS__;
+
+  const posthog = () => (window as any).posthog;
+
+  // ── State ──────────────────────────────────────────────────────────────
+  interface QuizState {
+    step1: string | null;
+    sign: string | null;
+    symbolType: string | null; // number|animal|word|dream|feeling|other
+    dream: string | null;
+    birthDate: string | null;
+    lifeContext: string | null;
+    lens: string | null;
+    freeText: string | null;
+  }
+
+  const STORAGE_KEY = 'whisp_discover_state';
+  const STEP_KEY = 'whisp_discover_step';
+
+  const defaultState = (): QuizState => ({
+    step1: null, sign: null, symbolType: null, dream: null,
+    birthDate: null, lifeContext: null, lens: null, freeText: null,
+  });
+
+  let state: QuizState = defaultState();
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+    if (saved) state = { ...defaultState(), ...JSON.parse(saved) };
+  } catch (e) {}
+
+  const persist = () => {
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  };
+
+  // If a campaign symbol pre-answers steps 1+2, apply it once up front.
+  if (campaign && !state.sign) {
+    state.step1 = campaign.family === 'number' ? 'A repeating number' : 'An animal or bird';
+    state.sign = campaign.step2Value;
+    state.symbolType = campaign.family;
+    persist();
+  }
+
+  // ── Step order (honest progress — campaign path genuinely skips 2 steps) ──
+  const FULL_ORDER = ['s1', 's2', 's3', 's4', 's5', 's6'];
+  const CAMPAIGN_ORDER = ['s3', 's4', 's5', 's6'];
+  const order = campaign ? CAMPAIGN_ORDER : FULL_ORDER;
+  const requiredOrder = order.filter((s) => s !== 's6');
+
+  // -1 means "at the intro screen, quiz not yet begun" — the honest default
+  // for a fresh visit. Only a valid, in-range saved index moves off it, so a
+  // corrupt/stale sessionStorage value can't strand a visitor mid-quiz.
+  let stepIndex = -1;
+  try {
+    const savedStep = sessionStorage.getItem(STEP_KEY);
+    if (savedStep !== null) {
+      const parsed = parseInt(savedStep, 10);
+      if (!Number.isNaN(parsed) && parsed >= 0) stepIndex = Math.min(parsed, order.length - 1);
+    }
+  } catch (e) {}
+
+  const ALL_SCREENS = ['intro', ...order, 'teaser', 'gate', 'loading'];
+
+  const els = {
+    backBtn: document.getElementById('back-btn') as HTMLButtonElement,
+    progressWrap: document.getElementById('progress-wrap') as HTMLDivElement,
+    progressLabel: document.getElementById('progress-label') as HTMLParagraphElement,
+    progressFill: document.getElementById('progress-fill') as HTMLDivElement,
+  };
+
+  function showScreen(name: string) {
+    ALL_SCREENS.forEach((s) => {
+      const el = document.querySelector(`[data-step="${s}"]`) as HTMLElement | null;
+      if (el) el.hidden = s !== name;
+    });
+
+    const stepPos = order.indexOf(name);
+    if (stepPos === -1 || name === 's6') {
+      els.progressWrap.hidden = name === 's6' ? false : true;
+      if (name === 's6') {
+        els.progressLabel.textContent = 'Optional';
+        els.progressFill.style.width = '100%';
+      }
+    } else {
+      els.progressWrap.hidden = false;
+      const reqPos = requiredOrder.indexOf(name);
+      els.progressLabel.textContent = `${reqPos + 1} of ${requiredOrder.length}`;
+      els.progressFill.style.width = `${((reqPos + 1) / requiredOrder.length) * 100}%`;
+    }
+
+    els.backBtn.hidden = name === 'intro' || name === 'loading';
+  }
+
+  function currentScreenName(): string {
+    if (stepIndex < 0) return 'intro';
+    if (stepIndex >= order.length) return 'teaser';
+    return order[stepIndex];
+  }
+
+  function render() {
+    const name = currentScreenName();
+    showScreen(name);
+    if (name === 's2') renderStep2();
+    try { sessionStorage.setItem(STEP_KEY, String(stepIndex)); } catch (e) {}
+  }
+
+  async function goNext() {
+    posthog()?.capture('quiz_step_completed', { step: currentScreenName(), step_index: stepIndex + 1 });
+    stepIndex += 1;
+    if (stepIndex >= order.length) {
+      // Deliberately await the full teaser build (local math + the one
+      // cached-meaning fetch) before revealing the screen, rather than
+      // showing it half-built and having the meaning pop in a moment
+      // later — a single coherent reveal reads as more "instant" than a
+      // visibly staggered one, even though the underlying calls are async.
+      // Note: STEP_KEY is intentionally left at the last question's index
+      // here (not advanced) — a refresh on the teaser just re-lands on
+      // that last question rather than needing a separate persisted state.
+      await buildTeaser();
+      showScreen('teaser');
+      posthog()?.capture('quiz_teaser_viewed');
+      return;
+    }
+    render();
+  }
+
+  function goBack() {
+    const name = currentScreenName();
+    if (name === 'teaser') { stepIndex = order.length - 1; render(); return; }
+    if (stepIndex <= 0) { stepIndex = -1; showScreen('intro'); return; }
+    stepIndex -= 1;
+    render();
+  }
+
+  els.backBtn.addEventListener('click', goBack);
+
+  // ── Intro ──────────────────────────────────────────────────────────────
+  document.getElementById('begin-btn')?.addEventListener('click', () => {
+    posthog()?.capture('quiz_started', { symbol: urlParams.symbol, variant: urlParams.variant });
+    stepIndex = 0;
+    render();
+  });
+
+  // ── Generic tap-option wiring (steps with data-field on a q-options div) ──
+  function wireOptions(container: HTMLElement, onPick: (value: string) => void) {
+    container.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((btn) => {
+      btn.addEventListener('click', () => onPick(btn.dataset.value || ''));
+    });
+  }
+
+  wireOptions(document.getElementById('s1-options')!, (value) => {
+    state.step1 = value;
+    state.sign = null; state.symbolType = null; state.dream = null;
+    persist();
+    goNext();
+  });
+
+  wireOptions(document.getElementById('s4-options')!, (value) => {
+    state.lifeContext = value;
+    persist();
+    goNext();
+  });
+
+  wireOptions(document.getElementById('s5-options')!, (value) => {
+    state.lens = value;
+    persist();
+    goNext();
+  });
+
+  // ── Step 2 — branches on step1 ────────────────────────────────────────
+  const s2Title = document.getElementById('s2-title') as HTMLHeadingElement;
+  const s2Options = document.getElementById('s2-options') as HTMLDivElement;
+  const s2TextWrap = document.getElementById('s2-text-wrap') as HTMLDivElement;
+  const s2Text = document.getElementById('s2-text') as HTMLInputElement;
+  const s2AnotherWrap = document.getElementById('s2-another-wrap') as HTMLDivElement;
+  const s2Another = document.getElementById('s2-another') as HTMLInputElement;
+
+  function buildTapList(options: readonly string[], symbolType: string) {
+    s2Options.innerHTML = '';
+    s2Options.hidden = false;
+    options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => {
+        if (opt === 'Another') {
+          s2Options.hidden = true;
+          s2AnotherWrap.hidden = false;
+          s2Another.focus();
+          return;
+        }
+        state.sign = opt;
+        state.symbolType = symbolType;
+        persist();
+        goNext();
+      });
+      s2Options.appendChild(btn);
+    });
+  }
+
+  function renderStep2() {
+    s2Options.hidden = true; s2Options.innerHTML = '';
+    s2TextWrap.hidden = true;
+    s2AnotherWrap.hidden = true;
+
+    switch (state.step1) {
+      case 'A repeating number':
+        s2Title.textContent = 'Which one?';
+        buildTapList(NUMBER_OPTIONS, 'number');
+        break;
+      case 'An animal or bird':
+        s2Title.textContent = 'Which one?';
+        buildTapList(ANIMAL_OPTIONS, 'animal');
+        break;
+      case 'A dream that stayed with you':
+        s2Title.textContent = 'What do you remember most?';
+        s2TextWrap.hidden = false;
+        break;
+      case 'A word, name, or phrase':
+        s2Title.textContent = 'What was it?';
+        s2TextWrap.hidden = false;
+        break;
+      case "A feeling I can't explain":
+        s2Title.textContent = 'Which comes closest?';
+        buildTapList(FEELING_OPTIONS, 'feeling');
+        break;
+      default:
+        s2Title.textContent = 'Tell us a little more';
+        s2TextWrap.hidden = false;
+    }
+  }
+
+  document.getElementById('s2-text-continue')?.addEventListener('click', () => {
+    const val = s2Text.value.trim();
+    if (!val) { s2Text.focus(); return; }
+    if (state.step1 === 'A dream that stayed with you') {
+      state.dream = val;
+      state.sign = 'a dream';
+      state.symbolType = 'dream';
+    } else {
+      state.sign = val;
+      state.symbolType = state.step1 === 'A word, name, or phrase' ? 'word' : 'other';
+    }
+    persist();
+    goNext();
+  });
+
+  document.getElementById('s2-another-continue')?.addEventListener('click', () => {
+    const val = s2Another.value.trim();
+    if (!val) { s2Another.focus(); return; }
+    state.sign = val;
+    persist();
+    goNext();
+  });
+
+  // ── Step 3 — birth date ───────────────────────────────────────────────
+  const birthInput = document.getElementById('birthdate-input') as HTMLInputElement;
+  const s3Continue = document.getElementById('s3-continue') as HTMLButtonElement;
+  birthInput.max = new Date().toISOString().slice(0, 10); // no future birthdates, computed at runtime rather than baked into the HTML
+  if (state.birthDate) birthInput.value = state.birthDate;
+  s3Continue.disabled = !birthInput.value;
+  birthInput.addEventListener('input', () => { s3Continue.disabled = !birthInput.value; });
+  s3Continue.addEventListener('click', () => {
+    if (!birthInput.value) return;
+    state.birthDate = birthInput.value;
+    persist();
+    goNext();
+  });
+
+  // ── Step 6 — optional ─────────────────────────────────────────────────
+  const s6Text = document.getElementById('s6-text') as HTMLInputElement;
+  if (state.freeText) s6Text.value = state.freeText;
+  document.getElementById('s6-continue')?.addEventListener('click', () => {
+    state.freeText = s6Text.value.trim() || null;
+    persist();
+    goNext();
+  });
+  document.getElementById('s6-skip')?.addEventListener('click', () => {
+    state.freeText = null;
+    persist();
+    goNext();
+  });
+
+  // ── Teaser (zero API calls — local math + one cached-meaning fetch) ────
+  const FRAGMENTS = [
+    (sun: string, lp: number, symbol: string) =>
+      `${sun} energy and a Life Path ${lp} tend to notice ${symbol} at turning points — worth paying attention to, not explaining away.`,
+    (sun: string, lp: number, symbol: string) =>
+      `For a ${sun} with a Life Path ${lp}, ${symbol} showing up now lines up with how you tend to move through change.`,
+    (sun: string, lp: number, symbol: string) =>
+      `A Life Path ${lp} under ${sun} often notices ${symbol} right when something's asking to be looked at more closely.`,
+  ];
+
+  function hashString(s: string): number {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function cacheKeyFor(value: string): string {
+    return value.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+  }
+
+  async function fetchSymbolMeaning(key: string): Promise<string | null> {
+    try {
+      const res = await fetch(`https://us-central1-life-signs-be094.cloudfunctions.net/getSymbolTeaser?key=${encodeURIComponent(key)}`, {
+        signal: AbortSignal.timeout(4000),
+      });
+      const data = await res.json();
+      return data?.found ? data.meaning : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function buildTeaser() {
+    const card = document.getElementById('teaser-card') as HTMLDivElement;
+    const symbolLabel = state.sign || 'what you noticed';
+    const sunSign = state.birthDate ? getSunSign(state.birthDate) : null;
+    const lifePath = state.birthDate ? computeLifePathNumber(state.birthDate) : null;
+    const glyph = sunSign ? SUN_SIGN_GLYPHS[sunSign] || '' : '';
+
+    const meaning = state.sign ? await fetchSymbolMeaning(campaign?.cacheKey || cacheKeyFor(state.sign)) : null;
+
+    const rows: string[] = [];
+    if (sunSign) rows.push(`<div class="teaser-row"><span class="teaser-glyph">${glyph}</span><div><strong>${sunSign}</strong><span>Your sun sign</span></div></div>`);
+    if (lifePath) rows.push(`<div class="teaser-row"><span class="teaser-glyph">✦</span><div><strong>Life Path ${lifePath}</strong><span>From your birth date</span></div></div>`);
+
+    let connector = '';
+    if (sunSign && lifePath && state.sign) {
+      const frag = FRAGMENTS[hashString(sunSign + lifePath + symbolLabel) % FRAGMENTS.length];
+      connector = `<p class="teaser-connector">${frag(sunSign, lifePath, symbolLabel)}</p>`;
+    }
+
+    const meaningBlock = meaning
+      ? `<p class="teaser-meaning"><strong>${symbolLabel}:</strong> ${meaning}</p>`
+      : state.sign
+        ? `<p class="teaser-meaning">${symbolLabel} is newer to Whisp's library — but it's already part of your full reading below.</p>`
+        : '';
+
+    card.innerHTML = rows.join('') + meaningBlock + connector;
+  }
+
+  // ── Gate + submit ──────────────────────────────────────────────────────
+  document.getElementById('teaser-continue')?.addEventListener('click', () => {
+    stepIndex = order.length; // marker for "past quiz, at gate"
+    showScreen('gate');
+    posthog()?.capture('quiz_email_gate_viewed');
+  });
+
+  const gateForm = document.getElementById('gate-form') as HTMLFormElement;
+  const gateError = document.getElementById('gate-error') as HTMLParagraphElement;
+  const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
+
+  const LOADING_COPY = ['Reading your signs…', 'Weaving the threads…', 'Almost there…'];
+
+  gateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    gateError.hidden = true;
+
+    const name = (document.getElementById('gate-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('gate-email') as HTMLInputElement).value.trim();
+    const turnstileField = gateForm.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null;
+
+    let utm = null;
+    try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (err) {}
+
+    posthog()?.capture('quiz_lead_captured');
+
+    showScreen('loading');
+    let copyIdx = 0;
+    loadingText.textContent = LOADING_COPY[0];
+    const loadingTimer = setInterval(() => {
+      copyIdx = Math.min(copyIdx + 1, LOADING_COPY.length - 1);
+      loadingText.textContent = LOADING_COPY[copyIdx];
+    }, 2500);
+
+    try {
+      const res = await fetch('/api/lead-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, email,
+          turnstileToken: turnstileField?.value || '',
+          sign: state.sign,
+          symbolType: state.symbolType,
+          dream: state.dream,
+          situation: state.lifeContext,
+          birthDate: state.birthDate,
+          interpretiveLens: state.lens,
+          freeText: state.freeText,
+          utm,
+          campaign: { symbol: urlParams.symbol, variant: urlParams.variant },
+        }),
+      });
+      const data = await res.json();
+      clearInterval(loadingTimer);
+
+      if (res.ok && data.readingId) {
+        posthog()?.capture('quiz_reading_generated');
+        try { sessionStorage.removeItem(STORAGE_KEY); sessionStorage.removeItem(STEP_KEY); } catch (err) {}
+        window.location.href = `/r/${data.readingId}`;
+        return;
+      }
+      throw new Error(data.error || 'Something went wrong. Please try again.');
+    } catch (err: any) {
+      clearInterval(loadingTimer);
+      posthog()?.capture('quiz_reading_failed');
+      showScreen('gate');
+      gateError.textContent = err.message;
+      gateError.hidden = false;
+    }
+  });
+
+  // ── Abandonment (best-effort, last completed step only — no free text) ──
+  window.addEventListener('pagehide', () => {
+    const name = currentScreenName();
+    if (name !== 'intro' && name !== 'teaser') {
+      posthog()?.capture('quiz_abandoned', { last_step: name });
+    }
+  });
+
+  // ── Initial render ─────────────────────────────────────────────────────
+  // A campaign symbol pre-answers steps 1+2 but does NOT skip the intro
+  // screen — the one-tap "Begin" still applies, just with the symbol
+  // reflected in the headline (see frontmatter). Only a resumed in-progress
+  // session (valid sessionStorage index) skips straight past it.
+  if (stepIndex >= 0) {
+    render();
+  } else {
+    showScreen('intro');
+  }
+</script>
+
+<style>
+  .quiz-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #07041a 0%, #0e0830 40%, #050212 100%);
+    color: #faf8f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(149,117,205,0.22) 0%, transparent 60%),
+      radial-gradient(ellipse at 30% 90%, rgba(240,192,64,0.07) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .quiz-shell {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    min-height: 100vh;
+    padding: 24px 24px 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-btn {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 18px;
+    padding: 8px;
+    margin: -8px 0 8px -8px;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+  }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #F0C040; transition: width 0.3s ease; }
+
+  .quiz-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: quizFadeIn 0.25s ease;
+  }
+  @keyframes quizFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quiz-step { animation: none; }
+  }
+
+  /* Intro */
+  .intro-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: rgba(255,248,235,0.6);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .intro-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .intro-sub {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  /* Questions */
+  .q-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(24px, 7vw, 30px);
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .q-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 24px;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opt-btn {
+    min-height: 44px;
+    text-align: left;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(149,117,205,0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #faf8f3;
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .opt-btn:hover, .opt-btn:focus-visible {
+    background: rgba(149,117,205,0.15);
+    border-color: rgba(149,117,205,0.6);
+  }
+  .opt-btn:active { background: rgba(240,192,64,0.15); border-color: rgba(240,192,64,0.5); }
+
+  .q-text-wrap { display: flex; flex-direction: column; gap: 16px; }
+  .q-input {
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 0.5px solid rgba(149,117,205,0.3);
+    background: rgba(255,255,255,0.04);
+    color: #faf8f3;
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    width: 100%;
+  }
+  .q-input::placeholder { color: rgba(255,255,255,0.3); }
+  .q-date { color-scheme: dark; }
+
+  .cta-btn {
+    min-height: 48px;
+    width: 100%;
+    background: #F0C040;
+    color: #0a0618;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  .cta-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .skip-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    padding: 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  /* Teaser */
+  .teaser-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: #9575CD;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .teaser-card {
+    background: rgba(149,117,205,0.08);
+    border: 0.5px solid rgba(149,117,205,0.3);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .teaser-row { display: flex; align-items: center; gap: 14px; }
+  .teaser-glyph { font-size: 24px; color: #F0C040; width: 32px; text-align: center; flex-shrink: 0; }
+  .teaser-row div { display: flex; flex-direction: column; gap: 2px; }
+  .teaser-row strong { font-family: 'Cormorant Garamond', serif; font-size: 18px; }
+  .teaser-row span { font-family: 'Raleway', sans-serif; font-size: 11.5px; color: rgba(255,255,255,0.5); }
+  .teaser-meaning, .teaser-connector {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.75);
+  }
+  .teaser-meaning strong { color: #F0C040; }
+  .teaser-note {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    margin: 16px 0 0;
+  }
+
+  /* Gate */
+  #gate-form { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+  .cf-turnstile { margin: 4px 0; }
+  .fine {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .fine a { color: rgba(255,255,255,0.55); }
+  .form-error {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12.5px;
+    color: #ff8a8a;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Loading */
+  [data-step="loading"] { align-items: center; text-align: center; }
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 2px solid rgba(240,192,64,0.2);
+    border-top-color: #F0C040;
+    border-radius: 50%;
+    animation: quizSpin 0.9s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes quizSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .loading-spinner { animation-duration: 2.4s; }
+  }
+  .loading-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.2);
+    padding-bottom: 24px;
+    position: relative;
+  }
+</style>
+
+</MinimalLayout>
