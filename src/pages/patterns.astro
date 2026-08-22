@@ -8,11 +8,6 @@ const symbolParam = Astro.url.searchParams.get('symbol');
 const variantParam = Astro.url.searchParams.get('variant');
 const campaignSymbol = symbolParam && CAMPAIGN_SYMBOLS[symbolParam] ? { key: symbolParam, ...CAMPAIGN_SYMBOLS[symbolParam] } : null;
 
-const introHeadline = campaignSymbol
-  ? campaignSymbol.reflected
-  : "What have you noticed?";
-const introSub = "You likely already have years of signs sitting in memory. Tell Whisp a few, and see the thread between them — free, right now.";
-
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 ---
 
@@ -30,31 +25,35 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
   <div class="pm-shell">
     <button type="button" id="back-btn" class="back-btn" hidden aria-label="Back">←</button>
-    <div class="progress-wrap" id="progress-wrap" hidden>
-      <p class="progress-label" id="progress-label"></p>
+
+    <!-- Persistent canvas — visible from the first question onward. Stars
+         land at their FINAL position the instant an entry is finalized
+         (computeEntryPlacement, resolved from the entry's own dominant
+         theme) and never move again — same component/positions used here
+         and on the final Pattern Map below. -->
+    <div id="capture-canvas-wrap" class="canvas-wrap" hidden>
+      <div id="capture-constellation" class="constellation-wrap"></div>
     </div>
+    <p id="micro-payoff" class="micro-payoff" hidden></p>
+    <p id="threshold-line" class="threshold-line" hidden>There's a shape here.</p>
 
     <!-- ═══ INTRO ═══ -->
     <div class="pm-step" data-step="intro">
       <div class="intro-wordmark">✦ whisp</div>
-      <h1 class="intro-headline">{introHeadline}</h1>
-      <p class="intro-sub">{introSub}</p>
+      <h1 class="intro-headline">You've been noticing things for years.</h1>
+      <p class="intro-sub">Most of them you never wrote down.</p>
+      <p class="intro-sub">Show Whisp a few, and it will show you the thread running between them.</p>
+      <p class="intro-rule">One thing is a moment. Two is a pair. Three is where a shape begins.</p>
       <button type="button" class="cta-btn" id="begin-btn">Begin ✦</button>
     </div>
 
     <!-- ═══ CATEGORY (repeats per entry) ═══ -->
     <div class="pm-step" data-step="category" hidden>
-      <h2 class="q-title">What was it?</h2>
-      <div class="q-options" id="category-options">
-        <button type="button" class="opt-btn" data-key="number" data-value="A repeating number">A repeating number</button>
-        <button type="button" class="opt-btn" data-key="animal" data-value="An animal or bird">An animal or bird</button>
-        <button type="button" class="opt-btn" data-key="dream" data-value="A dream">A dream</button>
-        <button type="button" class="opt-btn" data-key="object" data-value="An object">An object</button>
-        <button type="button" class="opt-btn" data-key="word" data-value="A word or name">A word or name</button>
-        <button type="button" class="opt-btn" data-key="other" data-value="Something else">Something else</button>
-      </div>
-      <p class="encouragement" id="encouragement" hidden></p>
-      <button type="button" class="done-btn" id="done-btn" hidden>I'm done — show me the pattern ✦</button>
+      <h2 class="q-title" id="category-title">What's been showing up for you?</h2>
+      <div class="q-options" id="category-options"></div>
+      <p class="nudge" id="nudge" hidden>Many people notice a repeating number, a bird that keeps appearing, or a dream that stayed.</p>
+      <button type="button" class="done-btn" id="done-btn" hidden>Reveal my map ✦</button>
+      <p class="add-more-hint" id="add-more-hint" hidden>Add more to sharpen it, or reveal it now.</p>
     </div>
 
     <!-- ═══ SPECIFIC — tap list (number/animal) ═══ -->
@@ -70,47 +69,43 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       <button type="button" class="cta-btn" id="specific-text-continue">Continue</button>
     </div>
 
-    <!-- ═══ ERA ═══ -->
-    <div class="pm-step" data-step="era" hidden>
-      <h2 class="q-title">Roughly when?</h2>
-      <div class="q-options" id="era-options">
-        <button type="button" class="opt-btn" data-value="recently">Recently</button>
-        <button type="button" class="opt-btn" data-value="few_months">A few months ago</button>
-        <button type="button" class="opt-btn" data-value="about_year">About a year ago</button>
-        <button type="button" class="opt-btn" data-value="years_ago">Years ago</button>
-        <button type="button" class="opt-btn" data-value="keeps_happening">It keeps happening</button>
-        <button type="button" class="opt-btn" data-value="dont_remember">I don't remember</button>
+    <!-- ═══ DETAIL (era + optional context, 1-tap collapse) ═══ -->
+    <div class="pm-step" data-step="detail" hidden>
+      <h2 class="q-title">Roughly when — and what was going on?</h2>
+      <p class="q-note">Both optional. Tap Continue any time.</p>
+      <div class="chip-row" id="era-options">
+        <button type="button" class="chip" data-value="recently">Recently</button>
+        <button type="button" class="chip" data-value="few_months">A few months ago</button>
+        <button type="button" class="chip" data-value="about_year">About a year ago</button>
+        <button type="button" class="chip" data-value="years_ago">Years ago</button>
+        <button type="button" class="chip" data-value="keeps_happening">It keeps happening</button>
+        <button type="button" class="chip" data-value="dont_remember">I don't remember</button>
       </div>
-    </div>
-
-    <!-- ═══ CONTEXT (optional) ═══ -->
-    <div class="pm-step" data-step="context" hidden>
-      <h2 class="q-title">What was going on then?</h2>
-      <p class="q-note">Optional — helps Whisp read more specifically.</p>
-      <input type="text" id="context-input" class="q-input" maxlength="200" placeholder="Totally optional..." />
-      <button type="button" class="cta-btn" id="context-continue">Continue</button>
-      <button type="button" class="skip-btn" id="context-skip">Skip this</button>
+      <input type="text" id="context-input" class="q-input detail-input" maxlength="200" placeholder="What was going on then? (optional)" />
+      <button type="button" class="done-btn" id="detail-continue">Continue</button>
     </div>
 
     <!-- ═══ PATTERN MAP ═══ -->
     <div class="pm-step" data-step="pattern-map" hidden>
       <div id="constellation-wrap" class="constellation-wrap"></div>
-      <h2 class="pm-title" id="pm-title"></h2>
-      <p class="pm-core-story" id="pm-core-story"></p>
+      <h2 class="pm-title" id="pm-title">&nbsp;</h2>
+      <div id="pm-reveal-body" class="pm-reveal-body">
+        <p class="pm-core-story" id="pm-core-story"></p>
 
-      <div class="pm-divider"></div>
+        <div class="pm-divider"></div>
 
-      <p class="pm-domain-prompt" id="pm-domain-prompt"></p>
-      <div class="pm-domain-grid" id="pm-domain-grid"></div>
-      <div class="pm-domain-reading" id="pm-domain-reading" hidden>
-        <p class="pm-domain-reading-label" id="pm-domain-reading-label"></p>
-        <p class="pm-domain-reading-text" id="pm-domain-reading-text"></p>
+        <p class="pm-domain-prompt" id="pm-domain-prompt"></p>
+        <div class="pm-domain-grid" id="pm-domain-grid"></div>
+        <div class="pm-domain-reading" id="pm-domain-reading" hidden>
+          <p class="pm-domain-reading-label" id="pm-domain-reading-label"></p>
+          <p class="pm-domain-reading-text" id="pm-domain-reading-text"></p>
+        </div>
+
+        <div class="pm-framing" id="pm-framing"></div>
+        <p class="pm-gap-line" id="pm-gap-line"></p>
+
+        <button type="button" class="cta-btn" id="pm-continue">See My Full Reading ✦</button>
       </div>
-
-      <div class="pm-framing" id="pm-framing"></div>
-      <p class="pm-gap-line" id="pm-gap-line"></p>
-
-      <button type="button" class="cta-btn" id="pm-continue">See My Full Reading ✦</button>
     </div>
 
     <!-- ═══ EMAIL GATE ═══ -->
@@ -153,55 +148,157 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
 <script>
   import {
-    NUMBER_OPTIONS, ANIMAL_OPTIONS,
-    MIN_ENTRIES, MAX_ENTRIES, DONE_AVAILABLE_FROM, encouragementFor, LIFE_DOMAINS,
+    ENTRY_CATEGORIES, NUMBER_OPTIONS, ANIMAL_OPTIONS,
+    MIN_ENTRIES, MAX_ENTRIES, DONE_AVAILABLE_FROM, LIFE_DOMAINS,
   } from '../lib/recallConfig';
+  import { computeEntryPlacement, themeCacheKeyForSymbol } from '../lib/themeTaxonomy';
+  import { glyphForOption, isTypographicNumber } from '../lib/patternMapGlyphs';
+
+  const GET_SYMBOL_TEASER_URL = 'https://us-central1-life-signs-be094.cloudfunctions.net/getSymbolTeaser';
+  const ENTRY_PROMPTS = [
+    'What’s been showing up for you?',
+    'What else have you noticed?',
+    'One more — anything else come to mind?',
+  ];
+  const entryPrompt = (n: number) => ENTRY_PROMPTS[n] || 'Add another';
 
   const campaign = (window as any).__PM_CAMPAIGN__ as { symbolName: string; category: string } | null;
   const urlParams = (window as any).__PM_PARAMS__ as { symbol: string | null; variant: string | null };
   const posthog = () => (window as any).posthog;
+  const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-  interface Entry { category: string; symbolName: string | null; era: string | null; context: string }
-  const emptyDraft = (): Entry => ({ category: null as any, symbolName: null, era: null, context: '' });
+  interface Entry {
+    category: string; symbolName: string | null; era: string | null; context: string;
+    angleDeg: number; radiusFactor: number; dominantTheme: string | null;
+  }
+  const emptyDraft = () => ({ category: null as any, symbolName: null as string | null, era: null as string | null, context: '' });
 
   let entries: Entry[] = [];
-  let draft: Entry = emptyDraft();
+  let draft = emptyDraft();
   let story: any = null;
   let themeIds: string[] = [];
+  let justCrossedThreshold = false;
+  let microPayoffTimer: any = null;
 
-  // First-touch UTM the site-wide Analytics.astro persisted at landing time.
   let utm: any = null;
   try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (e) {}
 
-  const els = {
-    backBtn: document.getElementById('back-btn') as HTMLButtonElement,
-    progressWrap: document.getElementById('progress-wrap') as HTMLDivElement,
-    progressLabel: document.getElementById('progress-label') as HTMLParagraphElement,
-  };
-
-  const ALL_SCREENS = ['intro', 'category', 'specific-tap', 'specific-text', 'era', 'context', 'pattern-map', 'gate', 'loading'];
+  const els = { backBtn: document.getElementById('back-btn') as HTMLButtonElement };
+  const ALL_SCREENS = ['intro', 'category', 'specific-tap', 'specific-text', 'detail', 'pattern-map', 'gate', 'loading'];
 
   function showScreen(name: string) {
     ALL_SCREENS.forEach((s) => {
       const el = document.querySelector(`[data-step="${s}"]`) as HTMLElement | null;
       if (el) el.hidden = s !== name;
     });
-    const capturing = ['category', 'specific-tap', 'specific-text', 'era', 'context'].includes(name);
-    els.progressWrap.hidden = !capturing;
-    if (capturing) {
-      els.progressLabel.textContent = entries.length >= MIN_ENTRIES
-        ? `${entries.length} of ${MAX_ENTRIES} · add more or say you're done`
-        : `${entries.length} of ${MIN_ENTRIES} to start`;
+    const capturing = ['category', 'specific-tap', 'specific-text', 'detail'].includes(name);
+    (document.getElementById('capture-canvas-wrap') as HTMLElement).hidden = !capturing;
+    if (capturing) renderCaptureConstellation();
+    if (!capturing || name !== 'category') {
+      (document.getElementById('threshold-line') as HTMLElement).hidden = true;
     }
     els.backBtn.hidden = name === 'intro' || name === 'loading';
   }
 
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ── Constellation (shared render, capture canvas + final Pattern Map) ─────
+  // Entries carry their own FIXED angleDeg/radiusFactor — this function only
+  // ever places nodes at those coordinates, never recomputes layout. Edges
+  // are consecutive-pairs within same-dominantTheme groups (not a full
+  // mesh), shown only once entries.length >= MIN_ENTRIES.
+  function buildConstellationHtml(ents: Entry[], showEdges: boolean, editable: boolean) {
+    const BOX = 100, CENTER = 50, R = 34;
+    const polar = (deg: number, radius: number) => {
+      const rad = (deg - 90) * (Math.PI / 180);
+      return { x: CENTER + radius * Math.cos(rad), y: CENTER + radius * Math.sin(rad) };
+    };
+    const positions = ents.map(e => polar(e.angleDeg, R * e.radiusFactor));
+
+    const edges: { from: number; to: number }[] = [];
+    if (showEdges) {
+      const byTheme: Record<string, number[]> = {};
+      ents.forEach((e, i) => {
+        if (!e.dominantTheme) return;
+        (byTheme[e.dominantTheme] ||= []).push(i);
+      });
+      Object.values(byTheme).forEach((idxs) => {
+        for (let i = 0; i < idxs.length - 1; i++) edges.push({ from: idxs[i], to: idxs[i + 1] });
+      });
+    }
+
+    let svg = `<svg viewBox="0 0 ${BOX} ${BOX}" class="constellation-svg">`;
+    svg += `<circle cx="${CENTER}" cy="${CENTER}" r="${R}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.4" stroke-dasharray="1.5,2" />`;
+    positions.forEach((p) => {
+      svg += `<line x1="${CENTER}" y1="${CENTER}" x2="${p.x}" y2="${p.y}" stroke="rgba(255,255,255,0.06)" stroke-width="0.35" />`;
+    });
+    edges.forEach((edge) => {
+      const p1 = positions[edge.from], p2 = positions[edge.to];
+      if (!p1 || !p2) return;
+      svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(206,166,54,0.6)" stroke-width="0.8" />`;
+    });
+    svg += `</svg>`;
+
+    let nodesHtml = `<div class="constellation-center"><span>✦</span></div>`;
+    positions.forEach((p, i) => {
+      const e = ents[i];
+      const isNumber = isTypographicNumber(e.category);
+      const glyph = isNumber ? null : glyphForOption(e.category, e.symbolName);
+      const inner = isNumber
+        ? `<span class="constellation-node-numeral">${escapeHtml(e.symbolName || '')}</span>`
+        : glyph
+          ? `<img src="${glyph}" class="constellation-node-img" alt="" />`
+          : `<span>✧</span>`;
+      const tag = editable ? 'button' : 'div';
+      const attrs = editable ? `type="button" data-remove-idx="${i}"` : '';
+      nodesHtml += `<${tag} ${attrs} class="constellation-node" style="left:${p.x}%; top:${p.y}%;">
+        <div class="constellation-node-circle">${inner}</div>
+        <div class="constellation-node-label">${escapeHtml(e.symbolName || '')}</div>
+      </${tag}>`;
+    });
+
+    return `<div class="constellation-inner">${svg}${nodesHtml}</div>`;
+  }
+
+  function renderCaptureConstellation() {
+    const wrap = document.getElementById('capture-constellation') as HTMLDivElement;
+    wrap.innerHTML = buildConstellationHtml(entries, entries.length >= MIN_ENTRIES, true);
+    wrap.querySelectorAll<HTMLButtonElement>('[data-remove-idx]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.removeIdx);
+        const entry = entries[idx];
+        if (!confirm(`Remove "${entry.symbolName}" from your map?`)) return;
+        entries = entries.filter((_, i) => i !== idx);
+        if (entries.length < MIN_ENTRIES) justCrossedThreshold = false;
+        renderCaptureConstellation();
+        renderCategoryScreen();
+      });
+    });
+  }
+
   function renderCategoryScreen() {
-    const encEl = document.getElementById('encouragement') as HTMLParagraphElement;
-    const doneEl = document.getElementById('done-btn') as HTMLButtonElement;
-    const enc = encouragementFor(entries.length);
-    if (enc) { encEl.textContent = enc; encEl.hidden = false; } else { encEl.hidden = true; }
-    doneEl.hidden = entries.length < DONE_AVAILABLE_FROM;
+    (document.getElementById('category-title') as HTMLElement).textContent =
+      entries.length < MIN_ENTRIES ? entryPrompt(entries.length) : 'Add another';
+    const optsWrap = document.getElementById('category-options') as HTMLDivElement;
+    optsWrap.innerHTML = '';
+    ENTRY_CATEGORIES.forEach((c) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt-btn';
+      const glyph = isTypographicNumber(c.key) ? null : glyphForOption(c.key);
+      btn.innerHTML = (glyph ? `<img src="${glyph}" class="opt-glyph" alt="" />` : '') + `<span>${escapeHtml(c.label)}</span>`;
+      btn.addEventListener('click', () => handleCategory(c.key));
+      optsWrap.appendChild(btn);
+    });
+
+    (document.getElementById('nudge') as HTMLElement).hidden = entries.length !== 0;
+    const atThreshold = entries.length >= DONE_AVAILABLE_FROM;
+    (document.getElementById('done-btn') as HTMLElement).hidden = !atThreshold;
+    (document.getElementById('add-more-hint') as HTMLElement).hidden = !atThreshold;
+    const thresholdEl = document.getElementById('threshold-line') as HTMLElement;
+    thresholdEl.hidden = !justCrossedThreshold;
   }
 
   document.getElementById('begin-btn')?.addEventListener('click', () => {
@@ -209,26 +306,24 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     if (campaign) {
       draft.category = campaign.category;
       draft.symbolName = campaign.symbolName;
-      showScreen('era');
+      showScreen('detail');
     } else {
       showScreen('category');
       renderCategoryScreen();
     }
   });
 
-  document.getElementById('category-options')?.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      draft.category = btn.dataset.key || null as any;
-      if (draft.category === 'number' || draft.category === 'animal') {
-        buildSpecificTapList();
-        showScreen('specific-tap');
-      } else {
-        (document.getElementById('specific-text-title') as HTMLElement).textContent =
-          draft.category === 'dream' ? 'What do you remember most?' : 'What was it?';
-        showScreen('specific-text');
-      }
-    });
-  });
+  function handleCategory(key: string) {
+    draft.category = key;
+    if (key === 'number' || key === 'animal') {
+      buildSpecificTapList();
+      showScreen('specific-tap');
+    } else {
+      (document.getElementById('specific-text-title') as HTMLElement).textContent =
+        key === 'dream' ? 'What do you remember most?' : 'What was it?';
+      showScreen('specific-text');
+    }
+  }
 
   function buildSpecificTapList() {
     const wrap = document.getElementById('specific-options') as HTMLDivElement;
@@ -238,7 +333,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'opt-btn';
-      btn.textContent = opt;
+      const glyph = opt !== 'Another' ? glyphForOption(draft.category, opt) : null;
+      btn.innerHTML = (glyph ? `<img src="${glyph}" class="opt-glyph" alt="" />` : '') + `<span>${escapeHtml(opt)}</span>`;
       btn.addEventListener('click', () => {
         if (opt === 'Another') {
           (document.getElementById('specific-text-title') as HTMLElement).textContent = 'What was it?';
@@ -246,7 +342,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
           return;
         }
         draft.symbolName = opt;
-        showScreen('era');
+        showScreen('detail');
       });
       wrap.appendChild(btn);
     });
@@ -258,22 +354,63 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     if (!val) return;
     draft.symbolName = val;
     specificTextInput.value = '';
-    showScreen('era');
+    showScreen('detail');
   });
 
-  document.getElementById('era-options')?.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((btn) => {
+  let eraSelection: string | null = null;
+  document.getElementById('era-options')?.querySelectorAll<HTMLButtonElement>('.chip').forEach((btn) => {
     btn.addEventListener('click', () => {
-      draft.era = btn.dataset.value || null;
-      showScreen('context');
+      eraSelection = btn.dataset.value || null;
+      document.querySelectorAll('#era-options .chip').forEach(c => c.classList.remove('chip-active'));
+      btn.classList.add('chip-active');
     });
   });
 
   const contextInput = document.getElementById('context-input') as HTMLInputElement;
-  function finalizeEntry(context: string) {
-    const finished: Entry = { ...draft, context: context.trim() };
-    entries.push(finished);
-    posthog()?.capture('recall_entry_added', { entry_index: entries.length, category: finished.category });
+
+  // Zero-generation micro-payoff: a plain cache read via the public
+  // getSymbolTeaser function (read-only, never generates on a miss — see
+  // functions/index.js). Silent on a miss; never fabricated.
+  async function fetchCachedTeaser(symbolName: string): Promise<string | null> {
+    try {
+      const key = themeCacheKeyForSymbol(symbolName);
+      const res = await fetch(`${GET_SYMBOL_TEASER_URL}?key=${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      return data?.found ? data.meaning : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function finalizeEntry() {
+    const symbolName = draft.symbolName;
+    const category = draft.category;
+    const era = eraSelection || 'dont_remember';
+    const context = contextInput.value.trim();
+
+    const cachedLine = await fetchCachedTeaser(symbolName || '');
+    const placement = computeEntryPlacement(symbolName, cachedLine, `${symbolName}_${entries.length}`);
+    const finished: Entry = {
+      category, symbolName, era, context,
+      angleDeg: placement.angleDeg, radiusFactor: placement.radiusFactor, dominantTheme: placement.dominantTheme,
+    };
+    entries = [...entries, finished];
+    posthog()?.capture('recall_entry_added', { entry_index: entries.length, category });
+
+    const payoffEl = document.getElementById('micro-payoff') as HTMLElement;
+    clearTimeout(microPayoffTimer);
+    if (cachedLine) {
+      payoffEl.innerHTML = `✦ <strong>${escapeHtml(symbolName || '')}</strong> — ${escapeHtml(cachedLine)}`;
+      payoffEl.hidden = false;
+      microPayoffTimer = setTimeout(() => { payoffEl.hidden = true; }, 6000);
+    } else {
+      payoffEl.hidden = true;
+    }
+
+    if (entries.length === MIN_ENTRIES) justCrossedThreshold = true;
+
     draft = emptyDraft();
+    eraSelection = null;
     contextInput.value = '';
 
     if (entries.length >= MAX_ENTRIES) {
@@ -283,8 +420,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       renderCategoryScreen();
     }
   }
-  document.getElementById('context-continue')?.addEventListener('click', () => finalizeEntry(contextInput.value));
-  document.getElementById('context-skip')?.addEventListener('click', () => finalizeEntry(''));
+  document.getElementById('detail-continue')?.addEventListener('click', finalizeEntry);
 
   document.getElementById('done-btn')?.addEventListener('click', () => {
     posthog()?.capture('recall_completed', { entry_count: entries.length });
@@ -296,58 +432,25 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       const el = document.querySelector(`[data-step="${s}"]`) as HTMLElement | null;
       return el && !el.hidden;
     });
-    if (current === 'context') { showScreen('era'); return; }
-    if (current === 'era') {
-      if (draft.category === 'number' || draft.category === 'animal') showScreen('specific-tap');
-      else showScreen('specific-text');
+    if (current === 'detail') {
+      showScreen(draft.category === 'number' || draft.category === 'animal' ? 'specific-tap' : 'specific-text');
       return;
     }
     if (current === 'specific-tap' || current === 'specific-text') { showScreen('category'); renderCategoryScreen(); return; }
     if (current === 'category') {
-      if (entries.length > 0) {
-        posthog()?.capture('recall_abandoned', { entry_count: entries.length });
-      }
+      if (entries.length > 0) posthog()?.capture('recall_abandoned', { entry_count: entries.length });
       showScreen('intro');
       return;
     }
     showScreen('intro');
   });
 
-  // ── Pattern Map ──────────────────────────────────────────────────────────
-  // themeIds isn't used for node placement (the constellation is a simple
-  // radial layout of the user's own entries, no edge-labeling on web yet —
-  // see build report), only for the cache-key sent to /api/lead-reading.
-  function buildConstellationSvg(ents: Entry[]) {
-    const N = ents.length;
-    const BOX = 100, CENTER = 50, R = 34;
-    const polar = (deg: number, radius: number) => {
-      const rad = (deg - 90) * (Math.PI / 180);
-      return { x: CENTER + radius * Math.cos(rad), y: CENTER + radius * Math.sin(rad) };
-    };
-    const positions = ents.map((_, i) => polar((360 / Math.max(N, 1)) * i, R));
-
-    let svg = `<svg viewBox="0 0 ${BOX} ${BOX}" class="constellation-svg">`;
-    svg += `<circle cx="${CENTER}" cy="${CENTER}" r="${R}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.4" stroke-dasharray="1.5,2" />`;
-    positions.forEach((p) => {
-      svg += `<line x1="${CENTER}" y1="${CENTER}" x2="${p.x}" y2="${p.y}" stroke="rgba(255,255,255,0.08)" stroke-width="0.4" />`;
-    });
-    svg += `</svg>`;
-
-    let nodesHtml = `<div class="constellation-center"><span>✦</span></div>`;
-    positions.forEach((p, i) => {
-      nodesHtml += `<div class="constellation-node" style="left:${p.x}%; top:${p.y}%;">
-        <div class="constellation-node-circle">${ents[i].category === 'dream' ? '☾' : '✧'}</div>
-        <div class="constellation-node-label">${escapeHtml(ents[i].symbolName || '')}</div>
-      </div>`;
-    });
-
-    return `<div class="constellation-inner">${svg}${nodesHtml}</div>`;
-  }
-
-  function escapeHtml(s: string) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
+  // ── Pattern Map (reveal choreography) ──────────────────────────────────────
+  // The constellation is already fully built (fixed positions, edges
+  // included) — what's new on arrival is the story. A brief pause + fade-in
+  // makes that read as something resolving, not an instant content swap.
+  // Respects prefers-reduced-motion by skipping the delay/transition
+  // entirely rather than degrading it.
   async function goToPatternMap() {
     showScreen('loading');
     (document.getElementById('loading-text') as HTMLElement).textContent = 'Finding the thread…';
@@ -367,7 +470,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     }
 
     const constellationWrap = document.getElementById('constellation-wrap') as HTMLDivElement;
-    constellationWrap.innerHTML = buildConstellationSvg(entries);
+    constellationWrap.innerHTML = buildConstellationHtml(entries, true, false);
 
     const titleEl = document.getElementById('pm-title') as HTMLElement;
     const coreStoryEl = document.getElementById('pm-core-story') as HTMLElement;
@@ -375,6 +478,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     const domainGridEl = document.getElementById('pm-domain-grid') as HTMLDivElement;
     const framingEl = document.getElementById('pm-framing') as HTMLElement;
     const gapLineEl = document.getElementById('pm-gap-line') as HTMLElement;
+    const revealBody = document.getElementById('pm-reveal-body') as HTMLElement;
+
+    titleEl.textContent = '';
+    revealBody.classList.remove('revealed');
+    titleEl.classList.remove('revealed');
 
     if (!story) {
       titleEl.textContent = "A pattern hasn't taken shape yet";
@@ -384,6 +492,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     } else {
       titleEl.textContent = story.title;
       coreStoryEl.textContent = story.coreStory;
+      domainPromptEl.hidden = false;
       domainPromptEl.textContent = story.domainPrompt;
       domainGridEl.hidden = false;
       domainGridEl.innerHTML = '';
@@ -421,6 +530,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     gapLineEl.textContent = `This is ${entries.length} thing${entries.length === 1 ? '' : 's'} you remembered. Whisp does this continuously with everything you notice.`;
 
     showScreen('pattern-map');
+
+    const skipDelay = reduceMotion();
+    setTimeout(() => { titleEl.classList.add('revealed'); }, skipDelay ? 0 : 450);
+    setTimeout(() => { revealBody.classList.add('revealed'); }, skipDelay ? 0 : 650);
   }
 
   document.getElementById('pm-continue')?.addEventListener('click', () => {
@@ -524,34 +637,70 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     color: rgba(255,255,255,0.5); font-size: 18px;
     padding: 8px; margin: -8px 0 8px -8px; cursor: pointer;
   }
-  .progress-wrap { margin-bottom: 20px; }
-  .progress-label { font-family: 'Raleway', sans-serif; font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
+
+  .canvas-wrap { margin-bottom: 4px; }
+  .constellation-wrap { width: 72%; aspect-ratio: 1; position: relative; max-width: 280px; margin: 0 auto; }
+  :global(.constellation-inner) { width: 100%; height: 100%; position: relative; }
+  :global(.constellation-svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  :global(.constellation-center) {
+    position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin-left: -24px; margin-top: -24px;
+    border-radius: 24px; background: rgba(232,200,116,0.14); border: 1px solid rgba(232,200,116,0.4);
+    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 20px;
+  }
+  :global(.constellation-node) {
+    position: absolute; width: 74px; margin-left: -37px; margin-top: -18px; text-align: center;
+    background: none; border: none; padding: 0; cursor: pointer; font: inherit;
+  }
+  :global(.constellation-node-circle) {
+    width: 38px; height: 38px; border-radius: 19px; margin: 0 auto;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(206,166,54,0.4);
+    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 16px;
+    overflow: hidden;
+  }
+  :global(.constellation-node-img) { width: 26px; height: 26px; object-fit: contain; }
+  :global(.constellation-node-numeral) { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 13px; color: #e8c874; text-shadow: 0 0 4px rgba(232,200,116,0.6); }
+  :global(.constellation-node-label) { font-family: 'Cormorant Garamond', serif; font-size: 12px; color: white; margin-top: 4px; }
+
+  .micro-payoff { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin: 4px 0 0; padding: 0 12px; }
+  .micro-payoff :global(strong) { font-style: normal; font-weight: 500; color: #F0C040; }
+  .threshold-line { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: #F5EEDC; text-align: center; margin: 8px 0 0; }
 
   .pm-step { flex: 1; display: flex; flex-direction: column; justify-content: center; animation: pmFadeIn 0.25s ease; }
   @keyframes pmFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   @media (prefers-reduced-motion: reduce) { .pm-step { animation: none; } }
 
-  .intro-wordmark { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: rgba(255,248,235,0.6); text-align: center; margin-bottom: 32px; }
-  .intro-headline { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(28px, 8vw, 38px); line-height: 1.2; text-align: center; margin-bottom: 16px; }
-  .intro-sub { font-family: 'Raleway', sans-serif; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 32px; }
+  .intro-wordmark { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: rgba(255,248,235,0.6); text-align: center; margin-bottom: 28px; }
+  .intro-headline { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(26px, 7vw, 34px); line-height: 1.25; text-align: center; margin-bottom: 12px; }
+  .intro-sub { font-family: 'Raleway', sans-serif; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 4px; }
+  .intro-rule { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: rgba(232,200,116,0.85); text-align: center; margin-top: 18px; margin-bottom: 32px; line-height: 1.5; }
 
-  .q-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(24px, 7vw, 28px); line-height: 1.25; margin-bottom: 12px; }
-  .q-note { font-family: 'Raleway', sans-serif; font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+  .q-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(22px, 6.5vw, 26px); line-height: 1.25; margin: 16px 0 12px; text-align: center; }
+  .q-note { font-family: 'Raleway', sans-serif; font-size: 12.5px; color: rgba(255,255,255,0.5); margin-bottom: 18px; text-align: center; }
+  .nudge { font-family: 'Raleway', sans-serif; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.45); text-align: center; margin-top: 20px; }
 
   .q-options { display: flex; flex-direction: column; gap: 10px; }
   :global(.opt-btn) {
-    min-height: 48px; text-align: left;
+    min-height: 48px; text-align: left; display: flex; align-items: center; gap: 12px;
     background: rgba(255,255,255,0.04); border: 0.5px solid rgba(149,117,205,0.3); border-radius: 12px;
-    padding: 14px 18px; color: #faf8f3; font-family: 'Raleway', sans-serif; font-size: 15px; cursor: pointer;
+    padding: 12px 18px; color: #faf8f3; font-family: 'Raleway', sans-serif; font-size: 15px; cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
   }
   :global(.opt-btn:hover) { background: rgba(149,117,205,0.15); border-color: rgba(149,117,205,0.6); }
   :global(.opt-btn:active) { background: rgba(240,192,64,0.15); border-color: rgba(240,192,64,0.5); }
+  :global(.opt-glyph) { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  :global(.chip) {
+    padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(206,166,54,0.3); color: rgba(255,255,255,0.75);
+    font-family: 'Raleway', sans-serif; font-size: 13px; cursor: pointer;
+  }
+  :global(.chip-active) { background: rgba(206,166,54,0.18); border-color: #F0C040; color: #F5EEDC; }
 
   .q-input {
-    min-height: 48px; border-radius: 10px; padding: 0 16px;
+    min-height: 48px; border-radius: 10px; padding: 0 16px; width: 100%;
     border: 0.5px solid rgba(149,117,205,0.3); background: rgba(255,255,255,0.04); color: #faf8f3;
-    font-family: 'Raleway', sans-serif; font-size: 15px; margin-bottom: 16px;
+    font-family: 'Raleway', sans-serif; font-size: 15px; margin-bottom: 16px; box-sizing: border-box;
   }
   .q-input::placeholder { color: rgba(255,255,255,0.3); }
 
@@ -566,27 +715,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 13.5px;
     cursor: pointer; margin-top: 20px;
   }
-  .skip-btn { background: none; border: none; color: rgba(255,255,255,0.4); font-family: 'Raleway', sans-serif; font-size: 12.5px; margin-top: 12px; align-self: center; cursor: pointer; }
-  .encouragement { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 18px; }
+  .add-more-hint { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: rgba(255,255,255,0.45); text-align: center; margin-top: 10px; }
 
-  /* Constellation */
-  .constellation-wrap { width: 100%; aspect-ratio: 1; position: relative; max-width: 280px; margin: 0 auto; }
-  :global(.constellation-inner) { width: 100%; height: 100%; position: relative; }
-  :global(.constellation-svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
-  :global(.constellation-center) {
-    position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin-left: -24px; margin-top: -24px;
-    border-radius: 24px; background: rgba(232,200,116,0.14); border: 1px solid rgba(232,200,116,0.4);
-    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 20px;
-  }
-  :global(.constellation-node) { position: absolute; width: 74px; margin-left: -37px; margin-top: -18px; text-align: center; }
-  :global(.constellation-node-circle) {
-    width: 38px; height: 38px; border-radius: 19px; margin: 0 auto;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(206,166,54,0.4);
-    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 16px;
-  }
-  :global(.constellation-node-label) { font-family: 'Cormorant Garamond', serif; font-size: 12px; color: white; margin-top: 4px; }
+  .pm-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: white; text-align: center; margin-top: 20px; opacity: 0; transition: opacity 0.6s ease; }
+  .pm-title.revealed { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .pm-title { transition: none; } }
 
-  .pm-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: white; text-align: center; margin-top: 20px; }
+  .pm-reveal-body { opacity: 0; transition: opacity 0.6s ease; }
+  .pm-reveal-body.revealed { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .pm-reveal-body { transition: none; } }
+
   .pm-core-story { font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.6; color: rgba(255,255,255,0.88); margin-top: 16px; }
   .pm-divider { height: 0.5px; background: rgba(206,166,54,0.25); margin: 24px 0; }
   .pm-domain-prompt { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 14px; }
