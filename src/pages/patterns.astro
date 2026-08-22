@@ -1,0 +1,634 @@
+---
+export const prerender = false;
+
+import MinimalLayout from '../layouts/MinimalLayout.astro';
+import { CAMPAIGN_SYMBOLS } from '../lib/recallConfig';
+
+const symbolParam = Astro.url.searchParams.get('symbol');
+const variantParam = Astro.url.searchParams.get('variant');
+const campaignSymbol = symbolParam && CAMPAIGN_SYMBOLS[symbolParam] ? { key: symbolParam, ...CAMPAIGN_SYMBOLS[symbolParam] } : null;
+
+const introHeadline = campaignSymbol
+  ? campaignSymbol.reflected
+  : "What have you noticed?";
+const introSub = "You likely already have years of signs sitting in memory. Tell Whisp a few, and see the thread between them — free, right now.";
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+---
+
+<MinimalLayout
+  title="Your Pattern Map · Whisp"
+  description="Tell Whisp a few things you've noticed over time — a number, an animal, a dream — and see the real thread between them, free."
+  ogUrl="https://getwhisp.app/patterns"
+>
+
+<section class="pm-page">
+  <div class="pm-bg">
+    <div class="nebula-blob nebula-blob--a"></div>
+    <div class="nebula-blob nebula-blob--b"></div>
+  </div>
+
+  <div class="pm-shell">
+    <button type="button" id="back-btn" class="back-btn" hidden aria-label="Back">←</button>
+    <div class="progress-wrap" id="progress-wrap" hidden>
+      <p class="progress-label" id="progress-label"></p>
+    </div>
+
+    <!-- ═══ INTRO ═══ -->
+    <div class="pm-step" data-step="intro">
+      <div class="intro-wordmark">✦ whisp</div>
+      <h1 class="intro-headline">{introHeadline}</h1>
+      <p class="intro-sub">{introSub}</p>
+      <button type="button" class="cta-btn" id="begin-btn">Begin ✦</button>
+    </div>
+
+    <!-- ═══ CATEGORY (repeats per entry) ═══ -->
+    <div class="pm-step" data-step="category" hidden>
+      <h2 class="q-title">What was it?</h2>
+      <div class="q-options" id="category-options">
+        <button type="button" class="opt-btn" data-key="number" data-value="A repeating number">A repeating number</button>
+        <button type="button" class="opt-btn" data-key="animal" data-value="An animal or bird">An animal or bird</button>
+        <button type="button" class="opt-btn" data-key="dream" data-value="A dream">A dream</button>
+        <button type="button" class="opt-btn" data-key="object" data-value="An object">An object</button>
+        <button type="button" class="opt-btn" data-key="word" data-value="A word or name">A word or name</button>
+        <button type="button" class="opt-btn" data-key="other" data-value="Something else">Something else</button>
+      </div>
+      <p class="encouragement" id="encouragement" hidden></p>
+      <button type="button" class="done-btn" id="done-btn" hidden>I'm done — show me the pattern ✦</button>
+    </div>
+
+    <!-- ═══ SPECIFIC — tap list (number/animal) ═══ -->
+    <div class="pm-step" data-step="specific-tap" hidden>
+      <h2 class="q-title">Which one?</h2>
+      <div class="q-options" id="specific-options"></div>
+    </div>
+
+    <!-- ═══ SPECIFIC — free text (dream/object/word/other/Another) ═══ -->
+    <div class="pm-step" data-step="specific-text" hidden>
+      <h2 class="q-title" id="specific-text-title">What was it?</h2>
+      <input type="text" id="specific-text-input" class="q-input" maxlength="120" placeholder="Type it here" />
+      <button type="button" class="cta-btn" id="specific-text-continue">Continue</button>
+    </div>
+
+    <!-- ═══ ERA ═══ -->
+    <div class="pm-step" data-step="era" hidden>
+      <h2 class="q-title">Roughly when?</h2>
+      <div class="q-options" id="era-options">
+        <button type="button" class="opt-btn" data-value="recently">Recently</button>
+        <button type="button" class="opt-btn" data-value="few_months">A few months ago</button>
+        <button type="button" class="opt-btn" data-value="about_year">About a year ago</button>
+        <button type="button" class="opt-btn" data-value="years_ago">Years ago</button>
+        <button type="button" class="opt-btn" data-value="keeps_happening">It keeps happening</button>
+        <button type="button" class="opt-btn" data-value="dont_remember">I don't remember</button>
+      </div>
+    </div>
+
+    <!-- ═══ CONTEXT (optional) ═══ -->
+    <div class="pm-step" data-step="context" hidden>
+      <h2 class="q-title">What was going on then?</h2>
+      <p class="q-note">Optional — helps Whisp read more specifically.</p>
+      <input type="text" id="context-input" class="q-input" maxlength="200" placeholder="Totally optional..." />
+      <button type="button" class="cta-btn" id="context-continue">Continue</button>
+      <button type="button" class="skip-btn" id="context-skip">Skip this</button>
+    </div>
+
+    <!-- ═══ PATTERN MAP ═══ -->
+    <div class="pm-step" data-step="pattern-map" hidden>
+      <div id="constellation-wrap" class="constellation-wrap"></div>
+      <h2 class="pm-title" id="pm-title"></h2>
+      <p class="pm-core-story" id="pm-core-story"></p>
+
+      <div class="pm-divider"></div>
+
+      <p class="pm-domain-prompt" id="pm-domain-prompt"></p>
+      <div class="pm-domain-grid" id="pm-domain-grid"></div>
+      <div class="pm-domain-reading" id="pm-domain-reading" hidden>
+        <p class="pm-domain-reading-label" id="pm-domain-reading-label"></p>
+        <p class="pm-domain-reading-text" id="pm-domain-reading-text"></p>
+      </div>
+
+      <div class="pm-framing" id="pm-framing"></div>
+      <p class="pm-gap-line" id="pm-gap-line"></p>
+
+      <button type="button" class="cta-btn" id="pm-continue">See My Full Reading ✦</button>
+    </div>
+
+    <!-- ═══ EMAIL GATE ═══ -->
+    <div class="pm-step" data-step="gate" hidden>
+      <h2 class="q-title">Your full reading is ready.</h2>
+      <p class="q-note">Where should we send it?</p>
+      <form id="gate-form">
+        <input type="text" id="gate-name" class="q-input" placeholder="Your name" autocomplete="name" required maxlength="80" />
+        <input type="email" id="gate-email" class="q-input" placeholder="your@email.com" autocomplete="email" required maxlength="200" />
+        {turnstileSiteKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark"></div>
+        )}
+        <button type="submit" class="cta-btn" id="gate-submit">Send My Reading ✦</button>
+        <p class="fine">
+          We'll email you the reading and occasional notes from Whisp. Unsubscribe any time —
+          see our <a href="/privacy">privacy policy</a>.
+        </p>
+        <p id="gate-error" class="form-error" hidden></p>
+      </form>
+    </div>
+
+    <!-- ═══ LOADING ═══ -->
+    <div class="pm-step" data-step="loading" hidden>
+      <div class="loading-spinner"></div>
+      <p class="loading-text" id="loading-text">Finding the thread…</p>
+    </div>
+  </div>
+
+  <p class="footer-mark">getwhisp.app</p>
+</section>
+
+{turnstileSiteKey && (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script is:inline define:vars={{ campaignSymbolJson: campaignSymbol ? JSON.stringify(campaignSymbol) : null, symbolParam, variantParam }}>
+  window.__PM_CAMPAIGN__ = campaignSymbolJson ? JSON.parse(campaignSymbolJson) : null;
+  window.__PM_PARAMS__ = { symbol: symbolParam || null, variant: variantParam || null };
+</script>
+
+<script>
+  import {
+    NUMBER_OPTIONS, ANIMAL_OPTIONS,
+    MIN_ENTRIES, MAX_ENTRIES, DONE_AVAILABLE_FROM, encouragementFor, LIFE_DOMAINS,
+  } from '../lib/recallConfig';
+
+  const campaign = (window as any).__PM_CAMPAIGN__ as { symbolName: string; category: string } | null;
+  const urlParams = (window as any).__PM_PARAMS__ as { symbol: string | null; variant: string | null };
+  const posthog = () => (window as any).posthog;
+
+  interface Entry { category: string; symbolName: string | null; era: string | null; context: string }
+  const emptyDraft = (): Entry => ({ category: null as any, symbolName: null, era: null, context: '' });
+
+  let entries: Entry[] = [];
+  let draft: Entry = emptyDraft();
+  let story: any = null;
+  let themeIds: string[] = [];
+
+  // First-touch UTM the site-wide Analytics.astro persisted at landing time.
+  let utm: any = null;
+  try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (e) {}
+
+  const els = {
+    backBtn: document.getElementById('back-btn') as HTMLButtonElement,
+    progressWrap: document.getElementById('progress-wrap') as HTMLDivElement,
+    progressLabel: document.getElementById('progress-label') as HTMLParagraphElement,
+  };
+
+  const ALL_SCREENS = ['intro', 'category', 'specific-tap', 'specific-text', 'era', 'context', 'pattern-map', 'gate', 'loading'];
+
+  function showScreen(name: string) {
+    ALL_SCREENS.forEach((s) => {
+      const el = document.querySelector(`[data-step="${s}"]`) as HTMLElement | null;
+      if (el) el.hidden = s !== name;
+    });
+    const capturing = ['category', 'specific-tap', 'specific-text', 'era', 'context'].includes(name);
+    els.progressWrap.hidden = !capturing;
+    if (capturing) {
+      els.progressLabel.textContent = entries.length >= MIN_ENTRIES
+        ? `${entries.length} of ${MAX_ENTRIES} · add more or say you're done`
+        : `${entries.length} of ${MIN_ENTRIES} to start`;
+    }
+    els.backBtn.hidden = name === 'intro' || name === 'loading';
+  }
+
+  function renderCategoryScreen() {
+    const encEl = document.getElementById('encouragement') as HTMLParagraphElement;
+    const doneEl = document.getElementById('done-btn') as HTMLButtonElement;
+    const enc = encouragementFor(entries.length);
+    if (enc) { encEl.textContent = enc; encEl.hidden = false; } else { encEl.hidden = true; }
+    doneEl.hidden = entries.length < DONE_AVAILABLE_FROM;
+  }
+
+  document.getElementById('begin-btn')?.addEventListener('click', () => {
+    posthog()?.capture('recall_started', { host: 'web', symbol: urlParams.symbol, variant: urlParams.variant });
+    if (campaign) {
+      draft.category = campaign.category;
+      draft.symbolName = campaign.symbolName;
+      showScreen('era');
+    } else {
+      showScreen('category');
+      renderCategoryScreen();
+    }
+  });
+
+  document.getElementById('category-options')?.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      draft.category = btn.dataset.key || null as any;
+      if (draft.category === 'number' || draft.category === 'animal') {
+        buildSpecificTapList();
+        showScreen('specific-tap');
+      } else {
+        (document.getElementById('specific-text-title') as HTMLElement).textContent =
+          draft.category === 'dream' ? 'What do you remember most?' : 'What was it?';
+        showScreen('specific-text');
+      }
+    });
+  });
+
+  function buildSpecificTapList() {
+    const wrap = document.getElementById('specific-options') as HTMLDivElement;
+    wrap.innerHTML = '';
+    const options = draft.category === 'number' ? NUMBER_OPTIONS : ANIMAL_OPTIONS;
+    options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => {
+        if (opt === 'Another') {
+          (document.getElementById('specific-text-title') as HTMLElement).textContent = 'What was it?';
+          showScreen('specific-text');
+          return;
+        }
+        draft.symbolName = opt;
+        showScreen('era');
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  const specificTextInput = document.getElementById('specific-text-input') as HTMLInputElement;
+  document.getElementById('specific-text-continue')?.addEventListener('click', () => {
+    const val = specificTextInput.value.trim();
+    if (!val) return;
+    draft.symbolName = val;
+    specificTextInput.value = '';
+    showScreen('era');
+  });
+
+  document.getElementById('era-options')?.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      draft.era = btn.dataset.value || null;
+      showScreen('context');
+    });
+  });
+
+  const contextInput = document.getElementById('context-input') as HTMLInputElement;
+  function finalizeEntry(context: string) {
+    const finished: Entry = { ...draft, context: context.trim() };
+    entries.push(finished);
+    posthog()?.capture('recall_entry_added', { entry_index: entries.length, category: finished.category });
+    draft = emptyDraft();
+    contextInput.value = '';
+
+    if (entries.length >= MAX_ENTRIES) {
+      goToPatternMap();
+    } else {
+      showScreen('category');
+      renderCategoryScreen();
+    }
+  }
+  document.getElementById('context-continue')?.addEventListener('click', () => finalizeEntry(contextInput.value));
+  document.getElementById('context-skip')?.addEventListener('click', () => finalizeEntry(''));
+
+  document.getElementById('done-btn')?.addEventListener('click', () => {
+    posthog()?.capture('recall_completed', { entry_count: entries.length });
+    goToPatternMap();
+  });
+
+  els.backBtn.addEventListener('click', () => {
+    const current = ALL_SCREENS.find((s) => {
+      const el = document.querySelector(`[data-step="${s}"]`) as HTMLElement | null;
+      return el && !el.hidden;
+    });
+    if (current === 'context') { showScreen('era'); return; }
+    if (current === 'era') {
+      if (draft.category === 'number' || draft.category === 'animal') showScreen('specific-tap');
+      else showScreen('specific-text');
+      return;
+    }
+    if (current === 'specific-tap' || current === 'specific-text') { showScreen('category'); renderCategoryScreen(); return; }
+    if (current === 'category') {
+      if (entries.length > 0) {
+        posthog()?.capture('recall_abandoned', { entry_count: entries.length });
+      }
+      showScreen('intro');
+      return;
+    }
+    showScreen('intro');
+  });
+
+  // ── Pattern Map ──────────────────────────────────────────────────────────
+  // themeIds isn't used for node placement (the constellation is a simple
+  // radial layout of the user's own entries, no edge-labeling on web yet —
+  // see build report), only for the cache-key sent to /api/lead-reading.
+  function buildConstellationSvg(ents: Entry[]) {
+    const N = ents.length;
+    const BOX = 100, CENTER = 50, R = 34;
+    const polar = (deg: number, radius: number) => {
+      const rad = (deg - 90) * (Math.PI / 180);
+      return { x: CENTER + radius * Math.cos(rad), y: CENTER + radius * Math.sin(rad) };
+    };
+    const positions = ents.map((_, i) => polar((360 / Math.max(N, 1)) * i, R));
+
+    let svg = `<svg viewBox="0 0 ${BOX} ${BOX}" class="constellation-svg">`;
+    svg += `<circle cx="${CENTER}" cy="${CENTER}" r="${R}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.4" stroke-dasharray="1.5,2" />`;
+    positions.forEach((p) => {
+      svg += `<line x1="${CENTER}" y1="${CENTER}" x2="${p.x}" y2="${p.y}" stroke="rgba(255,255,255,0.08)" stroke-width="0.4" />`;
+    });
+    svg += `</svg>`;
+
+    let nodesHtml = `<div class="constellation-center"><span>✦</span></div>`;
+    positions.forEach((p, i) => {
+      nodesHtml += `<div class="constellation-node" style="left:${p.x}%; top:${p.y}%;">
+        <div class="constellation-node-circle">${ents[i].category === 'dream' ? '☾' : '✧'}</div>
+        <div class="constellation-node-label">${escapeHtml(ents[i].symbolName || '')}</div>
+      </div>`;
+    });
+
+    return `<div class="constellation-inner">${svg}${nodesHtml}</div>`;
+  }
+
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  async function goToPatternMap() {
+    showScreen('loading');
+    (document.getElementById('loading-text') as HTMLElement).textContent = 'Finding the thread…';
+
+    try {
+      const res = await fetch('/api/theme-triad-story', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries: entries.map(e => ({ symbolName: e.symbolName })) }),
+      });
+      const data = await res.json();
+      story = data?.story || null;
+      themeIds = data?.themeIds || [];
+      posthog()?.capture('pattern_map_viewed', { triad_key: data?.cacheKey || 'none', cache_hit: !!data?.cacheHit });
+    } catch (e) {
+      story = null;
+    }
+
+    const constellationWrap = document.getElementById('constellation-wrap') as HTMLDivElement;
+    constellationWrap.innerHTML = buildConstellationSvg(entries);
+
+    const titleEl = document.getElementById('pm-title') as HTMLElement;
+    const coreStoryEl = document.getElementById('pm-core-story') as HTMLElement;
+    const domainPromptEl = document.getElementById('pm-domain-prompt') as HTMLElement;
+    const domainGridEl = document.getElementById('pm-domain-grid') as HTMLDivElement;
+    const framingEl = document.getElementById('pm-framing') as HTMLElement;
+    const gapLineEl = document.getElementById('pm-gap-line') as HTMLElement;
+
+    if (!story) {
+      titleEl.textContent = "A pattern hasn't taken shape yet";
+      coreStoryEl.textContent = 'What you shared is real, but Whisp needs a little more of a shared thread to weave a story from it.';
+      domainPromptEl.hidden = true;
+      domainGridEl.hidden = true;
+    } else {
+      titleEl.textContent = story.title;
+      coreStoryEl.textContent = story.coreStory;
+      domainPromptEl.textContent = story.domainPrompt;
+      domainGridEl.hidden = false;
+      domainGridEl.innerHTML = '';
+      LIFE_DOMAINS.forEach((domain) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'domain-btn';
+        btn.textContent = domain;
+        btn.addEventListener('click', () => {
+          domainGridEl.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('domain-btn-active'));
+          btn.classList.add('domain-btn-active');
+          posthog()?.capture('domain_selected', { domain });
+          const readingWrap = document.getElementById('pm-domain-reading') as HTMLDivElement;
+          const readingLabel = document.getElementById('pm-domain-reading-label') as HTMLElement;
+          const readingText = document.getElementById('pm-domain-reading-text') as HTMLElement;
+          const text = story.domainReadings?.[domain];
+          if (text) {
+            readingLabel.textContent = domain.toUpperCase();
+            readingText.textContent = text;
+            readingWrap.hidden = false;
+            (window as any).__PM_SELECTED_DOMAIN__ = domain;
+          }
+        });
+        domainGridEl.appendChild(btn);
+      });
+      framingEl.innerHTML = '';
+      [story.strengthFraming, "This is drawn from what you remembered. Whisp gets sharper as you log things as they happen."].forEach((t) => {
+        const p = document.createElement('p');
+        p.className = 'pm-framing-line';
+        p.textContent = t;
+        framingEl.appendChild(p);
+      });
+    }
+
+    gapLineEl.textContent = `This is ${entries.length} thing${entries.length === 1 ? '' : 's'} you remembered. Whisp does this continuously with everything you notice.`;
+
+    showScreen('pattern-map');
+  }
+
+  document.getElementById('pm-continue')?.addEventListener('click', () => {
+    posthog()?.capture('email_gate_viewed');
+    showScreen('gate');
+  });
+
+  // ── Gate + submit ──────────────────────────────────────────────────────
+  const gateForm = document.getElementById('gate-form') as HTMLFormElement;
+  const gateError = document.getElementById('gate-error') as HTMLParagraphElement;
+  const LOADING_COPY = ['Reading your signs…', 'Weaving the threads…', 'Almost there…'];
+
+  gateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    gateError.hidden = true;
+
+    const name = (document.getElementById('gate-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('gate-email') as HTMLInputElement).value.trim();
+    const turnstileField = gateForm.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null;
+    const selectedDomain = (window as any).__PM_SELECTED_DOMAIN__ || null;
+
+    posthog()?.capture('lead_captured');
+    showScreen('loading');
+    let copyIdx = 0;
+    const loadingTextEl = document.getElementById('loading-text') as HTMLElement;
+    loadingTextEl.textContent = LOADING_COPY[0];
+    const timer = setInterval(() => {
+      copyIdx = Math.min(copyIdx + 1, LOADING_COPY.length - 1);
+      loadingTextEl.textContent = LOADING_COPY[copyIdx];
+    }, 2500);
+
+    try {
+      const res = await fetch('/api/lead-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, email,
+          turnstileToken: turnstileField?.value || '',
+          recallEntries: entries.map(e => ({ symbolName: e.symbolName, category: e.category, era: e.era, context: e.context })),
+          selectedDomain,
+          triadKey: themeIds.length ? [...themeIds].sort().join('__') : null,
+          utm,
+          campaign: { symbol: urlParams.symbol, variant: urlParams.variant },
+        }),
+      });
+      const data = await res.json();
+      clearInterval(timer);
+
+      if (res.ok && data.readingId) {
+        window.location.href = `/r/${data.readingId}`;
+        return;
+      }
+      throw new Error(data.error || 'Something went wrong. Please try again.');
+    } catch (err: any) {
+      clearInterval(timer);
+      showScreen('gate');
+      gateError.textContent = err.message;
+      gateError.hidden = false;
+    }
+  });
+
+  showScreen('intro');
+</script>
+
+<style>
+  .pm-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #07041a 0%, #0e0830 40%, #050212 100%);
+    color: #faf8f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .pm-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .nebula-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5; }
+  .nebula-blob--a {
+    width: 60vw; height: 60vw; top: -10%; left: -15%;
+    background: radial-gradient(circle, rgba(149,117,205,0.35) 0%, transparent 70%);
+    animation: driftA 26s ease-in-out infinite;
+  }
+  .nebula-blob--b {
+    width: 50vw; height: 50vw; bottom: -15%; right: -10%;
+    background: radial-gradient(circle, rgba(240,192,64,0.14) 0%, transparent 70%);
+    animation: driftB 32s ease-in-out infinite;
+  }
+  @keyframes driftA { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6vw,4vh) scale(1.08); } }
+  @keyframes driftB { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-5vw,-6vh) scale(1.1); } }
+  @media (prefers-reduced-motion: reduce) { .nebula-blob { animation: none; } }
+
+  .pm-shell {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 480px; min-height: 100vh;
+    padding: 24px 24px 40px;
+    display: flex; flex-direction: column;
+  }
+
+  .back-btn {
+    align-self: flex-start; background: none; border: none;
+    color: rgba(255,255,255,0.5); font-size: 18px;
+    padding: 8px; margin: -8px 0 8px -8px; cursor: pointer;
+  }
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-label { font-family: 'Raleway', sans-serif; font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
+
+  .pm-step { flex: 1; display: flex; flex-direction: column; justify-content: center; animation: pmFadeIn 0.25s ease; }
+  @keyframes pmFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .pm-step { animation: none; } }
+
+  .intro-wordmark { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: rgba(255,248,235,0.6); text-align: center; margin-bottom: 32px; }
+  .intro-headline { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(28px, 8vw, 38px); line-height: 1.2; text-align: center; margin-bottom: 16px; }
+  .intro-sub { font-family: 'Raleway', sans-serif; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 32px; }
+
+  .q-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(24px, 7vw, 28px); line-height: 1.25; margin-bottom: 12px; }
+  .q-note { font-family: 'Raleway', sans-serif; font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+
+  .q-options { display: flex; flex-direction: column; gap: 10px; }
+  :global(.opt-btn) {
+    min-height: 48px; text-align: left;
+    background: rgba(255,255,255,0.04); border: 0.5px solid rgba(149,117,205,0.3); border-radius: 12px;
+    padding: 14px 18px; color: #faf8f3; font-family: 'Raleway', sans-serif; font-size: 15px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  :global(.opt-btn:hover) { background: rgba(149,117,205,0.15); border-color: rgba(149,117,205,0.6); }
+  :global(.opt-btn:active) { background: rgba(240,192,64,0.15); border-color: rgba(240,192,64,0.5); }
+
+  .q-input {
+    min-height: 48px; border-radius: 10px; padding: 0 16px;
+    border: 0.5px solid rgba(149,117,205,0.3); background: rgba(255,255,255,0.04); color: #faf8f3;
+    font-family: 'Raleway', sans-serif; font-size: 15px; margin-bottom: 16px;
+  }
+  .q-input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .cta-btn {
+    min-height: 50px; width: 100%; background: #F0C040; color: #0a0618;
+    font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 14px;
+    border: none; border-radius: 12px; cursor: pointer; margin-top: 4px;
+  }
+  .done-btn {
+    min-height: 48px; width: 100%; background: none; color: #F0C040;
+    border: 0.5px solid rgba(240,192,64,0.4); border-radius: 12px;
+    font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 13.5px;
+    cursor: pointer; margin-top: 20px;
+  }
+  .skip-btn { background: none; border: none; color: rgba(255,255,255,0.4); font-family: 'Raleway', sans-serif; font-size: 12.5px; margin-top: 12px; align-self: center; cursor: pointer; }
+  .encouragement { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 18px; }
+
+  /* Constellation */
+  .constellation-wrap { width: 100%; aspect-ratio: 1; position: relative; max-width: 280px; margin: 0 auto; }
+  :global(.constellation-inner) { width: 100%; height: 100%; position: relative; }
+  :global(.constellation-svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  :global(.constellation-center) {
+    position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin-left: -24px; margin-top: -24px;
+    border-radius: 24px; background: rgba(232,200,116,0.14); border: 1px solid rgba(232,200,116,0.4);
+    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 20px;
+  }
+  :global(.constellation-node) { position: absolute; width: 74px; margin-left: -37px; margin-top: -18px; text-align: center; }
+  :global(.constellation-node-circle) {
+    width: 38px; height: 38px; border-radius: 19px; margin: 0 auto;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(206,166,54,0.4);
+    display: flex; align-items: center; justify-content: center; color: #e8c874; font-size: 16px;
+  }
+  :global(.constellation-node-label) { font-family: 'Cormorant Garamond', serif; font-size: 12px; color: white; margin-top: 4px; }
+
+  .pm-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: white; text-align: center; margin-top: 20px; }
+  .pm-core-story { font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.6; color: rgba(255,255,255,0.88); margin-top: 16px; }
+  .pm-divider { height: 0.5px; background: rgba(206,166,54,0.25); margin: 24px 0; }
+  .pm-domain-prompt { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 14px; }
+  .pm-domain-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  :global(.domain-btn) {
+    padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(206,166,54,0.3); color: rgba(255,255,255,0.7);
+    font-family: 'Raleway', sans-serif; font-size: 12.5px; cursor: pointer;
+  }
+  :global(.domain-btn-active) { background: rgba(206,166,54,0.18); border-color: #F0C040; color: #F5EEDC; }
+  .pm-domain-reading {
+    background: rgba(206,166,54,0.06); border-left: 3px solid rgba(206,166,54,0.5);
+    border-radius: 12px; padding: 16px; margin-top: 16px;
+  }
+  .pm-domain-reading-label { font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 1.5px; color: #F5EEDC; margin-bottom: 8px; }
+  .pm-domain-reading-text { font-family: 'Cormorant Garamond', serif; font-size: 15.5px; line-height: 1.6; color: rgba(255,255,255,0.85); }
+  .pm-framing { margin-top: 24px; }
+  :global(.pm-framing-line) { font-family: 'Raleway', sans-serif; font-size: 11.5px; line-height: 1.6; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+  .pm-gap-line { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; line-height: 1.5; color: rgba(255,248,235,0.75); text-align: center; margin-top: 24px; }
+
+  #gate-form { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+  .cf-turnstile { margin: 4px 0; }
+  .fine { font-family: 'Raleway', sans-serif; font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.6; text-align: center; margin-top: 4px; }
+  .fine a { color: rgba(255,255,255,0.55); }
+  .form-error { font-family: 'Raleway', sans-serif; font-size: 12.5px; color: #ff8a8a; text-align: center; margin-top: 4px; }
+
+  [data-step="loading"] { align-items: center; text-align: center; }
+  .loading-spinner {
+    width: 36px; height: 36px; border: 2px solid rgba(240,192,64,0.2); border-top-color: #F0C040;
+    border-radius: 50%; animation: pmSpin 0.9s linear infinite; margin: 0 auto 20px;
+  }
+  @keyframes pmSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .loading-spinner { animation-duration: 2.4s; } }
+  .loading-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: rgba(255,255,255,0.7); }
+
+  .footer-mark { font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.2); padding-bottom: 24px; position: relative; }
+
+  /* Critical: any rule setting `display` on an element also toggled via the
+     `hidden` attribute silently wins over the browser's built-in
+     `[hidden] { display: none }` at equal specificity — the exact bug
+     caught on /discover earlier. Applying the fix from day one here. */
+  [hidden] { display: none !important; }
+</style>
+
+</MinimalLayout>
