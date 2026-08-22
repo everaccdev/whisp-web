@@ -21,6 +21,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   <div class="pm-bg">
     <div class="nebula-blob nebula-blob--a"></div>
     <div class="nebula-blob nebula-blob--b"></div>
+    <div class="starfield" id="starfield"></div>
   </div>
 
   <div class="pm-shell">
@@ -144,6 +145,37 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 <script is:inline define:vars={{ campaignSymbolJson: campaignSymbol ? JSON.stringify(campaignSymbol) : null, symbolParam, variantParam }}>
   window.__PM_CAMPAIGN__ = campaignSymbolJson ? JSON.parse(campaignSymbolJson) : null;
   window.__PM_PARAMS__ = { symbol: symbolParam || null, variant: variantParam || null };
+</script>
+
+<!-- Starfield: generated once on load, not per-render, so it never
+     reshuffles. Twinkle animation is skipped entirely under
+     prefers-reduced-motion — stars render at a fixed, slightly varied
+     opacity instead of animating. -->
+<script is:inline>
+  (function () {
+    var field = document.getElementById('starfield');
+    if (!field) return;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var COUNT = 70;
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < COUNT; i++) {
+      var star = document.createElement('div');
+      star.className = 'star';
+      var size = (Math.random() * 1.6 + 0.6).toFixed(2);
+      star.style.left = (Math.random() * 100).toFixed(2) + '%';
+      star.style.top = (Math.random() * 100).toFixed(2) + '%';
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      if (reduceMotion) {
+        star.style.opacity = (Math.random() * 0.35 + 0.25).toFixed(2);
+      } else {
+        star.style.animationDuration = (Math.random() * 3.5 + 2.5).toFixed(2) + 's';
+        star.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
+      }
+      frag.appendChild(star);
+    }
+    field.appendChild(frag);
+  })();
 </script>
 
 <script>
@@ -624,6 +656,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   @keyframes driftA { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6vw,4vh) scale(1.08); } }
   @keyframes driftB { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-5vw,-6vh) scale(1.1); } }
   @media (prefers-reduced-motion: reduce) { .nebula-blob { animation: none; } }
+
+  .starfield { position: absolute; inset: 0; }
+  :global(.star) {
+    position: absolute; border-radius: 50%; background: #f5eedc;
+    animation-name: pmTwinkle; animation-iteration-count: infinite; animation-timing-function: ease-in-out;
+  }
+  @keyframes pmTwinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.9; } }
 
   .pm-shell {
     position: relative; z-index: 1;
