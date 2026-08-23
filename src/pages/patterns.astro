@@ -43,7 +43,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       <div class="intro-wordmark">✦ whisp</div>
       <h1 class="intro-headline">You've been noticing things for years.</h1>
       <p class="intro-sub">Most of them you never wrote down.</p>
-      <p class="intro-sub">Show Whisp a few, and it will show you the thread running between them.</p>
+
+      <!-- Each button calls handleCategory(category) directly — the exact
+           same function the category-grid buttons use — so tapping one
+           skips the category-select step entirely and lands on that
+           category's specific-select/capture screen, with this tap already
+           counted toward entry 1. Begin below still opens the full
+           category grid, unchanged. -->
+      <div class="intro-examples" id="intro-examples">
+        <button type="button" class="intro-example" data-category="number"><span class="intro-example-glyph">#</span> A number that keeps showing up.</button>
+        <button type="button" class="intro-example" data-category="dream"><span class="intro-example-glyph">☾</span> A dream you've never quite let go of.</button>
+        <button type="button" class="intro-example" data-category="animal"><span class="intro-example-glyph">⋀</span> An animal that seems to find you.</button>
+      </div>
+
+      <p class="intro-sub">Show Whisp what comes to mind. Watch the thread form between them.</p>
       <p class="intro-rule">One thing is a moment. Two is a pair. Three is where a shape begins.</p>
       <button type="button" class="cta-btn" id="begin-btn">Begin ✦</button>
     </div>
@@ -343,6 +356,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       showScreen('category');
       renderCategoryScreen();
     }
+  });
+
+  document.getElementById('intro-examples')?.querySelectorAll<HTMLButtonElement>('.intro-example').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      posthog()?.capture('recall_started', { host: 'web', symbol: urlParams.symbol, variant: urlParams.variant });
+      handleCategory(btn.dataset.category || '');
+    });
   });
 
   function handleCategory(key: string) {
@@ -712,6 +732,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   .intro-headline { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(26px, 7vw, 34px); line-height: 1.25; text-align: center; margin-bottom: 12px; }
   .intro-sub { font-family: 'Raleway', sans-serif; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 4px; }
   .intro-rule { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: rgba(232,200,116,0.85); text-align: center; margin-top: 18px; margin-bottom: 32px; line-height: 1.5; }
+
+  .intro-examples { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 18px 0 4px; }
+  :global(.intro-example) {
+    background: none; border: none; cursor: pointer; padding: 6px 14px; border-radius: 10px;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16.5px;
+    color: rgba(255,248,235,0.88); text-align: center;
+    text-decoration: underline; text-decoration-color: rgba(206,166,54,0.4);
+    transition: background 0.15s;
+  }
+  :global(.intro-example:hover),
+  :global(.intro-example:active) { background: rgba(206,166,54,0.1); }
+  :global(.intro-example-glyph) { font-style: normal; font-weight: 500; color: #F0C040; text-decoration: none; }
 
   .q-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(22px, 6.5vw, 26px); line-height: 1.25; margin: 16px 0 12px; text-align: center; }
   .q-note { font-family: 'Raleway', sans-serif; font-size: 12.5px; color: rgba(255,255,255,0.5); margin-bottom: 18px; text-align: center; }
