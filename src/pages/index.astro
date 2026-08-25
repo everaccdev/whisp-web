@@ -176,6 +176,32 @@ import Base from '../layouts/Base.astro';
     }
   </script>
 
+  <!-- ═══════════════ SIGNS COME IN EVERY FORM ═══════════════
+       Addresses an objection the page never explicitly answered: that
+       Whisp is only for astrology/numerology people. One visual, tight
+       copy — not a new interactive section, deliberately lean so it
+       doesn't compete with the demo section above it for attention. -->
+  <section class="signs-variety">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Not just numbers. Not just astrology.</span>
+        <h2 class="section-title">A sign can be almost anything.</h2>
+        <p class="section-sub">
+          A repeating number. An animal that crosses your path twice. A dream you can't shake.
+          A card that falls out of a deck. Whisp doesn't require a belief system to start —
+          just something that caught your attention.
+        </p>
+      </div>
+      <div class="signs-visual fade-up">
+        <img
+          src="/signs-collage.jpg"
+          alt="A collage of signs Whisp tracks: repeating numbers, animal encounters, dreams, and objects"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
   <section class="showcase" id="showcase">
     <div class="container">
@@ -188,36 +214,32 @@ import Base from '../layouts/Base.astro';
 
     <div class="appshot-scroll" id="appshot-scroll">
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_01.jpg" alt="Whisp home screen inviting you to notice what life is whispering" loading="lazy" />
-        <p class="appshot-caption">Notice what life is whispering</p>
+        <img class="appshot-img" src="/device-1.jpg" alt="Whisp home screen showing your journey this week and a noticed pattern" loading="lazy" />
+        <p class="appshot-caption">Your week, gathered into one view</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_02.jpg" alt="Home screen gathering a week's signs, streak, and today's reflection in one place" loading="lazy" />
-        <p class="appshot-caption">Every sign, gathered in one place</p>
+        <img class="appshot-img" src="/device-2.jpg" alt="Journal timeline with a thread forming across recent entries" loading="lazy" />
+        <p class="appshot-caption">A thread is forming — Whisp says so</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_04.jpg" alt="Weekly vision screen with a personalized reading drawn from your signs" loading="lazy" />
-        <p class="appshot-caption">A personal reading, written just for you</p>
+        <img class="appshot-img" src="/device-4.jpg" alt="Sign log for a hummingbird with Whisp's personal reflection" loading="lazy" />
+        <p class="appshot-caption">Every sign, a personal reflection</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_05.jpg" alt="Journal timeline connecting signs and dreams in one thread" loading="lazy" />
-        <p class="appshot-caption">Signs and dreams, finally connected</p>
+        <img class="appshot-img" src="/device-3.jpg" alt="Weekly Insights weave with a written reading for the week" loading="lazy" />
+        <p class="appshot-caption">A weekly reading, written just for you</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_06.jpg" alt="Profile screen showing belief systems and practices shaping your insights" loading="lazy" />
-        <p class="appshot-caption">Insights shaped by what you believe</p>
+        <img class="appshot-img" src="/device-6.jpg" alt="Sacred Tools screen browsing the Rider-Waite tarot deck" loading="lazy" />
+        <p class="appshot-caption">Ancient tools, held in your pocket</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_07.jpg" alt="Chakra insights screen tracking energy centers across your logs" loading="lazy" />
-        <p class="appshot-caption">Track the energy moving through you</p>
+        <img class="appshot-img" src="/device-7.jpg" alt="Chakra Insights and Celestial screens side by side" loading="lazy" />
+        <p class="appshot-caption">Energy centers and the sky, tracked together</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_08.jpg" alt="Dream log entry with AI-generated imagery and interpretation" loading="lazy" />
-        <p class="appshot-caption">Even flight has meaning while you sleep</p>
-      </div>
-      <div class="appshot-card">
-        <img class="appshot-img" src="/whisp_appstore_09.jpg" alt="Sign log entry with a personal reflection tied to the photo that captured it" loading="lazy" />
-        <p class="appshot-caption">Every sign, a story — down to the photo</p>
+        <img class="appshot-img" src="/device-5.jpg" alt="Vision Board screen titled Life I'm building" loading="lazy" />
+        <p class="appshot-caption">A vision board for the life you're building</p>
       </div>
       <div class="slides-spacer"></div>
     </div>
@@ -232,7 +254,6 @@ import Base from '../layouts/Base.astro';
         <button class="sc-dot" data-idx="4"></button>
         <button class="sc-dot" data-idx="5"></button>
         <button class="sc-dot" data-idx="6"></button>
-        <button class="sc-dot" data-idx="7"></button>
       </div>
       <button class="sc-btn" id="as-next" aria-label="Next">→</button>
     </div>
@@ -244,7 +265,7 @@ import Base from '../layouts/Base.astro';
     const appshotCards = document.querySelectorAll<HTMLElement>('.appshot-card');
     const appshotDots  = document.querySelectorAll<HTMLElement>('#as-dots .sc-dot');
     let appshotCur = 0;
-    const appshotTot = 8;
+    const appshotTot = 7;
 
     function getAppshotPad() {
       if (!appshotEl) return 0;
@@ -344,7 +365,7 @@ import Base from '../layouts/Base.astro';
 
       <!-- 1: Sign logging -->
       <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/quote-2.png')"></div>
+        <div class="slide-bg" style="background-image:url('/slide-signs.jpg')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
@@ -382,7 +403,7 @@ import Base from '../layouts/Base.astro';
 
       <!-- 3: Dream intelligence -->
       <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/quote-3.png')"></div>
+        <div class="slide-bg" style="background-image:url('/slide-dream.jpg')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
@@ -398,7 +419,7 @@ import Base from '../layouts/Base.astro';
 
       <!-- 4: Pattern recognition -->
       <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/quote-4.png')"></div>
+        <div class="slide-bg" style="background-image:url('/slide-pattern.jpg')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
@@ -414,7 +435,7 @@ import Base from '../layouts/Base.astro';
 
       <!-- 5: Sacred tools -->
       <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/quote-1.png')"></div>
+        <div class="slide-bg" style="background-image:url('/slide-tarot.jpg')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
@@ -512,6 +533,8 @@ import Base from '../layouts/Base.astro';
 
   <!-- ═══════════════ PHILOSOPHY ═══════════════ -->
   <section class="philosophy">
+    <div class="philosophy-bg"></div>
+    <div class="philosophy-overlay"></div>
     <div class="container">
       <div class="philosophy-inner">
         <div class="philosophy-glyph" aria-hidden="true">✦</div>
@@ -1046,6 +1069,31 @@ import Base from '../layouts/Base.astro';
     .demo-result-text { font-size: 1.05rem; }
   }
 
+  /* ── SIGNS COME IN EVERY FORM ── */
+  .signs-variety {
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+  .signs-variety .section-header {
+    max-width: 620px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .signs-variety .section-title { margin-top: 14px; }
+  .signs-variety .section-sub { margin-top: 16px; }
+  .signs-visual {
+    max-width: 820px;
+    margin: 0 auto;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--navy-border);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+  }
+  .signs-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   /* ── APP SLIDES ── */
   .slides {
     padding: var(--section-pad) 0 60px;
@@ -1349,8 +1397,33 @@ import Base from '../layouts/Base.astro';
 
   /* ── PHILOSOPHY ── */
   .philosophy {
+    position: relative;
     padding: var(--section-pad) 0;
-    background: linear-gradient(to bottom, transparent, rgba(15,24,48,0.4), transparent);
+    overflow: hidden;
+  }
+  .philosophy-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('/philosophy-bg.jpg');
+    background-size: cover;
+    background-position: center 40%;
+    z-index: 0;
+  }
+  .philosophy-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(to bottom,
+        rgba(8,12,24,0.88) 0%,
+        rgba(8,12,24,0.65) 30%,
+        rgba(8,12,24,0.65) 70%,
+        rgba(8,12,24,0.88) 100%
+      );
+  }
+  .philosophy .container {
+    position: relative;
+    z-index: 2;
   }
   .philosophy-inner {
     max-width: 720px;
@@ -1615,7 +1688,7 @@ import Base from '../layouts/Base.astro';
   }
   .appshot-scroll::-webkit-scrollbar { display: none; }
   .appshot-card {
-    flex: 0 0 240px;
+    flex: 0 0 420px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1623,10 +1696,10 @@ import Base from '../layouts/Base.astro';
   }
   .appshot-img {
     width: 100%;
-    aspect-ratio: 1284 / 2778;
+    aspect-ratio: 1672 / 941;
     object-fit: cover;
     display: block;
-    border-radius: 28px;
+    border-radius: 14px;
     background: #06080f;
     box-shadow: 0 24px 60px rgba(0,0,0,0.5);
   }
@@ -1752,7 +1825,7 @@ import Base from '../layouts/Base.astro';
   }
   @media (max-width: 640px) {
     .wn-grid { grid-template-columns: 1fr 1fr; }
-    .appshot-card { flex: 0 0 180px; }
+    .appshot-card { flex: 0 0 280px; }
   }
   @media (max-width: 480px) {
     .wn-grid { grid-template-columns: 1fr; }
