@@ -187,15 +187,38 @@ import Base from '../layouts/Base.astro';
     </div>
 
     <div class="appshot-scroll" id="appshot-scroll">
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_01.png" alt="Whisp app screenshot 1" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_02.png" alt="Whisp app screenshot 2" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_03.png" alt="Whisp app screenshot 3" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_04.png" alt="Whisp app screenshot 4" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_05.png" alt="Whisp app screenshot 5" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_06.png" alt="Whisp app screenshot 6" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_07.png" alt="Whisp app screenshot 7" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_08.png" alt="Whisp app screenshot 8" loading="lazy" /></div>
-      <div class="appshot-card"><img class="appshot-img" src="/whisp_appstore_09.png" alt="Whisp app screenshot 9" loading="lazy" /></div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_01.png" alt="Whisp home screen inviting you to notice what life is whispering" loading="lazy" />
+        <p class="appshot-caption">Notice what life is whispering</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_02.png" alt="Home screen gathering a week's signs, streak, and today's reflection in one place" loading="lazy" />
+        <p class="appshot-caption">Every sign, gathered in one place</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_04.png" alt="Weekly vision screen with a personalized reading drawn from your signs" loading="lazy" />
+        <p class="appshot-caption">A personal reading, written just for you</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_05.png" alt="Journal timeline connecting signs and dreams in one thread" loading="lazy" />
+        <p class="appshot-caption">Signs and dreams, finally connected</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_06.png" alt="Profile screen showing belief systems and practices shaping your insights" loading="lazy" />
+        <p class="appshot-caption">Insights shaped by what you believe</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_07.png" alt="Chakra insights screen tracking energy centers across your logs" loading="lazy" />
+        <p class="appshot-caption">Track the energy moving through you</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_08.png" alt="Dream log entry with AI-generated imagery and interpretation" loading="lazy" />
+        <p class="appshot-caption">Even flight has meaning while you sleep</p>
+      </div>
+      <div class="appshot-card">
+        <img class="appshot-img" src="/whisp_appstore_09.png" alt="Sign log entry with a personal reflection tied to the photo that captured it" loading="lazy" />
+        <p class="appshot-caption">Every sign, a story — down to the photo</p>
+      </div>
       <div class="slides-spacer"></div>
     </div>
 
@@ -210,7 +233,6 @@ import Base from '../layouts/Base.astro';
         <button class="sc-dot" data-idx="5"></button>
         <button class="sc-dot" data-idx="6"></button>
         <button class="sc-dot" data-idx="7"></button>
-        <button class="sc-dot" data-idx="8"></button>
       </div>
       <button class="sc-btn" id="as-next" aria-label="Next">→</button>
     </div>
@@ -222,7 +244,7 @@ import Base from '../layouts/Base.astro';
     const appshotCards = document.querySelectorAll<HTMLElement>('.appshot-card');
     const appshotDots  = document.querySelectorAll<HTMLElement>('#as-dots .sc-dot');
     let appshotCur = 0;
-    const appshotTot = 9;
+    const appshotTot = 8;
 
     function getAppshotPad() {
       if (!appshotEl) return 0;
@@ -336,13 +358,35 @@ import Base from '../layouts/Base.astro';
         <div class="slide-mark">✦ whisp</div>
       </div>
 
-      <!-- 2: Dream intelligence -->
+      <!-- 2: Belief-aware reflections (moved earlier — Homepage Conversion
+           Rework Phase 5: this is core differentiation, not a footnote) -->
+      <div class="slide-card">
+        <div class="slide-bg" style="background-image:url('/hero-bg-1.png')"></div>
+        <div class="slide-grain"></div>
+        <div class="slide-ov-top"></div>
+        <div class="slide-ov-bottom"></div>
+        <span class="slide-num">2 / 6</span>
+        <div class="slide-body">
+          <div class="slide-eyebrow"><span>✦</span> BELIEF-AWARE REFLECTIONS</div>
+          <div class="slide-rule"></div>
+          <p class="slide-head">Your meaning.<br><em>Not ours.</em></p>
+          <p class="slide-text">Choose your cosmology — astrology, Jungian archetypes, numerology, or none. Whisp reads every sign through your lens alone.</p>
+          <div class="slide-chips">
+            <span class="slide-chip">Astrology</span>
+            <span class="slide-chip">Jungian</span>
+            <span class="slide-chip">Numerology</span>
+          </div>
+        </div>
+        <div class="slide-mark">✦ whisp</div>
+      </div>
+
+      <!-- 3: Dream intelligence -->
       <div class="slide-card">
         <div class="slide-bg" style="background-image:url('/quote-3.png')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
-        <span class="slide-num">2 / 6</span>
+        <span class="slide-num">3 / 6</span>
         <div class="slide-body">
           <div class="slide-eyebrow"><span>✦</span> DREAM INTELLIGENCE</div>
           <div class="slide-rule"></div>
@@ -352,13 +396,13 @@ import Base from '../layouts/Base.astro';
         <div class="slide-mark">✦ whisp</div>
       </div>
 
-      <!-- 3: Pattern recognition -->
+      <!-- 4: Pattern recognition -->
       <div class="slide-card">
         <div class="slide-bg" style="background-image:url('/quote-4.png')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
-        <span class="slide-num">3 / 6</span>
+        <span class="slide-num">4 / 6</span>
         <div class="slide-body">
           <div class="slide-eyebrow"><span>✦</span> PATTERN RECOGNITION</div>
           <div class="slide-rule"></div>
@@ -368,13 +412,13 @@ import Base from '../layouts/Base.astro';
         <div class="slide-mark">✦ whisp</div>
       </div>
 
-      <!-- 4: Sacred tools -->
+      <!-- 5: Sacred tools -->
       <div class="slide-card">
         <div class="slide-bg" style="background-image:url('/quote-1.png')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
-        <span class="slide-num">4 / 6</span>
+        <span class="slide-num">5 / 6</span>
         <div class="slide-body">
           <div class="slide-eyebrow"><span>✦</span> SACRED TOOLS</div>
           <div class="slide-rule"></div>
@@ -389,39 +433,18 @@ import Base from '../layouts/Base.astro';
         <div class="slide-mark">✦ whisp</div>
       </div>
 
-      <!-- 5: Weekly narrative -->
+      <!-- 6: Weekly narrative -->
       <div class="slide-card">
         <div class="slide-bg" style="background-image:url('/hero-bg-2.png')"></div>
         <div class="slide-grain"></div>
         <div class="slide-ov-top"></div>
         <div class="slide-ov-bottom"></div>
-        <span class="slide-num">5 / 6</span>
+        <span class="slide-num">6 / 6</span>
         <div class="slide-body">
           <div class="slide-eyebrow"><span>✦</span> WEEKLY NARRATIVE</div>
           <div class="slide-rule"></div>
           <p class="slide-head">Your week,<br><em>in your language.</em></p>
           <p class="slide-text">Each week, Whisp weaves your signs, dreams, and sacred pulls into a personalized reflection — drawn from your cosmology, not a template.</p>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 6: Belief-aware reflections -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/hero-bg-1.png')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">6 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> BELIEF-AWARE REFLECTIONS</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Your meaning.<br><em>Not ours.</em></p>
-          <p class="slide-text">Choose your cosmology — astrology, Jungian archetypes, numerology, or none. Whisp reads every sign through your lens alone.</p>
-          <div class="slide-chips">
-            <span class="slide-chip">Astrology</span>
-            <span class="slide-chip">Jungian</span>
-            <span class="slide-chip">Numerology</span>
-          </div>
         </div>
         <div class="slide-mark">✦ whisp</div>
       </div>
@@ -487,80 +510,6 @@ import Base from '../layouts/Base.astro';
     }
   </script>
 
-  <!-- ═══════════════ WHAT'S NEW (condensed teaser — Homepage Conversion
-       Rework Phase 4: full release log relocated to /updates, verbatim,
-       nothing lost) ═══════════════ -->
-  <section class="whats-new whats-new--teaser" id="whats-new">
-    <div class="container">
-      <div class="wn-header">
-        <span class="wn-badge">What's New</span>
-        <h2 class="section-title">Gets sharper the longer you use it</h2>
-        <p class="section-sub">A few recent additions that show it. <a href="/updates" class="wn-teaser-link" data-analytics="changelog_teaser_link">See the full release log →</a></p>
-      </div>
-      <div class="wn-grid wn-grid--teaser">
-        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
-          <div class="wn-icon">⬡</div>
-          <h3 class="wn-title">Recurring Themes</h3>
-          <p class="wn-desc">Groups what's showing up by meaning, not just symbol — across your signs, dreams, and journal entries at once.</p>
-        </a>
-        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
-          <div class="wn-icon">⟠</div>
-          <h3 class="wn-title">Interpretive Lens</h3>
-          <p class="wn-desc">Add a lens — Jungian, Human Design, Shadow Work — and get an extra read through that framework.</p>
-        </a>
-        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
-          <div class="wn-icon">☾</div>
-          <h3 class="wn-title">Dream Incubation</h3>
-          <p class="wn-desc">Set an intention before bed, then wake up to it waiting alongside space to log what you dreamed.</p>
-        </a>
-        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
-          <div class="wn-icon">✷</div>
-          <h3 class="wn-title">Vision Board</h3>
-          <p class="wn-desc">Build a board for what you're calling in — images, words, and intentions gathered in one place.</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-label">The journey</span>
-        <h2 class="section-title">From sign to meaning</h2>
-      </div>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">01</div>
-          <div class="step-content">
-            <h3>Log the moment</h3>
-            <p>A quick tap captures the sign — what you saw, felt, and where you were. Dream, symbol, repeating number, animal encounter. Nothing gets lost.</p>
-          </div>
-        </div>
-        <div class="step-connector">· · ·</div>
-
-        <div class="step">
-          <div class="step-number">02</div>
-          <div class="step-content">
-            <h3>Whisp finds the patterns</h3>
-            <p>Over days and weeks, your personal intelligence model builds. Whisp surfaces what's repeating, what shifts with your mood, what clusters around certain times.</p>
-          </div>
-        </div>
-        <div class="step-connector">· · ·</div>
-
-        <div class="step">
-          <div class="step-number">03</div>
-          <div class="step-content">
-            <h3>Meaning that's yours</h3>
-            <p>Reflections that know your beliefs, your life context, and your resonance history. Not a generic interpretation — a conversation with your own emerging mythology.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ═══════════════ PHILOSOPHY ═══════════════ -->
   <section class="philosophy">
     <div class="container">
@@ -598,7 +547,7 @@ import Base from '../layouts/Base.astro';
             <li>✓ Symbol library (universal meanings)</li>
             <li>✓ Celestial context</li>
             <li>✓ Basic pattern tracking</li>
-            <li>✓ 3 reflections / month</li>
+            <li>✓ Reflection credits — 12 to start, plus more from daily logging and streaks</li>
             <li>✓ 90-day sign & dream history</li>
           </ul>
           <div class="dl-btn-row">
@@ -632,6 +581,79 @@ import Base from '../layouts/Base.astro';
             <li>✓ Full sign & dream history</li>
           </ul>
           <a href="/founders" class="btn btn-primary" style="width:100%; justify-content:center;">Claim founder pricing ✦</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ WHAT'S NEW (condensed teaser — Homepage Conversion
+       Rework Phase 4: full release log relocated to /updates, verbatim,
+       nothing lost) ═══════════════ -->
+  <section class="whats-new whats-new--teaser" id="whats-new">
+    <div class="container">
+      <div class="wn-header">
+        <span class="wn-badge">What's New</span>
+        <h2 class="section-title">Gets sharper the longer you use it</h2>
+        <p class="section-sub">A few recent additions that show it. <a href="/updates" class="wn-teaser-link" data-analytics="changelog_teaser_link">See the full release log →</a></p>
+      </div>
+      <div class="wn-grid wn-grid--teaser">
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">⬡</div>
+          <h3 class="wn-title">Recurring Themes</h3>
+          <p class="wn-desc">Groups what's showing up by meaning, not just symbol — across your signs, dreams, and journal entries at once.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">⟠</div>
+          <h3 class="wn-title">Interpretive Lens</h3>
+          <p class="wn-desc">Add a lens — Jungian, Human Design, Shadow Work — and get an extra read through that framework.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">☾</div>
+          <h3 class="wn-title">Dream Incubation</h3>
+          <p class="wn-desc">Set an intention before bed, then wake up to it waiting alongside space to log what you dreamed.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">✷</div>
+          <h3 class="wn-title">Vision Board</h3>
+          <p class="wn-desc">Build a board for what you're calling in — images, words, and intentions gathered in one place.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">The journey</span>
+        <h2 class="section-title">From sign to meaning</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>Log the moment</h3>
+            <p>A quick tap captures the sign — what you saw, felt, and where you were. Dream, symbol, repeating number, animal encounter. Nothing gets lost.</p>
+          </div>
+        </div>
+        <div class="step-connector">· · ·</div>
+
+        <div class="step">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>Whisp finds the patterns</h3>
+            <p>Over days and weeks, your personal intelligence model builds. Whisp surfaces what's repeating, what shifts with your mood, what clusters around certain times.</p>
+          </div>
+        </div>
+        <div class="step-connector">· · ·</div>
+
+        <div class="step">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>Meaning that's yours</h3>
+            <p>Reflections that know your beliefs, your life context, and your resonance history. Not a generic interpretation — a conversation with your own emerging mythology.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1574,18 +1596,27 @@ import Base from '../layouts/Base.astro';
   .appshot-scroll::-webkit-scrollbar { display: none; }
   .appshot-card {
     flex: 0 0 240px;
-    aspect-ratio: 1284 / 2778;
-    border-radius: 28px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     scroll-snap-align: start;
-    background: #06080f;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
   }
   .appshot-img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1284 / 2778;
     object-fit: cover;
     display: block;
+    border-radius: 28px;
+    background: #06080f;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  .appshot-caption {
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--cream-dim);
+    padding: 0 8px;
   }
 
   /* ── WHAT'S NEW ── */
