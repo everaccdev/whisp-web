@@ -21,7 +21,7 @@ import Base from '../layouts/Base.astro';
       </div>
 
       <h1 class="hero-title fade-up" style="animation-delay:0.15s">
-        The universe is always<br /><em>speaking.</em>
+        One sign is a moment.<br /><em>A pattern is a message.</em>
       </h1>
 
       <div class="hero-rule fade-up" style="animation-delay:0.22s">
@@ -29,20 +29,39 @@ import Base from '../layouts/Base.astro';
       </div>
 
       <p class="hero-sub fade-up" style="animation-delay:0.28s">
-        Track signs, synchronicities, dreams, and symbols.<br />
-        Discover what they mean — for <em>you</em>.
+        Whisp remembers what you don't —<br />
+        and shows you what it adds up to.
       </p>
 
+      <!-- ONE dominant action, adaptively platform-detected (see script
+           below) — was three competing CTAs (founders / iOS / Android).
+           Server-rendered default (no-JS, or before detection runs) is the
+           App Store, since that link always works regardless of platform.
+           Both store badges stay visible underneath, subordinate, so a
+           misdetection or desktop visitor can always pick correctly.
+           Founders pricing is now a small text link, not a competing
+           button — it belongs at the pricing section (moved up this
+           rework), not duplicating the nav's own founders link here. -->
       <div class="hero-cta fade-up" style="animation-delay:0.36s">
-        <a href="/founders" class="btn btn-primary hero-founder-btn">Claim Founder Pricing ✦</a>
-        <a href="https://apps.apple.com/app/id6777561873" class="btn btn-outline hero-dl-btn">
-          <svg class="btn-icon" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-          Download for iOS
+        <a
+          href="https://apps.apple.com/app/id6777561873"
+          id="hero-primary-cta"
+          class="btn btn-primary hero-primary-btn"
+          data-analytics="hero_primary_cta"
+        >
+          <span id="hero-primary-cta-text">Download for iOS ✦</span>
         </a>
-        <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="btn btn-outline hero-dl-btn">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3.5v17a1 1 0 0 0 1.5.87l14-8.5a1 1 0 0 0 0-1.74l-14-8.5A1 1 0 0 0 3 3.5z"/></svg>
-          Download for Android
-        </a>
+        <div class="hero-cta-secondary">
+          <a href="https://apps.apple.com/app/id6777561873" class="hero-store-badge" id="hero-badge-ios" data-analytics="hero_app_store_click">
+            <svg class="btn-icon" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+            App Store
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_share" class="hero-store-badge" id="hero-badge-android" data-analytics="hero_google_play_click">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3.5v17a1 1 0 0 0 1.5.87l14-8.5a1 1 0 0 0 0-1.74l-14-8.5A1 1 0 0 0 3 3.5z"/></svg>
+            Google Play
+          </a>
+        </div>
+        <a href="/founders" class="hero-founders-link" data-analytics="hero_founders_link">Or lock in founder pricing →</a>
       </div>
 
       <p class="hero-note fade-up" style="animation-delay:0.44s">
@@ -55,6 +74,107 @@ import Base from '../layouts/Base.astro';
       <div class="scroll-line"></div>
     </div>
   </section>
+
+  <script>
+    // Adaptive primary CTA — no new dependency, plain navigator.userAgent
+    // sniffing (same tier of technique already used nowhere else on this
+    // site, but simple and dependency-free). Runs after paint so the
+    // server-rendered default (App Store) is what no-JS visitors and the
+    // very first frame always see — no flash, no layout shift, degrades
+    // to a working link either way.
+    const ua = navigator.userAgent || '';
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const primaryCta = document.getElementById('hero-primary-cta') as HTMLAnchorElement | null;
+    const primaryCtaText = document.getElementById('hero-primary-cta-text');
+    const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_hero';
+
+    if (primaryCta && primaryCtaText) {
+      if (isAndroid) {
+        primaryCta.href = ANDROID_URL;
+        primaryCtaText.textContent = 'Download for Android ✦';
+      } else if (isIOS) {
+        // Already the server-rendered default — leave as-is.
+      } else {
+        // Desktop / unknown — App Store default stays as the primary
+        // (both store badges are equally visible underneath regardless).
+      }
+    }
+  </script>
+
+  <!-- ═══════════════ DEMONSTRATE THE PATTERN ═══════════════
+       Homepage Conversion Rework Phase 2 — the single highest-leverage
+       new section. Shows accumulation rather than describing it, so a
+       cold visitor sees the "why not just ask ChatGPT" answer before
+       they've had a chance to form the objection. The timeline below is
+       explicitly illustrative (labelled as such), not a live backend
+       call or a real user's data — it's modeled on what Whisp's actual
+       detectors do (patternEngine.js: frequency surges, dream/waking
+       overlap, cross-entry-type recurrence across signs/dreams/journal),
+       not invented functionality. -->
+  <section class="demo-pattern" id="demo-pattern" data-analytics="demo_section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Why not just ask ChatGPT</span>
+        <h2 class="section-title">One sign is a curiosity.<br /><em>A pattern is something a single lookup can't see.</em></h2>
+        <p class="section-sub">
+          Ask a chatbot what a number means and the context evaporates the moment you close the tab.
+          Whisp remembers across weeks — here's the shape of what that looks like.
+        </p>
+      </div>
+
+      <div class="demo-visual fade-up">
+        <img
+          src="/demo-pattern.jpg"
+          alt="Whisp noticing a recurring theme across signs, dreams, and journal entries"
+          loading="lazy"
+          class="demo-visual-img"
+        />
+      </div>
+
+      <div class="demo-timeline fade-up" role="list" aria-label="Illustrative example, not a real user's data">
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 1</span><span class="demo-beat-sign">11:11</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 6</span><span class="demo-beat-sign">a white butterfly</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 11</span><span class="demo-beat-sign">a dream about leaving home</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 17</span><span class="demo-beat-sign">a journal entry about a career change</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 23</span><span class="demo-beat-sign">11:11 again</span></div>
+      </div>
+
+      <div class="demo-result fade-up">
+        <span class="demo-result-label">✦ WHISP NOTICES</span>
+        <p class="demo-result-text">Transition keeps appearing — across your signs, your dreams, and what you've written.</p>
+      </div>
+
+      <p class="demo-caveat">
+        Illustrative example, not a specific person's data — modeled on how Whisp's real pattern
+        detection actually works: recurring symbols, dream-and-waking overlap, and themes that
+        span your signs, dreams, and journal at once.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // Fires once per visitor when the demonstration section first enters
+    // view — the "did the differentiation land" signal (Phase 7).
+    const demoSection = document.getElementById('demo-pattern');
+    if (demoSection && typeof IntersectionObserver !== 'undefined') {
+      let demoSeen = false;
+      const demoIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !demoSeen) {
+            demoSeen = true;
+            (window as any).posthog?.capture('website_demo_section_viewed');
+            demoIO.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      demoIO.observe(demoSection);
+    }
+  </script>
 
   <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
   <section class="showcase" id="showcase">
@@ -367,459 +487,41 @@ import Base from '../layouts/Base.astro';
     }
   </script>
 
-  <!-- ═══════════════ LATEST RELEASE ═══════════════ -->
-  <section class="whats-new" id="whats-new">
+  <!-- ═══════════════ WHAT'S NEW (condensed teaser — Homepage Conversion
+       Rework Phase 4: full release log relocated to /updates, verbatim,
+       nothing lost) ═══════════════ -->
+  <section class="whats-new whats-new--teaser" id="whats-new">
     <div class="container">
       <div class="wn-header">
         <span class="wn-badge">What's New</span>
-        <h2 class="section-title">Latest Release Highlights</h2>
-        <p class="section-sub">We've been building. A lot. Here's what's arrived, batch by batch.</p>
+        <h2 class="section-title">Gets sharper the longer you use it</h2>
+        <p class="section-sub">A few recent additions that show it. <a href="/updates" class="wn-teaser-link" data-analytics="changelog_teaser_link">See the full release log →</a></p>
       </div>
-
-      <div class="wn-period">
-        <div class="wn-period-label">
-          <span class="wn-period-date">August 2026</span>
-          <span class="wn-period-line"></span>
-        </div>
-        <div class="wn-grid">
-
-          <div class="wn-card">
-            <div class="wn-icon">⟠</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Interpretive Lens</h3>
-            <p class="wn-desc">Add a lens — Jungian Archetypes, Human Design, Shadow Work, Parts Work, and more — and your dreams, sign log reflections, and Weave gain an extra read through that framework, sitting alongside your primary reading rather than replacing it.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◉</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">My Perspectives</h3>
-            <p class="wn-desc">See every lens you've added in one place, tell Whisp when an interpretation actually landed, and keep exactly the perspectives that serve you — nothing added stays if it isn't useful.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⟢</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">The Weave, Only When It's Real</h3>
-            <p class="wn-desc">If a week doesn't have enough of your own words behind it, Whisp says so instead of writing something hollow to fill the space — and a quiet regenerate is always there when you want a fresh read.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">☊</div>
-            <div class="wn-label wn-label--sacred">Enhanced · Sacred</div>
-            <h3 class="wn-title">Human Design, Actually Calculated</h3>
-            <p class="wn-desc">Your Human Design profile — Authority, Type, Profile, defined centers — is now calculated from your real birth data instead of relying on what you self-reported, so any reading that references it is grounded in your actual chart.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⟡</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Deeper Weekly Readings</h3>
-            <p class="wn-desc">Your Weave and Pattern Story now draw on your actual journal entries, the life context you've written, and dates you've marked significant — not just sign names and moods. A reading can finally say "this connects to what you wrote in March," not just guess.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⬡</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Recurring Themes</h3>
-            <p class="wn-desc">Whisp now groups what's showing up by meaning, not just symbol — a theme like transition or partnership spanning your signs, dreams, and journal entries at once, always shown with its own honest evidence count.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⟐</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">A Whisper That Feels Like a Moment</h3>
-            <p class="wn-desc">The "Whisp is Noticing" card on Home now opens with real space for its art before the reading begins, and the whole card taps straight through to the full pattern — no more hunting for the right link.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">❈</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Life Path Number, Woven In</h3>
-            <p class="wn-desc">See your Life Path Number reflected right on a matching symbol's page when a repeating number is genuinely yours — plus threaded quietly into your readings wherever it actually applies.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✷</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Vision Board</h3>
-            <p class="wn-desc">Build a board for what you're calling in — images, words, and intentions gathered in one place, with a hero image up top and full control to arrange it exactly how you like.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◐</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">A Calmer Calendar</h3>
-            <p class="wn-desc">Journal's calendar view now shows a day's own art and interpretation when it genuinely connects to what Whisp has been noticing, with a clearer legend and a soft gold glow on the day you've selected.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⊹</div>
-            <div class="wn-label wn-label--sacred">Enhanced · Sacred</div>
-            <h3 class="wn-title">Spiritual Weather, Two Ways</h3>
-            <p class="wn-desc">The daily moon-and-energy card now lives as a quick glance right on Home, plus its own place among your Sacred Tools whenever you want the fuller picture.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✧</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">More Nebula Themes</h3>
-            <p class="wn-desc">Five new nebula backgrounds join Appearance — Amethyst, Rose, Emerald, Copper, and a denser, deep-blue Sapphire — each with its own starfield and glow.</p>
-          </div>
-
-        </div>
+      <div class="wn-grid wn-grid--teaser">
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">⬡</div>
+          <h3 class="wn-title">Recurring Themes</h3>
+          <p class="wn-desc">Groups what's showing up by meaning, not just symbol — across your signs, dreams, and journal entries at once.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">⟠</div>
+          <h3 class="wn-title">Interpretive Lens</h3>
+          <p class="wn-desc">Add a lens — Jungian, Human Design, Shadow Work — and get an extra read through that framework.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">☾</div>
+          <h3 class="wn-title">Dream Incubation</h3>
+          <p class="wn-desc">Set an intention before bed, then wake up to it waiting alongside space to log what you dreamed.</p>
+        </a>
+        <a href="/updates" class="wn-card wn-card--teaser" data-analytics="changelog_teaser_card">
+          <div class="wn-icon">✷</div>
+          <h3 class="wn-title">Vision Board</h3>
+          <p class="wn-desc">Build a board for what you're calling in — images, words, and intentions gathered in one place.</p>
+        </a>
       </div>
-
-      <div class="wn-period">
-        <div class="wn-period-label">
-          <span class="wn-period-date">July 2026</span>
-          <span class="wn-period-line"></span>
-        </div>
-        <div class="wn-grid">
-
-          <div class="wn-card">
-            <div class="wn-icon">☾</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Dream Incubation</h3>
-            <p class="wn-desc">Set an intention before bed, then wake up to it waiting alongside the space to log what you dreamed. A quiet two-part ritual for remembering more of what your dreams are trying to tell you.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✵</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Spiritual Weather Report</h3>
-            <p class="wn-desc">A single daily card waiting for you each morning — moon phase, a numerology note for the day, and a brief read on the day's energy.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◆</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Symbol Dictionary</h3>
-            <p class="wn-desc">A searchable reference for what signs generally mean — angel numbers, animals, and anything else you look up — separate from your own personal readings.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◍</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Smarter Notifications</h3>
-            <p class="wn-desc">Nudges that adapt to you — if a prompt goes unanswered a couple times, Whisp quietly backs off rather than repeating itself, and eases back in once you're engaging again.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⊚</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">A Real Notifications Toggle</h3>
-            <p class="wn-desc">Enable or check your notification permission any time from More → Settings — no more being stuck if you dismissed the one-time prompt early on.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">φ</div>
-            <div class="wn-label wn-label--sacred">New · Sacred</div>
-            <h3 class="wn-title">Golden Ratio & Fibonacci Analysis</h3>
-            <p class="wn-desc">Add Golden Ratio and Fibonacci Sequence as belief systems, and Whisp starts reading your signs through φ — from the first seed of an idea to the infinite spiral it becomes. A pattern-by-pattern breakdown of the growth showing up in your life.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">▦</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Sacred Tools, Reimagined</h3>
-            <p class="wn-desc">Tarot, Runes, I Ching, Chakras, Golden Ratio — your unlocked tools now live in a single collapsible card on the More screen, so what you've added stays easy to find without crowding everything else.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✳</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Word & Name Origins</h3>
-            <p class="wn-desc">When a sign is a word, phrase, or name, Whisp now traces where it comes from — etymology and origin laid out right in the symbol detail, alongside the personal meaning it's taken on for you.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">↻</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Refresh a Reflection</h3>
-            <p class="wn-desc">Didn't land the way you hoped? Regenerate the reflection on any journal or event entry right from its detail view, without leaving the page.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✎</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Deeper Reflections</h3>
-            <p class="wn-desc">Longer prompts in, longer reflections out. Journal, dream, and event entries now carry more context and receive fuller responses — no more reflections cut short mid-thought.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◔</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Reflection Credits at a Glance</h3>
-            <p class="wn-desc">Free members can now see their reflection credit balance right from the More screen, with a clear breakdown of how credits are earned and spent.</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="wn-period">
-        <div class="wn-period-label">
-          <span class="wn-period-date">June 2026</span>
-          <span class="wn-period-line"></span>
-        </div>
-        <div class="wn-grid">
-
-          <div class="wn-card">
-            <div class="wn-icon">✦</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Intention Reflection</h3>
-            <p class="wn-desc">Pull a synthesis reading across everything you've logged in relation to one intention, on demand. Whisp tells you honestly which signs genuinely connect — and which seem to be pointing somewhere else entirely. Never forced, never automatic.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◈</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Living Intentions</h3>
-            <p class="wn-desc">Mark an intention Active, Holding, or Released as your relationship to it changes. Whisp gently checks in if one's gone quiet for 30 days — and only ever asks if a sign feels connected to it, never decides for you.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">❖</div>
-            <div class="wn-label wn-label--sacred">New · Sacred</div>
-            <h3 class="wn-title">Log a Pull as a Sign</h3>
-            <p class="wn-desc">Draw a tarot card or cast a rune, then save it straight into your sign log — meaning, artwork, and all. It joins your symbol library and pattern detection like anything else you've noticed.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◍</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Smart Push Notifications</h3>
-            <p class="wn-desc">A gentle ask before anything else — then notifications that actually mean something: a pattern forming, a vision ready to view, a celestial shift, or a meaningful echo from a year ago today.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✺</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Choose Your Art Style</h3>
-            <p class="wn-desc">Pick how Whisp paints your signs — cosmic starfields, a single shaft of temple light, or soft twilight stillness. Set it once in Appearance and every generated image follows your lead.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">❍</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Log a Recurring Thought</h3>
-            <p class="wn-desc">Some signs aren't seen, they're heard from the inside — the same thought that won't stop returning. Now it has a category of its own, right alongside your symbols and dreams.</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="wn-period">
-        <div class="wn-period-label">
-          <span class="wn-period-date">Spring 2026</span>
-          <span class="wn-period-line"></span>
-        </div>
-        <div class="wn-grid">
-
-          <div class="wn-card">
-            <div class="wn-icon">◷</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Highlights from the Past</h3>
-            <p class="wn-desc">Your home screen now surfaces moments from a month ago, two months, three months, six months, and a year back — picking the entries with the most resonance. Dreams rise first, then signs with notes. The same thread, returning.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◈</div>
-            <div class="wn-label wn-label--premium">New · Premium</div>
-            <h3 class="wn-title">Chakra System Insights</h3>
-            <p class="wn-desc">Every sign log surfaces which chakras may be resonating. Whisp reads your emotional state, somatic sensations, and the sign's energy — then maps it to the body's energy centers and tells you what might be asking for attention.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✶</div>
-            <div class="wn-label wn-label--premium">New · Premium</div>
-            <h3 class="wn-title">Sacred Text Resonance</h3>
-            <p class="wn-desc">When a sign appears, Whisp finds a passage from your tradition — Bible, Torah, Quran, Bhagavad Gita, Tao Te Ching, Buddhist canon, and more — that genuinely meets the moment. Not the most famous verse. The one that actually speaks to where you are.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◑</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Custom App Themes</h3>
-            <p class="wn-desc">Build your own gradient from any two colors using the in-app color picker. Pair it with tab bar style, text size, and FAB color for a setup that actually feels like yours.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✦</div>
-            <div class="wn-label wn-label--sacred">New · Sacred</div>
-            <h3 class="wn-title">Tarot Card Pulls</h3>
-            <p class="wn-desc">Draw from the full 78-card Rider-Waite deck — Major and Minor Arcana, upright and reversed — with meanings in Whisp's own reflective voice.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">ᚠ</div>
-            <div class="wn-label wn-label--sacred">New · Sacred</div>
-            <h3 class="wn-title">Elder Futhark Runes</h3>
-            <p class="wn-desc">All 24 runes of the Elder Futhark with meanings rooted in Norse cosmology — upright and reversed, each with its mythic resonance intact.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">☰</div>
-            <div class="wn-label wn-label--sacred">New · Sacred</div>
-            <h3 class="wn-title">I Ching Hexagrams</h3>
-            <p class="wn-desc">Consult all 64 hexagrams of the I Ching. Each cast is recorded and woven into your weekly narrative alongside your signs and dreams.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◐</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Sacred Tool Narrative</h3>
-            <p class="wn-desc">Your rune, tarot, and I Ching pulls now flow directly into your weekly reflection — woven alongside your signs for a richer, fuller picture.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◈</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Whisp for a Friend</h3>
-            <p class="wn-desc">Generate a personalized reading for someone you love. Share it as a beautiful web page — drawn from their astrological profile and your intention for them.</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="wn-period">
-        <div class="wn-period-label">
-          <span class="wn-period-date">Earlier Releases</span>
-          <span class="wn-period-line"></span>
-        </div>
-        <div class="wn-grid">
-
-          <div class="wn-card">
-            <div class="wn-icon">◎</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Milestone Celebrations</h3>
-            <p class="wn-desc">Personalized full-screen celebrations when you hit meaningful tracking milestones — not generic notifications, but moments that feel like yours.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⟁</div>
-            <div class="wn-label wn-label--premium">Enhanced · Premium</div>
-            <h3 class="wn-title">Pattern Correlations</h3>
-            <p class="wn-desc">Discover which symbols appear when your emotional state shifts, when the moon is in certain phases, or when specific life events cluster together.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">☽</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Celestial Intelligence</h3>
-            <p class="wn-desc">Live moon phases, retrograde windows, and eclipse seasons woven into every log — so the cosmic weather is always part of the context you're reading from.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◑</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">App Theming</h3>
-            <p class="wn-desc">Light and dark modes designed for how you actually use the app — soft and airy in daylight, deep and immersive under stars. Switch any time from your profile.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">☁</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Dream Mode</h3>
-            <p class="wn-desc">Dreams and waking signs live in separate worlds. When you log a dream, the interface shifts — different palette, cloud overlay, its own lens. Sleep has a different language.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◇</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Intentions</h3>
-            <p class="wn-desc">Set a guiding intention for your week or season. It quietly becomes part of your context — shaping reflections without you having to repeat yourself.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">≋</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Emotional Weather</h3>
-            <p class="wn-desc">Log your emotional state with every entry. Over time Whisp maps which signs appear during which inner weather — one of the most quietly revelatory features in the app.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">○</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Year in Review</h3>
-            <p class="wn-desc">A beautiful annual summary of your most significant signs, patterns, and turning points. The year you almost didn't notice — laid out and given back to you.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◉</div>
-            <div class="wn-label wn-label--premium">Enhanced · Premium</div>
-            <h3 class="wn-title">Symbol Profiles</h3>
-            <p class="wn-desc">Every symbol builds a living record: frequency, emotional clusters, moon phases, and a meaning that grows more personal the longer you track. Your crow is not everyone's crow.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✦</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Journal Mode</h3>
-            <p class="wn-desc">Full-length journaling alongside your sign log — for the days that ask for more than a quick capture. Longer reflections, photos, freeform writing, and context.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⊞</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Tag & Browse</h3>
-            <p class="wn-desc">Tag entries and filter your entire history by symbol, type, mood, or time period. Find every crow sighting. Every 11:11. Every ocean dream. Your own archive, searchable.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⊙</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Belief Exclusions</h3>
-            <p class="wn-desc">Fine-tune exactly which beliefs influence your lens — add or remove any time. Your cosmology is always yours to define, and Whisp always follows your lead.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◫</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Gifted Readings Inbox</h3>
-            <p class="wn-desc">When a friend sends you a Whisp reading, it arrives as a beautiful shareable page — drawn from your astrological profile, ready to sit with and return to.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◈</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Vision Collection</h3>
-            <p class="wn-desc">Save the insights, readings, and reflections that land deepest. A personal library of your most resonant moments — there when you want to return to them.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◊</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Privacy & Data Export</h3>
-            <p class="wn-desc">Your data is always yours. Export everything or delete at will — no lock-in, no data resale, ever. We think trust is built through control, not promises.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">✧</div>
-            <div class="wn-label wn-label--premium">New · Premium</div>
-            <h3 class="wn-title">Vision Share Links</h3>
-            <p class="wn-desc">Your week's painting becomes a shareable web page. When you send the link, iMessage shows the full artwork as a rich preview card — no screenshot, no caption needed.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">◌</div>
-            <div class="wn-label">New</div>
-            <h3 class="wn-title">Dream Share Links</h3>
-            <p class="wn-desc">Every dream card becomes its own beautiful page. The atmospheric painting and palette from your dream appear as a full image card in iMessage — a window into your inner life, sent in one tap.</p>
-          </div>
-
-          <div class="wn-card">
-            <div class="wn-icon">⊕</div>
-            <div class="wn-label">Enhanced</div>
-            <h3 class="wn-title">Reading Artwork</h3>
-            <p class="wn-desc">Friend readings now generate a painting drawn from the signs and dream content you share. The link arrives with a full image preview — something that feels considered, not just forwarded.</p>
-          </div>
-
-        </div>
-      </div>
-
     </div>
   </section>
+
 
   <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
   <section class="how-it-works" id="how-it-works">
@@ -1033,9 +735,9 @@ import Base from '../layouts/Base.astro';
   .hero-bg-img {
     position: absolute;
     inset: 0;
-    background-image: url('/hero-bg-1.png');
+    background-image: url('/hero-signs.jpg');
     background-size: cover;
-    background-position: center 20%;
+    background-position: center 30%;
     z-index: 0;
   }
   .hero-overlay {
@@ -1094,12 +796,15 @@ import Base from '../layouts/Base.astro';
     text-shadow: 0 2px 32px rgba(201, 168, 76, 0.25);
   }
   .hero-title {
+    width: 100%;
+    max-width: 100%;
     font-family: var(--font-heading);
     font-size: clamp(2.4rem, 5.5vw, 4.2rem);
     font-weight: 300;
     line-height: 1.15;
     color: var(--cream);
     text-shadow: 0 2px 32px rgba(0,0,0,0.6);
+    word-wrap: break-word;
   }
   .hero-title em {
     font-style: italic;
@@ -1125,9 +830,35 @@ import Base from '../layouts/Base.astro';
     text-shadow: 0 1px 12px rgba(0,0,0,0.5);
   }
   .hero-sub em { font-style: italic; color: var(--cream); }
-  .hero-cta { width: 100%; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-  .hero-founder-btn { padding: 16px 32px; font-size: 0.9rem; }
-  .hero-dl-btn { padding: 16px 28px; font-size: 0.9rem; }
+  .hero-cta { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .hero-primary-btn { padding: 18px 40px; font-size: 0.95rem; min-width: 260px; justify-content: center; }
+  .hero-cta-secondary { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .hero-store-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--navy-border);
+    color: var(--cream-dim);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .hero-store-badge:hover { border-color: rgba(201,168,76,0.4); color: var(--cream); }
+  .hero-founders-link {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--cream-dim);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0.75;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .hero-founders-link:hover { opacity: 1; color: var(--gold-light); }
   .btn-icon { width: 15px; height: 15px; flex-shrink: 0; }
   .dl-btn-row { display: flex; gap: 8px; }
   .dl-btn-half { flex: 1; justify-content: center; padding-left: 12px; padding-right: 12px; }
@@ -1165,6 +896,112 @@ import Base from '../layouts/Base.astro';
   @keyframes scrollPulse {
     0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
     50% { opacity: 0.7; transform: scaleY(1); }
+  }
+
+  /* ── DEMONSTRATE THE PATTERN ── */
+  .demo-pattern {
+    padding: var(--section-pad) 0;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-top: 1px solid var(--navy-border);
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .demo-pattern .section-header {
+    max-width: 640px;
+    margin: 0 auto 56px;
+    text-align: center;
+  }
+  .demo-pattern .section-title { margin-top: 14px; }
+  .demo-pattern .section-sub { margin-top: 16px; }
+  .demo-visual {
+    max-width: 720px;
+    margin: 0 auto 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--navy-border);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+  }
+  .demo-visual-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .demo-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .demo-beat {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+  }
+  .demo-beat-day {
+    flex-shrink: 0;
+    width: 56px;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .demo-beat-sign {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--cream);
+  }
+  .demo-beat-arrow {
+    color: var(--gold-dim);
+    font-size: 0.85rem;
+    opacity: 0.5;
+    line-height: 1;
+    padding: 2px 0;
+  }
+  .demo-result {
+    max-width: 480px;
+    margin: 28px auto 0;
+    padding: 22px 26px;
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 8px;
+    background: rgba(201,168,76,0.06);
+    text-align: center;
+  }
+  .demo-result-label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .demo-result-text {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+  .demo-caveat {
+    max-width: 480px;
+    margin: 20px auto 0;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--cream-dim);
+    opacity: 0.65;
+  }
+  @media (max-width: 600px) {
+    .demo-beat { padding: 9px 14px; gap: 10px; }
+    .demo-beat-day { width: 46px; font-size: 0.6rem; }
+    .demo-beat-sign { font-size: 0.95rem; }
+    .demo-result { padding: 18px 20px; }
+    .demo-result-text { font-size: 1.05rem; }
   }
 
   /* ── APP SLIDES ── */

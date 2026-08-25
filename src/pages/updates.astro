@@ -1,0 +1,638 @@
+---
+// Homepage Conversion Rework — Phase 4. Full "Latest Release Highlights"
+// content relocated here verbatim from index.astro (was ~450 lines sitting
+// directly on the homepage between features and pricing, forcing a cold
+// visitor to process advanced functionality like Human Design chart
+// calculation before they'd even understood the core promise). Nothing
+// here is new or modified — every wn-card below is byte-for-byte the same
+// content that lived on the homepage, just relocated. The homepage now
+// carries a condensed 4-item teaser linking here.
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Updates — Whisp"
+  description="What's new in Whisp — the full release log, batch by batch."
+>
+  <div class="updates-page-hero">
+    <div class="container">
+      <span class="section-label">Whisp</span>
+      <h1>Everything we've shipped</h1>
+      <p class="updates-page-sub">A running log of what's arrived, batch by batch. <a href="/">← Back to home</a></p>
+    </div>
+  </div>
+
+  <section class="whats-new" id="whats-new">
+    <div class="container">
+      <div class="wn-header">
+        <span class="wn-badge">What's New</span>
+        <h2 class="section-title">Latest Release Highlights</h2>
+        <p class="section-sub">We've been building. A lot. Here's what's arrived, batch by batch.</p>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
+          <span class="wn-period-date">August 2026</span>
+          <span class="wn-period-line"></span>
+        </div>
+        <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">⟠</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Interpretive Lens</h3>
+            <p class="wn-desc">Add a lens — Jungian Archetypes, Human Design, Shadow Work, Parts Work, and more — and your dreams, sign log reflections, and Weave gain an extra read through that framework, sitting alongside your primary reading rather than replacing it.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◉</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">My Perspectives</h3>
+            <p class="wn-desc">See every lens you've added in one place, tell Whisp when an interpretation actually landed, and keep exactly the perspectives that serve you — nothing added stays if it isn't useful.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⟢</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">The Weave, Only When It's Real</h3>
+            <p class="wn-desc">If a week doesn't have enough of your own words behind it, Whisp says so instead of writing something hollow to fill the space — and a quiet regenerate is always there when you want a fresh read.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">☊</div>
+            <div class="wn-label wn-label--sacred">Enhanced · Sacred</div>
+            <h3 class="wn-title">Human Design, Actually Calculated</h3>
+            <p class="wn-desc">Your Human Design profile — Authority, Type, Profile, defined centers — is now calculated from your real birth data instead of relying on what you self-reported, so any reading that references it is grounded in your actual chart.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⟡</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Deeper Weekly Readings</h3>
+            <p class="wn-desc">Your Weave and Pattern Story now draw on your actual journal entries, the life context you've written, and dates you've marked significant — not just sign names and moods. A reading can finally say "this connects to what you wrote in March," not just guess.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⬡</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Recurring Themes</h3>
+            <p class="wn-desc">Whisp now groups what's showing up by meaning, not just symbol — a theme like transition or partnership spanning your signs, dreams, and journal entries at once, always shown with its own honest evidence count.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⟐</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">A Whisper That Feels Like a Moment</h3>
+            <p class="wn-desc">The "Whisp is Noticing" card on Home now opens with real space for its art before the reading begins, and the whole card taps straight through to the full pattern — no more hunting for the right link.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❈</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Life Path Number, Woven In</h3>
+            <p class="wn-desc">See your Life Path Number reflected right on a matching symbol's page when a repeating number is genuinely yours — plus threaded quietly into your readings wherever it actually applies.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✷</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Vision Board</h3>
+            <p class="wn-desc">Build a board for what you're calling in — images, words, and intentions gathered in one place, with a hero image up top and full control to arrange it exactly how you like.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◐</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">A Calmer Calendar</h3>
+            <p class="wn-desc">Journal's calendar view now shows a day's own art and interpretation when it genuinely connects to what Whisp has been noticing, with a clearer legend and a soft gold glow on the day you've selected.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⊹</div>
+            <div class="wn-label wn-label--sacred">Enhanced · Sacred</div>
+            <h3 class="wn-title">Spiritual Weather, Two Ways</h3>
+            <p class="wn-desc">The daily moon-and-energy card now lives as a quick glance right on Home, plus its own place among your Sacred Tools whenever you want the fuller picture.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✧</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">More Nebula Themes</h3>
+            <p class="wn-desc">Five new nebula backgrounds join Appearance — Amethyst, Rose, Emerald, Copper, and a denser, deep-blue Sapphire — each with its own starfield and glow.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
+          <span class="wn-period-date">July 2026</span>
+          <span class="wn-period-line"></span>
+        </div>
+        <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">☾</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Dream Incubation</h3>
+            <p class="wn-desc">Set an intention before bed, then wake up to it waiting alongside the space to log what you dreamed. A quiet two-part ritual for remembering more of what your dreams are trying to tell you.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✵</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Spiritual Weather Report</h3>
+            <p class="wn-desc">A single daily card waiting for you each morning — moon phase, a numerology note for the day, and a brief read on the day's energy.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◆</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Symbol Dictionary</h3>
+            <p class="wn-desc">A searchable reference for what signs generally mean — angel numbers, animals, and anything else you look up — separate from your own personal readings.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◍</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Smarter Notifications</h3>
+            <p class="wn-desc">Nudges that adapt to you — if a prompt goes unanswered a couple times, Whisp quietly backs off rather than repeating itself, and eases back in once you're engaging again.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⊚</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">A Real Notifications Toggle</h3>
+            <p class="wn-desc">Enable or check your notification permission any time from More → Settings — no more being stuck if you dismissed the one-time prompt early on.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">φ</div>
+            <div class="wn-label wn-label--sacred">New · Sacred</div>
+            <h3 class="wn-title">Golden Ratio & Fibonacci Analysis</h3>
+            <p class="wn-desc">Add Golden Ratio and Fibonacci Sequence as belief systems, and Whisp starts reading your signs through φ — from the first seed of an idea to the infinite spiral it becomes. A pattern-by-pattern breakdown of the growth showing up in your life.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">▦</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Sacred Tools, Reimagined</h3>
+            <p class="wn-desc">Tarot, Runes, I Ching, Chakras, Golden Ratio — your unlocked tools now live in a single collapsible card on the More screen, so what you've added stays easy to find without crowding everything else.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✳</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Word & Name Origins</h3>
+            <p class="wn-desc">When a sign is a word, phrase, or name, Whisp now traces where it comes from — etymology and origin laid out right in the symbol detail, alongside the personal meaning it's taken on for you.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">↻</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Refresh a Reflection</h3>
+            <p class="wn-desc">Didn't land the way you hoped? Regenerate the reflection on any journal or event entry right from its detail view, without leaving the page.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✎</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Deeper Reflections</h3>
+            <p class="wn-desc">Longer prompts in, longer reflections out. Journal, dream, and event entries now carry more context and receive fuller responses — no more reflections cut short mid-thought.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◔</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Reflection Credits at a Glance</h3>
+            <p class="wn-desc">Free members can now see their reflection credit balance right from the More screen, with a clear breakdown of how credits are earned and spent.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
+          <span class="wn-period-date">June 2026</span>
+          <span class="wn-period-line"></span>
+        </div>
+        <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">✦</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Intention Reflection</h3>
+            <p class="wn-desc">Pull a synthesis reading across everything you've logged in relation to one intention, on demand. Whisp tells you honestly which signs genuinely connect — and which seem to be pointing somewhere else entirely. Never forced, never automatic.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◈</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Living Intentions</h3>
+            <p class="wn-desc">Mark an intention Active, Holding, or Released as your relationship to it changes. Whisp gently checks in if one's gone quiet for 30 days — and only ever asks if a sign feels connected to it, never decides for you.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❖</div>
+            <div class="wn-label wn-label--sacred">New · Sacred</div>
+            <h3 class="wn-title">Log a Pull as a Sign</h3>
+            <p class="wn-desc">Draw a tarot card or cast a rune, then save it straight into your sign log — meaning, artwork, and all. It joins your symbol library and pattern detection like anything else you've noticed.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◍</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Smart Push Notifications</h3>
+            <p class="wn-desc">A gentle ask before anything else — then notifications that actually mean something: a pattern forming, a vision ready to view, a celestial shift, or a meaningful echo from a year ago today.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✺</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Choose Your Art Style</h3>
+            <p class="wn-desc">Pick how Whisp paints your signs — cosmic starfields, a single shaft of temple light, or soft twilight stillness. Set it once in Appearance and every generated image follows your lead.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❍</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Log a Recurring Thought</h3>
+            <p class="wn-desc">Some signs aren't seen, they're heard from the inside — the same thought that won't stop returning. Now it has a category of its own, right alongside your symbols and dreams.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
+          <span class="wn-period-date">Spring 2026</span>
+          <span class="wn-period-line"></span>
+        </div>
+        <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">◷</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Highlights from the Past</h3>
+            <p class="wn-desc">Your home screen now surfaces moments from a month ago, two months, three months, six months, and a year back — picking the entries with the most resonance. Dreams rise first, then signs with notes. The same thread, returning.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◈</div>
+            <div class="wn-label wn-label--premium">New · Premium</div>
+            <h3 class="wn-title">Chakra System Insights</h3>
+            <p class="wn-desc">Every sign log surfaces which chakras may be resonating. Whisp reads your emotional state, somatic sensations, and the sign's energy — then maps it to the body's energy centers and tells you what might be asking for attention.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✶</div>
+            <div class="wn-label wn-label--premium">New · Premium</div>
+            <h3 class="wn-title">Sacred Text Resonance</h3>
+            <p class="wn-desc">When a sign appears, Whisp finds a passage from your tradition — Bible, Torah, Quran, Bhagavad Gita, Tao Te Ching, Buddhist canon, and more — that genuinely meets the moment. Not the most famous verse. The one that actually speaks to where you are.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◑</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Custom App Themes</h3>
+            <p class="wn-desc">Build your own gradient from any two colors using the in-app color picker. Pair it with tab bar style, text size, and FAB color for a setup that actually feels like yours.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✦</div>
+            <div class="wn-label wn-label--sacred">New · Sacred</div>
+            <h3 class="wn-title">Tarot Card Pulls</h3>
+            <p class="wn-desc">Draw from the full 78-card Rider-Waite deck — Major and Minor Arcana, upright and reversed — with meanings in Whisp's own reflective voice.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">ᚠ</div>
+            <div class="wn-label wn-label--sacred">New · Sacred</div>
+            <h3 class="wn-title">Elder Futhark Runes</h3>
+            <p class="wn-desc">All 24 runes of the Elder Futhark with meanings rooted in Norse cosmology — upright and reversed, each with its mythic resonance intact.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">☰</div>
+            <div class="wn-label wn-label--sacred">New · Sacred</div>
+            <h3 class="wn-title">I Ching Hexagrams</h3>
+            <p class="wn-desc">Consult all 64 hexagrams of the I Ching. Each cast is recorded and woven into your weekly narrative alongside your signs and dreams.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◐</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Sacred Tool Narrative</h3>
+            <p class="wn-desc">Your rune, tarot, and I Ching pulls now flow directly into your weekly reflection — woven alongside your signs for a richer, fuller picture.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◈</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Whisp for a Friend</h3>
+            <p class="wn-desc">Generate a personalized reading for someone you love. Share it as a beautiful web page — drawn from their astrological profile and your intention for them.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
+          <span class="wn-period-date">Earlier Releases</span>
+          <span class="wn-period-line"></span>
+        </div>
+        <div class="wn-grid">
+
+          <div class="wn-card">
+            <div class="wn-icon">◎</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Milestone Celebrations</h3>
+            <p class="wn-desc">Personalized full-screen celebrations when you hit meaningful tracking milestones — not generic notifications, but moments that feel like yours.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⟁</div>
+            <div class="wn-label wn-label--premium">Enhanced · Premium</div>
+            <h3 class="wn-title">Pattern Correlations</h3>
+            <p class="wn-desc">Discover which symbols appear when your emotional state shifts, when the moon is in certain phases, or when specific life events cluster together.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">☽</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Celestial Intelligence</h3>
+            <p class="wn-desc">Live moon phases, retrograde windows, and eclipse seasons woven into every log — so the cosmic weather is always part of the context you're reading from.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◑</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">App Theming</h3>
+            <p class="wn-desc">Light and dark modes designed for how you actually use the app — soft and airy in daylight, deep and immersive under stars. Switch any time from your profile.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">☁</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Dream Mode</h3>
+            <p class="wn-desc">Dreams and waking signs live in separate worlds. When you log a dream, the interface shifts — different palette, cloud overlay, its own lens. Sleep has a different language.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◇</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Intentions</h3>
+            <p class="wn-desc">Set a guiding intention for your week or season. It quietly becomes part of your context — shaping reflections without you having to repeat yourself.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">≋</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Emotional Weather</h3>
+            <p class="wn-desc">Log your emotional state with every entry. Over time Whisp maps which signs appear during which inner weather — one of the most quietly revelatory features in the app.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">○</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Year in Review</h3>
+            <p class="wn-desc">A beautiful annual summary of your most significant signs, patterns, and turning points. The year you almost didn't notice — laid out and given back to you.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◉</div>
+            <div class="wn-label wn-label--premium">Enhanced · Premium</div>
+            <h3 class="wn-title">Symbol Profiles</h3>
+            <p class="wn-desc">Every symbol builds a living record: frequency, emotional clusters, moon phases, and a meaning that grows more personal the longer you track. Your crow is not everyone's crow.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✦</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Journal Mode</h3>
+            <p class="wn-desc">Full-length journaling alongside your sign log — for the days that ask for more than a quick capture. Longer reflections, photos, freeform writing, and context.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⊞</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Tag & Browse</h3>
+            <p class="wn-desc">Tag entries and filter your entire history by symbol, type, mood, or time period. Find every crow sighting. Every 11:11. Every ocean dream. Your own archive, searchable.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⊙</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Belief Exclusions</h3>
+            <p class="wn-desc">Fine-tune exactly which beliefs influence your lens — add or remove any time. Your cosmology is always yours to define, and Whisp always follows your lead.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◫</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Gifted Readings Inbox</h3>
+            <p class="wn-desc">When a friend sends you a Whisp reading, it arrives as a beautiful shareable page — drawn from your astrological profile, ready to sit with and return to.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◈</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Vision Collection</h3>
+            <p class="wn-desc">Save the insights, readings, and reflections that land deepest. A personal library of your most resonant moments — there when you want to return to them.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◊</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Privacy & Data Export</h3>
+            <p class="wn-desc">Your data is always yours. Export everything or delete at will — no lock-in, no data resale, ever. We think trust is built through control, not promises.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✧</div>
+            <div class="wn-label wn-label--premium">New · Premium</div>
+            <h3 class="wn-title">Vision Share Links</h3>
+            <p class="wn-desc">Your week's painting becomes a shareable web page. When you send the link, iMessage shows the full artwork as a rich preview card — no screenshot, no caption needed.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◌</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Dream Share Links</h3>
+            <p class="wn-desc">Every dream card becomes its own beautiful page. The atmospheric painting and palette from your dream appear as a full image card in iMessage — a window into your inner life, sent in one tap.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⊕</div>
+            <div class="wn-label">Enhanced</div>
+            <h3 class="wn-title">Reading Artwork</h3>
+            <p class="wn-desc">Friend readings now generate a painting drawn from the signs and dream content you share. The link arrives with a full image preview — something that feels considered, not just forwarded.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .updates-page-hero {
+    padding: 140px 0 40px;
+    text-align: center;
+  }
+  .updates-page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin: 12px 0;
+  }
+  .updates-page-sub {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+  }
+  .updates-page-sub a {
+    color: var(--gold);
+    text-decoration: underline;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--cream);
+    font-weight: 300;
+  }
+  .section-sub {
+    max-width: 520px;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--cream-dim);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .whats-new {
+    padding: var(--section-pad) 0 calc(var(--section-pad) * 1.4);
+  }
+  .wn-header {
+    text-align: center;
+    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .wn-badge {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.28);
+  }
+  .wn-period {
+    margin-bottom: 48px;
+  }
+  .wn-period:last-child {
+    margin-bottom: 0;
+  }
+  .wn-period-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .wn-period-date {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+  .wn-period-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.25), transparent);
+  }
+  .wn-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .wn-card {
+    background: rgba(12,20,42,0.65);
+    border: 1px solid var(--navy-border);
+    border-radius: 8px;
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.28s, transform 0.28s;
+    position: relative;
+  }
+  .wn-card:hover {
+    border-color: rgba(201,168,76,0.22);
+    transform: translateY(-2px);
+  }
+  .wn-icon {
+    font-size: 1.35rem;
+    color: var(--gold);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .wn-label {
+    font-family: var(--font-display);
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    opacity: 0.6;
+  }
+  .wn-label--sacred {
+    color: rgba(180,150,220,0.9);
+    opacity: 1;
+  }
+  .wn-label--premium {
+    color: var(--gold);
+    opacity: 0.75;
+  }
+  .wn-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .wn-desc {
+    font-size: 0.82rem;
+    color: var(--cream-dim);
+    line-height: 1.68;
+  }
+
+  @media (max-width: 1100px) {
+    .wn-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .wn-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .wn-grid { grid-template-columns: 1fr; }
+  }
+</style>

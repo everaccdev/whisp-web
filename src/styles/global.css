@@ -158,6 +158,10 @@ img {
   animation: fadeUp 0.8s ease forwards;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .fade-up { animation: none; opacity: 1; transform: none; }
+}
+
 /* Glow effects */
 .glow-gold {
   box-shadow: 0 0 60px rgba(201, 168, 76, 0.12);

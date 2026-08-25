@@ -25,7 +25,7 @@ const currentPath = Astro.url.pathname;
     </ul>
 
     <div class="nav-actions">
-      <a href="/founders" class="btn btn-primary btn-sm">Claim Founder Pricing</a>
+      <a href="/founders" class="nav-founders-link" data-analytics="nav_founders_link">Founder Pricing</a>
     </div>
 
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
@@ -120,9 +120,24 @@ const currentPath = Astro.url.pathname;
   .nav-actions {
     flex-shrink: 0;
   }
-  .btn-sm {
-    padding: 10px 22px;
-    font-size: 0.75rem;
+  /* Intentionally NOT a solid btn-primary — the hero's single dominant CTA
+     is the download action now (Homepage Conversion Rework); this stays
+     available without visually competing with it in the same viewport. */
+  .nav-founders-link {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 4px;
+    padding: 9px 18px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .nav-founders-link:hover {
+    border-color: rgba(201,168,76,0.7);
+    background: rgba(201,168,76,0.08);
   }
 
   /* Hamburger */
