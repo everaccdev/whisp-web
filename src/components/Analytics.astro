@@ -23,6 +23,19 @@
   });
   (window as any).posthog = posthog; // so page-specific inline scripts can call posthog.capture(...)
 
+  // Device-type tracking (Phase 7) — captured here, not in a page-specific
+  // script, so it can't lose a race against this module's own async import
+  // (a plain inline script elsewhere on the page can execute before this
+  // one finishes fetching posthog-js, silently dropping an optional-chained
+  // capture call). One event per pageview — the denominator for the
+  // per-platform CTA click-through events.
+  const ua = navigator.userAgent || '';
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  posthog.capture('website_device_detected', {
+    device_type: isAndroid ? 'android' : isIOS ? 'ios' : 'desktop_or_unknown',
+  });
+
   try {
     const params = new URLSearchParams(window.location.search);
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
@@ -41,4 +54,21 @@
     // localStorage unavailable (private browsing, etc.) — attribution is
     // best-effort, never worth breaking the page over.
   }
+
+  // Generic click tracking for any element tagged data-analytics="<event
+  // name>" (Homepage Conversion Rework Phase 7). Elements across the site
+  // already carry these tags (hero CTAs, nav founders link, changelog
+  // teaser cards, etc.) — this single delegated listener is what actually
+  // fires them, named `website_<tag>` to match the established convention
+  // (see founders.astro's website_checkout_started).
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement)?.closest('[data-analytics]') as HTMLElement | null;
+    if (!target) return;
+    const name = target.getAttribute('data-analytics');
+    if (!name) return;
+    (window as any).posthog?.capture(`website_${name}`, {
+      href: (target as HTMLAnchorElement).href || undefined,
+      text: target.textContent?.trim().slice(0, 80),
+    });
+  });
 </script>

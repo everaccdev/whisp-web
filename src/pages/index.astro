@@ -112,7 +112,7 @@ import Base from '../layouts/Base.astro';
        detectors do (patternEngine.js: frequency surges, dream/waking
        overlap, cross-entry-type recurrence across signs/dreams/journal),
        not invented functionality. -->
-  <section class="demo-pattern" id="demo-pattern" data-analytics="demo_section">
+  <section class="demo-pattern" id="demo-pattern">
     <div class="container">
       <div class="section-header">
         <span class="section-label">Why not just ask ChatGPT</span>
@@ -585,6 +585,26 @@ import Base from '../layouts/Base.astro';
       </div>
     </div>
   </section>
+
+  <script>
+    // Scroll-depth-to-pricing (Phase 7) — the single number this whole
+    // rework is meant to move. Fires once per visitor, first time any part
+    // of the pricing section is actually on screen.
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection && typeof IntersectionObserver !== 'undefined') {
+      let pricingSeen = false;
+      const pricingIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !pricingSeen) {
+            pricingSeen = true;
+            (window as any).posthog?.capture('website_pricing_section_viewed');
+            pricingIO.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      pricingIO.observe(pricingSection);
+    }
+  </script>
 
   <!-- ═══════════════ WHAT'S NEW (condensed teaser — Homepage Conversion
        Rework Phase 4: full release log relocated to /updates, verbatim,
