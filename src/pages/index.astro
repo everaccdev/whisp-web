@@ -3,6 +3,7 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import { ACTIVE_HERO_VARIANT } from '../lib/heroContent';
 import WhispGlyph from '../components/whisp-glyphs/WhispGlyph.astro';
+import WhispDivider from '../components/whisp-glyphs/WhispDivider.astro';
 const hero = ACTIVE_HERO_VARIANT;
 ---
 
@@ -113,10 +114,11 @@ const hero = ACTIVE_HERO_VARIANT;
        mechanism, and .fade-up already degrades to static under
        prefers-reduced-motion (see global.css). -->
   <section class="validation-beat" id="validation-beat">
-    <!-- CSS nebula gradient only — the feather-symbol.jpg ambient layer and
-         the small closing feather glyph were both removed (user feedback:
-         "the dividers ended up pretty clunky" / "remove the feather"). The
-         gold hinge line alone is the section's closing beat now. -->
+    <!-- CSS nebula gradient only — the feather-symbol.jpg ambient
+         background layer was removed (too clunky as a large image behind
+         the copy). The spark divider and closing feather glyph stayed —
+         those read fine on their own; only the background image was the
+         problem. -->
     <div class="validation-bg" aria-hidden="true"></div>
     <div class="container">
       <div class="section-header">
@@ -128,9 +130,20 @@ const hero = ACTIVE_HERO_VARIANT;
         <p class="validation-line fade-up" style="animation-delay:0.25s">A dream about someone, and then they call.</p>
         <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.35s">You half-laugh it off. You wonder if you're the only one who counts these.</p>
 
-        <p class="validation-hinge fade-up" style="animation-delay:0.4s">
+        <div class="fade-up" style="animation-delay:0.4s">
+          <WhispDivider glyph="spark" size={13} class="validation-divider" />
+        </div>
+
+        <p class="validation-hinge fade-up" style="animation-delay:0.48s">
           <em>You've never told anyone how often this actually happens.</em>
         </p>
+
+        <!-- "It should feel almost like the final punctuation for the
+             thought" — a small delicate feather, centered, drifting in
+             just after the hinge line settles. -->
+        <div class="validation-glyph-close">
+          <WhispGlyph name="feather" size={34} animate="drift" delay={0.7} />
+        </div>
       </div>
     </div>
   </section>
@@ -174,7 +187,7 @@ const hero = ACTIVE_HERO_VARIANT;
         </p>
 
         <div class="tension-glyph-close">
-          <WhispGlyph name="sign-diamond" size={15} animate="brighten" delay={1} />
+          <WhispGlyph name="sign-diamond" size={22} animate="brighten" delay={1} />
         </div>
       </div>
     </div>
@@ -974,13 +987,23 @@ const hero = ACTIVE_HERO_VARIANT;
     font-style: italic;
     font-size: clamp(1rem, 2vw, 1.2rem);
   }
+  .validation-divider {
+    max-width: 220px;
+    margin: 0 auto;
+  }
   .validation-hinge {
+    margin-top: -6px;
     font-family: var(--font-heading);
     font-size: clamp(1.2rem, 2.6vw, 1.6rem);
     font-style: italic;
     font-weight: 400;
     color: var(--gold-light);
     line-height: 1.6;
+  }
+  .validation-glyph-close {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
   }
 
   /* ── THE TENSION BEAT ── */
