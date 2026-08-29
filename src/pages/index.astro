@@ -3,7 +3,6 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import { ACTIVE_HERO_VARIANT } from '../lib/heroContent';
 import WhispGlyph from '../components/whisp-glyphs/WhispGlyph.astro';
-import WhispDivider from '../components/whisp-glyphs/WhispDivider.astro';
 const hero = ACTIVE_HERO_VARIANT;
 ---
 
@@ -114,14 +113,11 @@ const hero = ACTIVE_HERO_VARIANT;
        mechanism, and .fade-up already degrades to static under
        prefers-reduced-motion (see global.css). -->
   <section class="validation-beat" id="validation-beat">
-    <!-- CSS nebula gradient + the feather-symbol.jpg asset, layered very
-         low-opacity underneath it — real artwork, but used here as
-         atmosphere behind the copy, not a focal illustration (see design
-         brief: "should NOT feel like large illustrations"). The crisp
-         small SVG feather below the hinge line is the actual "glyph" the
-         visitor is meant to consciously notice; this is just ambience. -->
+    <!-- CSS nebula gradient only — the feather-symbol.jpg ambient layer and
+         the small closing feather glyph were both removed (user feedback:
+         "the dividers ended up pretty clunky" / "remove the feather"). The
+         gold hinge line alone is the section's closing beat now. -->
     <div class="validation-bg" aria-hidden="true"></div>
-    <div class="validation-bg-feather" aria-hidden="true"></div>
     <div class="container">
       <div class="section-header">
         <span class="section-label fade-up">You know this feeling</span>
@@ -132,20 +128,9 @@ const hero = ACTIVE_HERO_VARIANT;
         <p class="validation-line fade-up" style="animation-delay:0.25s">A dream about someone, and then they call.</p>
         <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.35s">You half-laugh it off. You wonder if you're the only one who counts these.</p>
 
-        <div class="fade-up" style="animation-delay:0.4s">
-          <WhispDivider glyph="spark" size={13} class="validation-divider" />
-        </div>
-
-        <p class="validation-hinge fade-up" style="animation-delay:0.48s">
+        <p class="validation-hinge fade-up" style="animation-delay:0.4s">
           <em>You've never told anyone how often this actually happens.</em>
         </p>
-
-        <!-- "It should feel almost like the final punctuation for the
-             thought" — a small delicate feather, centered, drifting in
-             just after the hinge line settles. -->
-        <div class="validation-glyph-close">
-          <WhispGlyph name="feather" size={26} animate="drift" delay={0.7} />
-        </div>
       </div>
     </div>
   </section>
@@ -184,14 +169,7 @@ const hero = ACTIVE_HERO_VARIANT;
           If it happens again in three months, you won't remember this happened at all.
         </p>
 
-        <!-- The emotional concept is memory fading — a small spark
-             dissolving into dim, scattering particles between the body
-             paragraph and Whisp's answer. -->
-        <div class="tension-glyph-row fade-up" style="animation-delay:0.22s">
-          <WhispGlyph name="fading-memory" size={34} animate="fade" delay={0.3} />
-        </div>
-
-        <p class="tension-resolve fade-up" style="animation-delay:0.5s">
+        <p class="tension-resolve fade-up" style="animation-delay:0.3s">
           <em>Whisp remembers what stands out — even when you don't.</em>
         </p>
 
@@ -971,20 +949,6 @@ const hero = ACTIVE_HERO_VARIANT;
       radial-gradient(ellipse 60% 45% at 20% 15%, rgba(201,168,76,0.07), transparent 60%),
       radial-gradient(ellipse 55% 50% at 85% 85%, rgba(78,205,196,0.05), transparent 60%);
   }
-  .validation-bg-feather {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    /* Real artwork (feather-symbol.jpg), used as ambience rather than a
-       focal illustration — very low opacity, sitting low in the section so
-       it never lands directly behind the text lines above it. */
-    background-image: url('/feather-symbol.jpg');
-    background-repeat: no-repeat;
-    background-position: center 82%;
-    background-size: min(680px, 85%) auto;
-    opacity: 0.16;
-    mix-blend-mode: screen;
-  }
   .validation-beat .container {
     position: relative;
     z-index: 1;
@@ -1010,23 +974,13 @@ const hero = ACTIVE_HERO_VARIANT;
     font-style: italic;
     font-size: clamp(1rem, 2vw, 1.2rem);
   }
-  .validation-divider {
-    max-width: 220px;
-    margin: 0 auto;
-  }
   .validation-hinge {
-    margin-top: -6px;
     font-family: var(--font-heading);
     font-size: clamp(1.2rem, 2.6vw, 1.6rem);
     font-style: italic;
     font-weight: 400;
     color: var(--gold-light);
     line-height: 1.6;
-  }
-  .validation-glyph-close {
-    display: flex;
-    justify-content: center;
-    margin-top: 4px;
   }
 
   /* ── THE TENSION BEAT ── */
@@ -1044,13 +998,8 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream-dim);
     line-height: 1.75;
   }
-  .tension-glyph-row {
-    display: flex;
-    justify-content: center;
-    margin-top: 22px;
-  }
   .tension-resolve {
-    margin-top: 18px;
+    margin-top: 26px;
     font-family: var(--font-heading);
     font-size: clamp(1.15rem, 2.4vw, 1.45rem);
     font-style: italic;
