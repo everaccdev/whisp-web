@@ -1,0 +1,40 @@
+---
+// WhispDivider — "thin line — glyph — thin line," for ornamenting a
+// horizontal rule instead of leaving it bare.
+//
+// Built on top of the .divider / .divider-glyph classes already defined
+// in global.css (gold gradient lines either side of a centered glyph) —
+// that pattern existed sitewide but was never actually used anywhere in
+// the markup. Reusing it here rather than inventing a second divider
+// system; the only addition is swapping its plain-text glyph slot for a
+// WhispGlyph SVG.
+import WhispGlyph from './WhispGlyph.astro';
+import type { WhispGlyphName } from './types';
+
+interface Props {
+  glyph?: WhispGlyphName;
+  size?: number;
+  class?: string;
+}
+
+const { glyph = 'spark', size = 13, class: className = '' } = Astro.props;
+---
+
+<div class={`divider whisp-divider ${className}`} aria-hidden="true">
+  <span class="divider-glyph">
+    <WhispGlyph name={glyph} size={size} />
+  </span>
+</div>
+
+<style>
+  /* .divider already provides the flex row + gradient ::before/::after
+     lines (global.css) — this just tightens the glyph slot to sit a
+     WhispGlyph SVG instead of a bare character. */
+  .whisp-divider {
+    margin: 0;
+  }
+  .whisp-divider .divider-glyph {
+    display: inline-flex;
+    opacity: 1; /* WhispGlyph controls its own opacity/glow */
+  }
+</style>

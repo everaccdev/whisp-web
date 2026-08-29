@@ -1,0 +1,231 @@
+---
+// WhispGlyph — a small, reusable set of Whisp-specific decorative marks,
+// built as ONE component with a `name` prop rather than ten near-identical
+// files, since every motif shares the same sizing/glow/animation plumbing.
+// This is the "WhispSpark / WhispFeather / WhispThread / WhispConstellation"
+// family from the design brief, consolidated.
+//
+// Visual intent: thin warm-gold linework at restrained opacity — closer to
+// something engraved than an icon. Deliberately NOT built from a generic
+// icon font/library; every path below is hand-drawn for this component.
+// Reuses the site's existing --gold/--gold-light tokens (see global.css)
+// rather than inventing a new gold.
+//
+// Purely decorative by default: aria-hidden unless a `title` is passed, in
+// which case it becomes role="img" with that label.
+//
+// Animation follows the ONE mechanism already established on this page
+// (see index.astro's .fade-up / hero stagger) — a CSS @keyframes animation
+// that plays once at mount with a per-instance `delay`, not a scroll
+// observer or new library. Every keyframe here is disabled under
+// prefers-reduced-motion, same as .fade-up.
+
+import type { WhispGlyphName, WhispGlyphAnimation } from './types';
+export type { WhispGlyphName, WhispGlyphAnimation };
+
+interface Props {
+  name: WhispGlyphName;
+  size?: number;
+  animate?: WhispGlyphAnimation;
+  delay?: number;
+  class?: string;
+  title?: string;
+}
+
+const {
+  name,
+  size = 22,
+  animate = 'none',
+  delay = 0,
+  class: className = '',
+  title,
+} = Astro.props;
+---
+
+<span
+  class={`whisp-glyph whisp-glyph--${name} whisp-glyph--anim-${animate} ${className}`}
+  style={`--whisp-glyph-size:${size}px; --whisp-glyph-delay:${delay}s;`}
+  {...(title ? { role: 'img', 'aria-label': title } : { 'aria-hidden': 'true' })}
+>
+  {name === 'spark' && (
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12,2.5 C12.8,8 14.5,9.8 20,11 C14.5,12.2 12.8,15 12,20.5 C11.4,15.3 9.6,12.2 4.5,11 C9.6,9.8 11.4,8 12,2.5 Z" />
+    </svg>
+  )}
+
+  {name === 'sign-diamond' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path d="M12,4 L19,12 L12,20 L5,12 Z" />
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M12,9.4 C12.32,11.2 12.9,11.92 14.6,12.4 C12.9,12.88 12.32,13.6 12,15.4 C11.7,13.62 11.16,12.88 9.5,12.4 C11.16,11.92 11.7,11.2 12,9.4 Z"
+      />
+    </svg>
+  )}
+
+  {name === 'synchronicity' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path d="M9,7 L14,12 L9,17 L4,12 Z" />
+      <path d="M15,7 L20,12 L15,17 L10,12 Z" />
+    </svg>
+  )}
+
+  {name === 'pattern' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path
+        class="whisp-glyph-draw"
+        pathLength="1"
+        d="M5,17 C8,12.5 9,9.5 12,7 C15,9.5 17,12.5 19,14"
+      />
+      <path d="M5,15.8 L6.2,17 L5,18.2 L3.8,17 Z" />
+      <path d="M12,4.8 L13.2,6 L12,7.2 L10.8,6 Z" />
+      <path d="M19,12.8 L20.2,14 L19,15.2 L17.8,14 Z" />
+    </svg>
+  )}
+
+  {name === 'feather' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round">
+      <path class="whisp-glyph-drift" d="M12,3.5 C11.3,9 11,15 9.5,20.5" />
+      <path d="M11.6,7 C10,7.6 8.7,8.6 8,10" />
+      <path d="M11.3,11 C9.4,11.7 7.9,12.9 7,14.5" />
+      <path d="M10.8,15 C9.2,15.7 8,16.8 7.2,18.2" />
+    </svg>
+  )}
+
+  {name === 'dream-crescent' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path d="M14,4.5 A7.5,7.5 0 1 0 14,19.5 A6,6 0 1 1 14,4.5 Z" />
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M19,6.2 C19.16,6.9 19.4,7.14 20.1,7.3 C19.4,7.46 19.16,7.7 19,8.4 C18.84,7.7 18.6,7.46 17.9,7.3 C18.6,7.14 18.84,6.9 19,6.2 Z"
+      />
+    </svg>
+  )}
+
+  {name === 'threshold' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path d="M7,21 L7,11 A5,5 0 0 1 17,11 L17,21" />
+    </svg>
+  )}
+
+  {name === 'ripple' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.6">
+      <path d="M8,13 A4,4 0 1 1 15,14.5" opacity="0.9" />
+      <path d="M6,15 A7,6.5 0 1 1 17.5,16.8" opacity="0.6" />
+      <path d="M4,16.5 A10,9 0 1 1 19.5,18.8" opacity="0.35" />
+    </svg>
+  )}
+
+  {name === 'fading-memory' && (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M6,6 C6.4,7.6 7,8.2 8.6,8.6 C7,9 6.4,9.6 6,11.2 C5.6,9.6 5,9 3.4,8.6 C5,8.2 5.6,7.6 6,6 Z" />
+      <path
+        class="whisp-glyph-fade"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="0.5"
+        stroke-dasharray="0.5 1.6"
+        stroke-linecap="round"
+        d="M8,9 C10,11 12,13 14,15"
+      />
+      <circle class="whisp-glyph-particle" cx="15.6" cy="16.1" r="0.9" style="--p:1" />
+      <circle class="whisp-glyph-particle" cx="17.6" cy="17.3" r="0.6" style="--p:2" />
+      <circle class="whisp-glyph-particle" cx="19.4" cy="18.3" r="0.4" style="--p:3" />
+      <circle class="whisp-glyph-particle" cx="21" cy="19" r="0.25" style="--p:4" />
+    </svg>
+  )}
+
+  {name === 'thread' && (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+      <path class="whisp-glyph-draw" pathLength="1" d="M5,17 C9,10 15,10 19,6" />
+      <circle cx="5" cy="17" r="1" fill="currentColor" stroke="none" />
+      <circle cx="19" cy="6" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )}
+</span>
+
+<style>
+  .whisp-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--whisp-glyph-size, 22px);
+    height: var(--whisp-glyph-size, 22px);
+    color: var(--gold-light, #e8c97a);
+    opacity: 0.45;
+    filter: drop-shadow(0 0 3px rgba(232, 201, 122, 0.3));
+    flex-shrink: 0;
+    line-height: 0;
+  }
+  .whisp-glyph svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* ── Entrance animations — same one-shot, mount-time mechanism as
+     .fade-up elsewhere on this page (see index.astro), not a scroll
+     observer or new library. All disabled under reduced motion below. ── */
+
+  .whisp-glyph--anim-drift .whisp-glyph-drift {
+    animation: whispGlyphDrift 2.6s ease-out var(--whisp-glyph-delay, 0s) both;
+  }
+  @keyframes whispGlyphDrift {
+    from { transform: translateY(-9px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .whisp-glyph--anim-draw .whisp-glyph-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: whispGlyphDraw 1.8s ease-in-out var(--whisp-glyph-delay, 0s) both;
+  }
+  @keyframes whispGlyphDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .whisp-glyph--anim-fade .whisp-glyph-fade {
+    stroke-dashoffset: 6;
+    animation: whispGlyphFadeThread 2.2s ease-out var(--whisp-glyph-delay, 0s) both;
+  }
+  @keyframes whispGlyphFadeThread {
+    to { stroke-dashoffset: 0; }
+  }
+  .whisp-glyph--anim-fade .whisp-glyph-particle {
+    opacity: 0;
+    animation: whispGlyphParticle 1.4s ease-out both;
+    animation-delay: calc(var(--whisp-glyph-delay, 0s) + (var(--p) * 0.18s));
+  }
+  @keyframes whispGlyphParticle {
+    from { opacity: 0; transform: scale(0.4); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .whisp-glyph--anim-brighten {
+    animation: whispGlyphBrighten 2s ease-out var(--whisp-glyph-delay, 0s) both;
+  }
+  @keyframes whispGlyphBrighten {
+    from { opacity: 0.15; }
+    to   { opacity: 0.45; }
+  }
+
+  @media (max-width: 640px) {
+    .whisp-glyph {
+      width: calc(var(--whisp-glyph-size, 22px) * 0.8);
+      height: calc(var(--whisp-glyph-size, 22px) * 0.8);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whisp-glyph, .whisp-glyph * {
+      animation: none !important;
+    }
+    .whisp-glyph-drift { transform: none; opacity: 1; }
+    .whisp-glyph-draw { stroke-dashoffset: 0; }
+    .whisp-glyph-fade { stroke-dashoffset: 0; }
+    .whisp-glyph-particle { opacity: 1; transform: none; }
+    .whisp-glyph--anim-brighten { opacity: 0.45; }
+  }
+</style>
