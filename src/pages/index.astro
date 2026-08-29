@@ -1,6 +1,8 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import { ACTIVE_HERO_VARIANT } from '../lib/heroContent';
+const hero = ACTIVE_HERO_VARIANT;
 ---
 
 <Base>
@@ -21,17 +23,14 @@ import Base from '../layouts/Base.astro';
       </div>
 
       <h1 class="hero-title fade-up" style="animation-delay:0.15s">
-        One sign is a moment.<br /><em>A pattern is a message.</em>
+        {hero.titlePlain}<br /><em>{hero.titleEmphasis}</em>
       </h1>
 
       <div class="hero-rule fade-up" style="animation-delay:0.22s">
         <div class="rule-line"></div>
       </div>
 
-      <p class="hero-sub fade-up" style="animation-delay:0.28s">
-        Whisp remembers what you don't —<br />
-        and shows you what it adds up to.
-      </p>
+      <p class="hero-sub fade-up" style="animation-delay:0.28s" set:html={hero.sub} />
 
       <!-- ONE dominant action, adaptively platform-detected (see script
            below) — was three competing CTAs (founders / iOS / Android).
@@ -102,20 +101,92 @@ import Base from '../layouts/Base.astro';
     }
   </script>
 
+  <!-- ═══════════════ THE VALIDATION BEAT ═══════════════
+       Emotional Narrative Pass, Phase 2. Job: make the visitor feel
+       personally, specifically recognized before the page argues anything.
+       Power is entirely in the specificity of the examples and the closing
+       italic line — never generalize this copy. Visual is deliberately
+       restrained (CSS-only dark/nebula gradient, no image) so nothing
+       competes with the text. Reuses the existing load-time .fade-up
+       stagger already established on the hero — no new animation
+       mechanism, and .fade-up already degrades to static under
+       prefers-reduced-motion (see global.css). -->
+  <section class="validation-beat" id="validation-beat">
+    <div class="validation-bg" aria-hidden="true"></div>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label fade-up">You know this feeling</span>
+      </div>
+      <div class="validation-lines">
+        <p class="validation-line fade-up" style="animation-delay:0.05s">11:11 again — and that small jolt, right in your chest.</p>
+        <p class="validation-line fade-up" style="animation-delay:0.15s">The same word, from three different people, in one day.</p>
+        <p class="validation-line fade-up" style="animation-delay:0.25s">A dream about someone, and then they call.</p>
+        <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.35s">You half-laugh it off. You wonder if you're the only one who counts these.</p>
+        <p class="validation-hinge fade-up" style="animation-delay:0.48s">
+          <em>You've never told anyone how often this actually happens.</em>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Scroll-depth-to-validation-section (Emotional Narrative Pass, Phase 7)
+    // — same one-shot IntersectionObserver pattern as the existing
+    // website_demo_section_viewed / website_pricing_section_viewed events.
+    const validationSection = document.getElementById('validation-beat');
+    if (validationSection && typeof IntersectionObserver !== 'undefined') {
+      let validationSeen = false;
+      const validationIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !validationSeen) {
+            validationSeen = true;
+            (window as any).posthog?.capture('website_validation_section_viewed');
+            validationIO.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      validationIO.observe(validationSection);
+    }
+  </script>
+
+  <!-- ═══════════════ THE TENSION BEAT ═══════════════
+       Phase 3. Short, on purpose — its entire job is the felt gap between
+       the recognition above and the demonstration below. Closing line is
+       the first appearance of Whisp as the answer; it should read as
+       relief, not a pitch. -->
+  <section class="tension-beat" id="tension-beat">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label fade-up">But the moment passes</span>
+        <p class="tension-body fade-up" style="animation-delay:0.1s">
+          You notice. You feel it. Then the day moves on, and by next week the details have already softened.
+          If it happens again in three months, you won't remember this happened at all.
+        </p>
+        <p class="tension-resolve fade-up" style="animation-delay:0.2s">
+          <em>Whisp remembers what stands out — even when you don't.</em>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ DEMONSTRATE THE PATTERN ═══════════════
-       Homepage Conversion Rework Phase 2 — the single highest-leverage
-       new section. Shows accumulation rather than describing it, so a
-       cold visitor sees the "why not just ask ChatGPT" answer before
-       they've had a chance to form the objection. The timeline below is
-       explicitly illustrative (labelled as such), not a live backend
-       call or a real user's data — it's modeled on what Whisp's actual
-       detectors do (patternEngine.js: frequency surges, dream/waking
-       overlap, cross-entry-type recurrence across signs/dreams/journal),
-       not invented functionality. -->
+       Homepage Conversion Rework Phase 2, refined in the Emotional
+       Narrative Pass — the single highest-leverage section on the page.
+       Shows accumulation rather than describing it, resolving the tension
+       beat above: "you weren't imagining it." The explicit ChatGPT
+       comparison used to be this section's own label — moved down to the
+       FAQ (Emotional Narrative Pass, Phase 6) so the underlying
+       differentiation idea (memory across time vs. one lookup) stays high
+       without spending the visitor's first real objection this early. The
+       timeline below is explicitly illustrative (labelled as such), not a
+       live backend call or a real user's data — it's modeled on what
+       Whisp's actual detectors do (patternEngine.js: frequency surges,
+       dream/waking overlap, cross-entry-type recurrence across
+       signs/dreams/journal), not invented functionality. -->
   <section class="demo-pattern" id="demo-pattern">
     <div class="container">
       <div class="section-header">
-        <span class="section-label">Why not just ask ChatGPT</span>
+        <span class="section-label">You weren't imagining it</span>
         <h2 class="section-title">One sign is a curiosity.<br /><em>A pattern is something a single lookup can't see.</em></h2>
         <p class="section-sub">
           Ask a chatbot what a number means and the context evaporates the moment you close the tab.
@@ -309,7 +380,7 @@ import Base from '../layouts/Base.astro';
         <h2 class="section-title">Your signs. Your meaning.</h2>
         <p class="section-sub">
           Not generic horoscopes. Not one-size-fits-all interpretations.<br />
-          Whisp learns your cosmology and reflects it back to you.
+          Whisp learns how you make meaning — and interprets through the lenses you choose.
         </p>
       </div>
 
@@ -345,191 +416,12 @@ import Base from '../layouts/Base.astro';
         <div class="feature-card feature-card--large">
           <div class="feature-icon">✦</div>
           <h3>Belief-Aware Reflections</h3>
-          <p>Choose your cosmology — astrology, numerology, Jungian, spiritual, secular — and Whisp only draws on the lenses you've selected. Your meaning, not ours.</p>
+          <p>Choose how you make meaning — astrology, numerology, Jungian, spiritual, secular — and Whisp only draws on the lenses you've selected. Your meaning, not ours.</p>
           <div class="feature-tag feature-tag--gold">Premium</div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- ═══════════════ APP SLIDES ═══════════════ -->
-  <section class="slides" id="slides">
-    <div class="container">
-      <div class="section-header" style="margin-bottom:36px">
-        <span class="section-label">✦ What Whisp Does</span>
-        <h2 class="section-title">Wonder. Depth. Meaning.</h2>
-      </div>
-    </div>
-
-    <div class="slides-scroll" id="slides-scroll">
-
-      <!-- 1: Sign logging -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/slide-signs.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">1 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> SIGN LOGGING</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Nothing passes<br><em>unnoticed.</em></p>
-          <p class="slide-text">A crow. A repeating number. A dream you almost forgot. Log it in seconds — Whisp holds the thread so you can follow it.</p>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 2: Belief-aware reflections (moved earlier — Homepage Conversion
-           Rework Phase 5: this is core differentiation, not a footnote) -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/hero-bg-1.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">2 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> BELIEF-AWARE REFLECTIONS</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Your meaning.<br><em>Not ours.</em></p>
-          <p class="slide-text">Choose your cosmology — astrology, Jungian archetypes, numerology, or none. Whisp reads every sign through your lens alone.</p>
-          <div class="slide-chips">
-            <span class="slide-chip">Astrology</span>
-            <span class="slide-chip">Jungian</span>
-            <span class="slide-chip">Numerology</span>
-          </div>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 3: Dream intelligence -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/slide-dream.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">3 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> DREAM INTELLIGENCE</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Your dreams speak.<br><em>We listen.</em></p>
-          <p class="slide-text">Each night your mind weaves symbols and stories. Whisp decodes them — surfacing the archetypes and patterns woven into your sleep.</p>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 4: Pattern recognition -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/slide-pattern.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">4 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> PATTERN RECOGNITION</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Hidden patterns,<br><em>revealed.</em></p>
-          <p class="slide-text">Your signs don't exist in isolation. Whisp maps connections across time — surfacing what repeats, what clusters, what the universe keeps returning to.</p>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 5: Sacred tools -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/slide-tarot.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">5 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> SACRED TOOLS</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Ancient wisdom.<br><em>Your moment.</em></p>
-          <p class="slide-text">Draw a tarot card. Cast a rune. Consult the I Ching. Each pull is recorded and woven into your week's unfolding story.</p>
-          <div class="slide-chips">
-            <span class="slide-chip">Tarot</span>
-            <span class="slide-chip">Runes</span>
-            <span class="slide-chip">I Ching</span>
-          </div>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <!-- 6: Weekly narrative -->
-      <div class="slide-card">
-        <div class="slide-bg" style="background-image:url('/hero-bg-2.jpg')"></div>
-        <div class="slide-grain"></div>
-        <div class="slide-ov-top"></div>
-        <div class="slide-ov-bottom"></div>
-        <span class="slide-num">6 / 6</span>
-        <div class="slide-body">
-          <div class="slide-eyebrow"><span>✦</span> WEEKLY NARRATIVE</div>
-          <div class="slide-rule"></div>
-          <p class="slide-head">Your week,<br><em>in your language.</em></p>
-          <p class="slide-text">Each week, Whisp weaves your signs, dreams, and sacred pulls into a personalized reflection — drawn from your cosmology, not a template.</p>
-        </div>
-        <div class="slide-mark">✦ whisp</div>
-      </div>
-
-      <div class="slides-spacer"></div>
-    </div>
-
-    <div class="slides-nav">
-      <button class="sc-btn" id="sc-prev" aria-label="Previous">←</button>
-      <div class="sc-dots" id="sc-dots">
-        <button class="sc-dot active" data-idx="0"></button>
-        <button class="sc-dot" data-idx="1"></button>
-        <button class="sc-dot" data-idx="2"></button>
-        <button class="sc-dot" data-idx="3"></button>
-        <button class="sc-dot" data-idx="4"></button>
-        <button class="sc-dot" data-idx="5"></button>
-      </div>
-      <button class="sc-btn" id="sc-next" aria-label="Next">→</button>
-    </div>
-  </section>
-
-  <script>
-    // App slides carousel
-    const slidesEl   = document.getElementById('slides-scroll') as HTMLElement | null;
-    const slideCards = document.querySelectorAll<HTMLElement>('.slide-card');
-    const slideDots  = document.querySelectorAll<HTMLElement>('#sc-dots .sc-dot');
-    let slideCur = 0;
-    const slideTot = 6;
-
-    function getScrollPad() {
-      if (!slidesEl) return 0;
-      return parseInt(getComputedStyle(slidesEl).paddingLeft) || 0;
-    }
-
-    function slideTo(idx: number) {
-      slideCur = ((idx % slideTot) + slideTot) % slideTot;
-      const card = slideCards[slideCur];
-      if (card && slidesEl) {
-        slidesEl.scrollTo({ left: card.offsetLeft - getScrollPad(), behavior: 'smooth' });
-      }
-      slideDots.forEach((d, i) => d.classList.toggle('active', i === slideCur));
-    }
-
-    document.getElementById('sc-prev')?.addEventListener('click', () => slideTo(slideCur - 1));
-    document.getElementById('sc-next')?.addEventListener('click', () => slideTo(slideCur + 1));
-    slideDots.forEach(d => d.addEventListener('click', () => slideTo(Number(d.dataset.idx))));
-
-    // Auto-advance
-    let slideTimer = setInterval(() => slideTo(slideCur + 1), 6500);
-    slidesEl?.addEventListener('pointerdown', () => { clearInterval(slideTimer); slideTimer = setInterval(() => slideTo(slideCur + 1), 6500); });
-
-    // Sync dot on native scroll
-    if (typeof IntersectionObserver !== 'undefined' && slidesEl) {
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            const i = Array.from(slideCards).indexOf(e.target as HTMLElement);
-            if (i !== -1) { slideCur = i; slideDots.forEach((d, j) => d.classList.toggle('active', j === i)); }
-          }
-        });
-      }, { root: slidesEl, threshold: 0.55 });
-      slideCards.forEach(c => io.observe(c));
-    }
-  </script>
 
   <!-- ═══════════════ PHILOSOPHY ═══════════════ -->
   <section class="philosophy">
@@ -549,13 +441,43 @@ import Base from '../layouts/Base.astro';
     </div>
   </section>
 
-  <!-- ═══════════════ PRICING ═══════════════ -->
+  <!-- ═══════════════ PRICING ═══════════════
+       Emotional Narrative Pass, Phase 4 rewrite. The old version argued
+       founder pricing as a discount — a rational case that competes poorly
+       against "I'll just use the free tier." The real argument is
+       continuity of your own story: free proves it works, Premium is how
+       you keep the whole thing instead of a rolling 90-day window. Every
+       factual claim below was verified against the real, enforced
+       implementation before shipping — see the audit report — not just
+       copied from the old copy:
+         - 90-day free history: src/utils/historyGate.js (FREE_HISTORY_DAYS
+           = 90), actually enforced in useSignLogs.js / useJournalEntries.js
+         - 500-member cap: src/lib/founderCount.ts (FOUNDER_CAP = 500),
+           hard-enforced server-side in api/checkout.ts (fails closed, does
+           not let a 501st person through even if Stripe is unreachable)
+         - Founder rate permanence: fixed Stripe Price objects
+           (price_1U40OR...), not price_data rebuilt per checkout — nothing
+           in the codebase migrates an existing subscription to a new price
+       The live counter previously existed only on /founders — added here
+       too (same /api/founder-count endpoint, not duplicated logic) since
+       the rewritten copy makes a specific numeric claim ("the first 500")
+       that needs a real number backing it, not just asserted text. -->
   <section class="pricing" id="pricing">
     <div class="container">
       <div class="section-header">
-        <span class="section-label">Founding member offer</span>
-        <h2 class="section-title">Start free. Go deeper.</h2>
-        <p class="section-sub">Whisp is free to start. Premium unlocks personalized reflections and pattern intelligence.</p>
+        <span class="section-label">Founding Membership</span>
+        <h2 class="section-title">Get in at the beginning — <em>and stay there.</em></h2>
+        <p class="section-sub">
+          Whisp is new. So is this offer. The first 500 members lock in Premium at half the regular price,
+          for as long as they stay — not an intro rate that quietly climbs, not a trial.
+          This is what it costs a founding member. Permanently.
+        </p>
+        <p class="section-sub" style="margin-top:10px;">
+          Free shows you it works. Premium is how you keep the whole story — not just the last 90 days of it.
+        </p>
+        <div class="counter-pill" id="counter-pill-home" data-state="open">
+          <span><strong id="counter-num-home">500</strong> of 500 founding spots remain</span>
+        </div>
       </div>
 
       <div class="pricing-grid">
@@ -583,6 +505,7 @@ import Base from '../layouts/Base.astro';
               Android
             </a>
           </div>
+          <p class="pricing-note" style="text-align:center; margin-top:10px;">Not ready yet? Start free — you can always upgrade later.</p>
         </div>
 
         <div class="pricing-card pricing-card--featured">
@@ -592,7 +515,7 @@ import Base from '../layouts/Base.astro';
             <span class="price-amount">$3.99</span>
             <span class="price-period">/mo &nbsp;·&nbsp; or $39.97/yr</span>
           </div>
-          <p class="pricing-note">Founders rate — locked in as long as you stay subscribed. Normally $7.99/mo.</p>
+          <p class="pricing-note">Founder rate — regularly $7.99/mo. Locked in for as long as you stay subscribed.</p>
           <ul class="pricing-features">
             <li>✓ Everything in Free</li>
             <li>✓ Unlimited reflections</li>
@@ -603,7 +526,7 @@ import Base from '../layouts/Base.astro';
             <li>✓ Celestial & sacred context</li>
             <li>✓ Full sign & dream history</li>
           </ul>
-          <a href="/founders" class="btn btn-primary" style="width:100%; justify-content:center;">Claim founder pricing ✦</a>
+          <a href="/founders" class="btn btn-primary" data-analytics="pricing_founder_cta" style="width:100%; justify-content:center;">Lock in the Founder Rate →</a>
         </div>
       </div>
     </div>
@@ -612,7 +535,9 @@ import Base from '../layouts/Base.astro';
   <script>
     // Scroll-depth-to-pricing (Phase 7) — the single number this whole
     // rework is meant to move. Fires once per visitor, first time any part
-    // of the pricing section is actually on screen.
+    // of the pricing section is actually on screen. This IS the
+    // scroll-depth-to-founder-section event (Emotional Narrative Pass,
+    // Phase 7) — same section, id="pricing" unchanged.
     const pricingSection = document.getElementById('pricing');
     if (pricingSection && typeof IntersectionObserver !== 'undefined') {
       let pricingSeen = false;
@@ -627,6 +552,34 @@ import Base from '../layouts/Base.astro';
       }, { threshold: 0.2 });
       pricingIO.observe(pricingSection);
     }
+
+    // Live founder counter (Emotional Narrative Pass, Phase 4) — same
+    // /api/founder-count endpoint founders.astro already uses, not
+    // duplicated logic. If Stripe is unreachable and there's no cached
+    // count, the endpoint returns { available: false } and this hides the
+    // pill entirely rather than showing a fabricated or stale-beyond-trust
+    // number (same rule founders.astro follows).
+    fetch('/api/founder-count')
+      .then(r => r.json())
+      .then(data => {
+        const pill = document.getElementById('counter-pill-home');
+        const num = document.getElementById('counter-num-home');
+        if (!pill) return;
+        if (!data.available) {
+          pill.style.display = 'none';
+          return;
+        }
+        if (data.capReached) {
+          pill.dataset.state = 'capped';
+          pill.innerHTML = '<span>All 500 founding spots are taken</span>';
+        } else if (num) {
+          num.textContent = String(data.remaining);
+        }
+      })
+      .catch(() => {
+        const pill = document.getElementById('counter-pill-home');
+        if (pill) pill.style.display = 'none';
+      });
   </script>
 
   <!-- ═══════════════ WHAT'S NEW (condensed teaser — Homepage Conversion
@@ -720,6 +673,11 @@ import Base from '../layouts/Base.astro';
         <details class="faq-item">
           <summary class="faq-q">What makes Whisp different from a regular journaling app?</summary>
           <p class="faq-a">Whisp is built around meaning, not output. Rather than just storing what you write, it tracks patterns across time — which symbols recur, which emotional states cluster together, which signs appear during specific moon phases or life events. The AI doesn't respond to a single entry; it responds to your history.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Why not just ask ChatGPT what a sign means?</summary>
+          <p class="faq-a">You can — for one sign, in one moment. But that answer has no idea you saw the same number six days ago, or that you dreamed about this before, or that it always seems to show up around the same kind of week. Close the tab and the context is gone. Whisp's read of a sign comes from your actual history — what recurs, what clusters, what keeps returning — not a single lookup with no memory of you.</p>
         </details>
 
         <details class="faq-item">
@@ -963,6 +921,86 @@ import Base from '../layouts/Base.astro';
     50% { opacity: 0.7; transform: scaleY(1); }
   }
 
+  /* ── THE VALIDATION BEAT ── */
+  .validation-beat {
+    position: relative;
+    padding: calc(var(--section-pad) * 0.85) 0;
+    overflow: hidden;
+    background: #070b16;
+  }
+  .validation-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    /* Restrained nebula atmosphere, CSS-only — deliberately no image here
+       (see Emotional Narrative Pass Phase 2: "heavy imagery would compete
+       with it"). Two soft radial glows, gold and a cooler indigo, barely
+       above the base navy. */
+    background:
+      radial-gradient(ellipse 60% 45% at 20% 15%, rgba(201,168,76,0.07), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 85% 85%, rgba(78,205,196,0.05), transparent 60%);
+  }
+  .validation-beat .container {
+    position: relative;
+    z-index: 1;
+  }
+  .validation-beat .section-header { margin-bottom: 40px; }
+  .validation-lines {
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .validation-line {
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.6;
+  }
+  .validation-line--soft {
+    color: var(--cream-dim);
+    font-style: italic;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+  }
+  .validation-hinge {
+    margin-top: 10px;
+    padding-top: 30px;
+    border-top: 0.5px solid rgba(201,168,76,0.2);
+    font-family: var(--font-heading);
+    font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold-light);
+    line-height: 1.6;
+  }
+
+  /* ── THE TENSION BEAT ── */
+  .tension-beat {
+    position: relative;
+    padding: calc(var(--section-pad) * 0.6) 0;
+    background: #05070e;
+  }
+  .tension-beat .section-header { max-width: 620px; margin: 0 auto; text-align: center; }
+  .tension-body {
+    margin-top: 22px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.05rem, 2.1vw, 1.3rem);
+    font-weight: 300;
+    color: var(--cream-dim);
+    line-height: 1.75;
+  }
+  .tension-resolve {
+    margin-top: 26px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+    font-style: italic;
+    color: var(--gold-light);
+    line-height: 1.6;
+  }
+
   /* ── DEMONSTRATE THE PATTERN ── */
   .demo-pattern {
     padding: var(--section-pad) 0;
@@ -1094,145 +1132,15 @@ import Base from '../layouts/Base.astro';
     height: auto;
   }
 
-  /* ── APP SLIDES ── */
-  .slides {
-    padding: var(--section-pad) 0 60px;
-    background: #060a12;
-    overflow: hidden;
-  }
-  .slides-scroll {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    padding: 0 clamp(24px, 6vw, 80px);
-    -webkit-overflow-scrolling: touch;
-  }
-  .slides-scroll::-webkit-scrollbar { display: none; }
+  /* ── CAROUSEL CHROME (shared: App Showcase's #appshot-scroll) ──
+     Was written under "App Slides" originally and shared by both
+     carousels via CSS not caring about source order — the App Slides
+     section itself was cut (Emotional Narrative Pass, Phase 6: it
+     restated Features almost 1:1 in a second visual format immediately
+     next to this other, more credible screenshot carousel), but these
+     nav/dot/spacer rules stayed since Showcase still uses them. -->
   .slides-spacer { flex: 0 0 clamp(24px,6vw,80px); }
 
-  .slide-card {
-    flex: 0 0 300px;
-    height: 530px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    scroll-snap-align: start;
-    background: #06080f;
-  }
-  .slide-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center 25%;
-  }
-  .slide-grain {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 128px;
-  }
-  .slide-ov-top {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 42%;
-    background: linear-gradient(to bottom, rgba(4,5,14,0.52), transparent);
-    z-index: 1;
-  }
-  .slide-ov-bottom {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 78%;
-    background: linear-gradient(to top, rgba(4,5,14,0.97) 0%, rgba(4,5,14,0.88) 35%, rgba(4,5,14,0.42) 65%, transparent 100%);
-    z-index: 1;
-  }
-  .slide-num {
-    position: absolute;
-    top: 15px; right: 15px;
-    z-index: 10;
-    font-family: var(--font-display);
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.28);
-    background: rgba(0,0,0,0.38);
-    padding: 3px 9px;
-    border-radius: 20px;
-  }
-  .slide-body {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    z-index: 10;
-    padding: 0 26px 42px;
-  }
-  .slide-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-display);
-    font-size: 8px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--gold);
-    opacity: 0.85;
-    margin-bottom: 10px;
-  }
-  .slide-rule {
-    width: 28px;
-    height: 0.5px;
-    background: rgba(201,168,76,0.5);
-    margin-bottom: 14px;
-  }
-  .slide-head {
-    font-family: var(--font-heading);
-    font-size: 1.75rem;
-    font-weight: 300;
-    line-height: 1.28;
-    color: rgba(255,248,235,0.96);
-    margin-bottom: 12px;
-    text-shadow: 0 1px 16px rgba(0,0,0,0.95), 0 0 40px rgba(0,0,0,0.7);
-  }
-  .slide-head em { font-style: italic; }
-  .slide-text {
-    font-family: var(--font-heading);
-    font-size: 0.92rem;
-    font-weight: 300;
-    font-style: italic;
-    line-height: 1.65;
-    color: rgba(255,248,235,0.58);
-    text-shadow: 0 1px 8px rgba(0,0,0,0.8);
-    margin-bottom: 2px;
-  }
-  .slide-chips {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-  }
-  .slide-chip {
-    font-family: var(--font-display);
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    padding: 4px 11px;
-    border-radius: 20px;
-    border: 0.5px solid rgba(201,168,76,0.35);
-    background: rgba(201,168,76,0.08);
-    color: var(--gold);
-  }
-  .slide-mark {
-    position: absolute;
-    bottom: 13px; left: 17px;
-    z-index: 10;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 11px;
-    color: rgba(255,248,235,0.18);
-    letter-spacing: 0.06em;
-  }
   .slides-nav {
     display: flex;
     align-items: center;
@@ -1457,6 +1365,29 @@ import Base from '../layouts/Base.astro';
 
   /* ── PRICING ── */
   .pricing { padding: var(--section-pad) 0; }
+  /* Live founder counter — same visual language as founders.astro's
+     .counter-pill (not copy-pasted 1:1; uses this page's own --gold /
+     --gold-light tokens instead of hardcoded hex, per "don't redesign the
+     visual system, do reuse it"). */
+  .counter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(201,168,76,0.08);
+    border: 0.5px solid rgba(201,168,76,0.3);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 18px;
+  }
+  .counter-pill strong { color: var(--gold-light); font-weight: 700; }
+  .counter-pill[data-state="capped"] {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+  }
   .pricing-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
