@@ -1,9 +1,16 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-import { ACTIVE_HERO_VARIANT } from '../lib/heroContent';
+import { ACTIVE_HERO_VARIANT, HERO_VARIANTS } from '../lib/heroContent';
 import WhispGlyph from '../components/whisp-glyphs/WhispGlyph.astro';
 import WhispDivider from '../components/whisp-glyphs/WhispDivider.astro';
+// ACTIVE_HERO_VARIANT is still what's server-rendered — the no-JS /
+// first-paint default, same role the App Store link plays for the CTA
+// below. The actual 3-way split now happens client-side (see the
+// hero-variant-split script after the hero): a sticky per-visitor cookie
+// picks A/B/C and swaps the DOM before the .fade-up entrance animation
+// reveals it, so there's no flash for the ~2/3 of visitors not on the
+// default. HERO_VARIANTS is passed into that script via define:vars.
 const hero = ACTIVE_HERO_VARIANT;
 ---
 
@@ -25,14 +32,14 @@ const hero = ACTIVE_HERO_VARIANT;
       </div>
 
       <h1 class="hero-title fade-up" style="animation-delay:0.15s">
-        {hero.titlePlain}<br /><em>{hero.titleEmphasis}</em>
+        <span id="hero-title-plain">{hero.titlePlain}</span><br /><em id="hero-title-em">{hero.titleEmphasis}</em>
       </h1>
 
       <div class="hero-rule fade-up" style="animation-delay:0.22s">
         <div class="rule-line"></div>
       </div>
 
-      <p class="hero-sub fade-up" style="animation-delay:0.28s" set:html={hero.sub} />
+      <p class="hero-sub fade-up" id="hero-sub" style="animation-delay:0.28s" set:html={hero.sub} />
 
       <!-- ONE dominant action, adaptively platform-detected (see script
            below) — was three competing CTAs (founders / iOS / Android).
@@ -101,6 +108,66 @@ const hero = ACTIVE_HERO_VARIANT;
         // (both store badges are equally visible underneath regardless).
       }
     }
+  </script>
+
+  <script is:inline define:vars={{ variants: HERO_VARIANTS }}>
+    // Hero copy split test. Real 3-way random split, sticky per visitor —
+    // not a formal PostHog Experiment (that needs a feature flag created
+    // in the PostHog dashboard, which is a config step on the account, not
+    // something this script can do) but a fully analyzable one: hero_variant
+    // is registered as a PostHog super-property, so it rides along on every
+    // event this visitor fires afterward — pricing_section_viewed, CTA
+    // clicks, checkout starts — and you can break any of those down by it
+    // in a PostHog insight with no extra wiring.
+    //
+    // This page is static-prerendered (export const prerender = true), so
+    // there's no per-request server to pick a variant — the swap happens
+    // here, client-side, right after the CTA script above and BEFORE the
+    // hero's .fade-up entrance animation reveals it (0.15s/0.28s delays),
+    // so the ~2/3 of visitors not on the default variant see no flash.
+    // No-JS visitors and the very first frame always see variant A, same
+    // "server-rendered default" pattern the CTA button uses.
+    (function () {
+      var COOKIE = 'whisp_hero_variant';
+      var IDS = Object.keys(variants);
+
+      function getCookie(name) {
+        var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+      function setCookie(name, value, days) {
+        var expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = name + '=' + value + '; expires=' + expires + '; path=/; SameSite=Lax';
+      }
+
+      var variant = getCookie(COOKIE);
+      var isNewAssignment = false;
+      if (!variant || IDS.indexOf(variant) === -1) {
+        variant = IDS[Math.floor(Math.random() * IDS.length)];
+        setCookie(COOKIE, variant, 180); // sticky ~6 months — long enough to cover a slow purchase decision
+        isNewAssignment = true;
+      }
+
+      if (variant !== 'A') {
+        var v = variants[variant];
+        var plainEl = document.getElementById('hero-title-plain');
+        var emEl = document.getElementById('hero-title-em');
+        var subEl = document.getElementById('hero-sub');
+        if (plainEl) plainEl.textContent = v.titlePlain;
+        if (emEl) emEl.textContent = v.titleEmphasis;
+        if (subEl) subEl.innerHTML = v.sub;
+      }
+
+      // define:vars scripts are inline/plain JS, not TS-processed — no
+      // `as any` cast here (unlike the optional-chained posthog calls
+      // elsewhere on this page, which live in TS-processed scripts).
+      if (window.posthog) {
+        window.posthog.register({ hero_variant: variant });
+        if (isNewAssignment) {
+          window.posthog.capture('website_hero_variant_assigned', { hero_variant: variant });
+        }
+      }
+    })();
   </script>
 
   <!-- ═══════════════ THE VALIDATION BEAT ═══════════════
