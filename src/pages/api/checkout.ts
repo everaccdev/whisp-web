@@ -29,6 +29,17 @@ export const POST: APIRoute = async ({ request }) => {
     const plan  = (body?.plan === 'annual') ? 'annual' : 'monthly';
     const { priceId } = PLANS[plan];
 
+    // In-app external-checkout entry point (App Store 3.1.1(a), iOS/US
+    // only) passes the signed-in Firebase uid through so stripeWebhook can
+    // attach the purchase to the user's EXISTING account instead of
+    // resolving by email — a signed-in user checking out with a different
+    // billing email than their Whisp account would otherwise get a second,
+    // orphaned account with none of their logged history. uid isn't
+    // secret (same trust tier as the price IDs above); worst case someone
+    // hand-crafts a request with someone else's uid and pays for THEM,
+    // which is a gift, not a vulnerability.
+    const uid: string | undefined = typeof body?.uid === 'string' && body.uid.trim() ? body.uid.trim() : undefined;
+
     // First-touch UTM the client persisted at landing time (see
     // Analytics.astro) — carried into Stripe metadata so stripeWebhook can
     // write acquisition source onto the user doc, and so a purchase is
@@ -73,7 +84,12 @@ export const POST: APIRoute = async ({ request }) => {
       // the Stripe webhook (which reads session.metadata?.plan) keep
       // working exactly as before — the switch to real Price IDs doesn't
       // change what either of those read.
-      metadata: { source: 'founders_page', plan, tier: 'founders', ...utmMetadata },
+      metadata: {
+        source: uid ? 'in_app_external_checkout' : 'founders_page',
+        plan, tier: 'founders',
+        ...(uid && { uid }),
+        ...utmMetadata,
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {

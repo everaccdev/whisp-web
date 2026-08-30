@@ -279,6 +279,22 @@ const initialCapReached = founderStatus?.capReached ?? false;
   const btnSpin     = document.getElementById('btn-loading')   as HTMLSpanElement;
   const emailInput  = document.getElementById('email-input')   as HTMLInputElement;
 
+  // In-app external-checkout entry point (App Store 3.1.1(a), iOS/US only —
+  // see src/services/founderCheckoutService.js in the main app repo) opens
+  // this page as https://getwhisp.app/founders?uid=...&email=.... uid rides
+  // into Checkout metadata so stripeWebhook attaches the purchase to this
+  // exact existing account instead of resolving by email (which could
+  // create a second, orphaned account if the billing email differs from
+  // the one the app account uses). email just prefills the field so a
+  // signed-in user isn't asked to retype something the app already knows.
+  const appParams = new URLSearchParams(window.location.search);
+  const appUid    = appParams.get('uid') || null;
+  const appEmail  = appParams.get('email') || null;
+  if (appEmail && emailInput && !emailInput.value) emailInput.value = appEmail;
+  if (appUid) {
+    (window as any).posthog?.capture('website_founders_opened_from_app');
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = emailInput.value.trim();
@@ -291,13 +307,13 @@ const initialCapReached = founderStatus?.capReached ?? false;
     let utm = null;
     try { utm = JSON.parse(localStorage.getItem('whisp_utm') || 'null'); } catch (e) {}
 
-    (window as any).posthog?.capture('website_checkout_started', { plan: selectedPlan });
+    (window as any).posthog?.capture('website_checkout_started', { plan: selectedPlan, from_app: !!appUid });
 
     try {
       const res  = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, plan: selectedPlan, utm }),
+        body: JSON.stringify({ email, plan: selectedPlan, utm, uid: appUid || undefined }),
       });
       const data = await res.json();
       if (data.url) {
