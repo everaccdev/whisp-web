@@ -8,6 +8,14 @@ interface Props {
   ogImage?: string;
   ogUrl?: string;
   twitterCard?: 'summary' | 'summary_large_image';
+  // Share-landing pages (r/c/d/je/sl/v/y) pass these so a single
+  // website_share_landing_viewed event fires here, once, rather than each
+  // of the seven pages re-implementing its own capture call. shareFound
+  // distinguishes a real landing from the "this has faded" expired state —
+  // audit found zero instrumentation on any of these pages previously.
+  shareType?: string;
+  shareId?: string;
+  shareFound?: boolean;
 }
 
 const {
@@ -16,6 +24,9 @@ const {
   ogImage = 'https://getwhisp.app/icon.jpg',
   ogUrl = 'https://getwhisp.app',
   twitterCard = 'summary_large_image',
+  shareType,
+  shareId,
+  shareFound,
 } = Astro.props;
 ---
 
@@ -37,6 +48,26 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>{title}</title>
     <Analytics />
+    {shareType && (
+      <script is:inline define:vars={{ shareType, shareId: shareId ?? null, shareFound: shareFound !== false }}>
+        // One event per share-landing pageview — the denominator for
+        // share_landing_cta_click (data-analytics on the CTA buttons
+        // themselves, picked up by Analytics.astro's delegated listener).
+        // define:vars scripts are inline/plain JS and run synchronously at
+        // parse time, before Analytics.astro's dynamic `import posthog
+        // from 'posthog-js'` has necessarily resolved — same window.posthog
+        // existence guard index.astro's hero-variant-split script already
+        // uses for this exact reason (a bare optional-chain here would
+        // silently no-op far more often than that explicit check does).
+        if (window.posthog) {
+          window.posthog.capture('website_share_landing_viewed', {
+            share_type: shareType,
+            share_id: shareId,
+            found: shareFound,
+          });
+        }
+      </script>
+    )}
   </head>
   <body>
     <main>

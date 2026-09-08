@@ -3,11 +3,13 @@ export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import { getDoc } from '../../lib/firestore';
+import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const APP_STORE_URL = 'https://apps.apple.com/app/id6777561873';
+const iosUrl = withShareUtm(APP_STORE_URL, 'year_review', id);
+const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'year_review', id);
 
 const data = await getDoc('sharedYearReviews', id ?? '');
 const notFound = !data;
@@ -38,6 +40,9 @@ const pageDescription = !notFound
   ogImage="https://getwhisp.app/icon.jpg"
   ogUrl={`https://getwhisp.app/y/${id}`}
   twitterCard="summary"
+  shareType="year_review"
+  shareId={id}
+  shareFound={!notFound}
 >
 
   {notFound && (
@@ -53,8 +58,11 @@ const pageDescription = !notFound
       </div>
       <h1>This year in review has faded</h1>
       <p class="subtext">Yearly reflections linger for a while, then dissolve — like the signs themselves.</p>
-      <a href={APP_STORE_URL} class="cta">Build your own year ✦</a>
-      <p class="microcopy">Free to start · Available on iOS</p>
+      <div class="cta-row">
+        <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
+        <a href={androidUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">Google Play</a>
+      </div>
+      <p class="microcopy">Free to start · iOS & Android</p>
     </section>
   )}
 
@@ -128,8 +136,11 @@ const pageDescription = !notFound
             Whisp tracks the signs, dreams, and synchronicities you notice
             all year long, then weaves them into a story at year's end.
           </p>
-          <a href={APP_STORE_URL} class="cta">Download Whisp ✦</a>
-          <p class="microcopy">Free to start · Available on iOS</p>
+          <div class="cta-row">
+            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
+            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
+          </div>
+          <p class="microcopy">Free to start · iOS & Android</p>
         </div>
 
         <p class="footer-mark">getwhisp.app</p>
@@ -177,6 +188,32 @@ const pageDescription = !notFound
     transition: opacity 0.2s;
   }
   .cta:hover { opacity: 0.85; }
+
+  .cta-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+  }
+  .cta-half {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 168, 76, 0.1);
+    border: 0.5px solid rgba(201, 168, 76, 0.45);
+    color: #c9a84c;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 14px 8px;
+    transition: opacity 0.2s;
+  }
+  .cta-half:hover { opacity: 0.8; }
 
   .microcopy {
     font-family: 'Raleway', sans-serif;
