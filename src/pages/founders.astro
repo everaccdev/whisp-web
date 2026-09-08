@@ -7,14 +7,21 @@
 export const prerender = false;
 
 import MinimalLayout from '../layouts/MinimalLayout.astro';
-import { getFounderCount, FOUNDER_CAP } from '../lib/founderCount';
+import { getFounderCount, FOUNDER_CAP, FOUNDER_REVEAL_THRESHOLD } from '../lib/founderCount';
 
 // Server-rendered initial value so the page never flashes "0 of 500" before
 // JS loads — the client script (below) re-fetches on load to stay current
 // with the 5-minute cache, but this gives a correct number on first paint.
 const founderStatus = await getFounderCount(import.meta.env.STRIPE_SECRET_KEY as string);
+const initialCount = founderStatus?.count ?? null;
 const initialRemaining = founderStatus?.remaining ?? null;
 const initialCapReached = founderStatus?.capReached ?? false;
+const initialUnavailable = founderStatus === null;
+// Below the threshold, showing the real (low) count publicly reads as
+// reverse social proof — "0 of 500 sold" tells every visitor nobody else
+// has bought yet. See FOUNDER_REVEAL_THRESHOLD in src/lib/founderCount.ts.
+const initialShowNumber = !initialUnavailable && !initialCapReached
+  && initialCount !== null && initialCount >= FOUNDER_REVEAL_THRESHOLD;
 ---
 
 <MinimalLayout
@@ -51,14 +58,14 @@ const initialCapReached = founderStatus?.capReached ?? false;
       </div>
       <a href="#offer" class="btn-hero-cta">Get Founders Access ✦</a>
       <div class="hero-counter-text" id="counter-pill-hero" data-state={initialCapReached ? 'capped' : 'open'}>
-        {initialRemaining !== null ? (
-          initialCapReached ? (
-            <span>All 500 founding spots are taken</span>
-          ) : (
-            <span><strong id="counter-num-hero">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
-          )
-        ) : (
+        {initialUnavailable ? (
           <span>Founders access is limited to {FOUNDER_CAP} members</span>
+        ) : initialCapReached ? (
+          <span>All 500 founding spots are taken</span>
+        ) : initialShowNumber ? (
+          <span><strong id="counter-num-hero">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+        ) : (
+          <span id="counter-text-hero">Founding spots open</span>
         )}
       </div>
     </div>
@@ -172,14 +179,14 @@ const initialCapReached = founderStatus?.capReached ?? false;
   <!-- ═══ 5. HONEST SCARCITY ═══ -->
   <div class="scarcity">
     <div class="counter-pill counter-pill--large" id="counter-pill-scarcity" data-state={initialCapReached ? 'capped' : 'open'}>
-      {initialRemaining !== null ? (
-        initialCapReached ? (
-          <span>All 500 founding spots are taken</span>
-        ) : (
-          <span><strong id="counter-num-scarcity">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
-        )
-      ) : (
+      {initialUnavailable ? (
         <span>Founders access is limited to {FOUNDER_CAP} members</span>
+      ) : initialCapReached ? (
+        <span>All 500 founding spots are taken</span>
+      ) : initialShowNumber ? (
+        <span><strong id="counter-num-scarcity">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+      ) : (
+        <span id="counter-text-scarcity">Founding spots open</span>
       )}
     </div>
     <p class="scarcity-note">Once the 500 are gone, standard pricing applies to anyone who joins after — the founders rate doesn't come back.</p>
@@ -228,14 +235,14 @@ const initialCapReached = founderStatus?.capReached ?? false;
   <div class="final-cta">
     <p class="final-cta-headline">312 spots or 3 — the offer is the same either way.<br/>The number just tells you how much longer it lasts.</p>
     <div class="counter-pill" id="counter-pill-final" data-state={initialCapReached ? 'capped' : 'open'}>
-      {initialRemaining !== null ? (
-        initialCapReached ? (
-          <span>All 500 founding spots are taken</span>
-        ) : (
-          <span><strong id="counter-num-final">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
-        )
-      ) : (
+      {initialUnavailable ? (
         <span>Founders access is limited to {FOUNDER_CAP} members</span>
+      ) : initialCapReached ? (
+        <span>All 500 founding spots are taken</span>
+      ) : initialShowNumber ? (
+        <span><strong id="counter-num-final">{initialRemaining}</strong> of {FOUNDER_CAP} founding spots remain</span>
+      ) : (
+        <span id="counter-text-final">Founding spots open</span>
       )}
     </div>
     <a href="#offer" class="btn-hero-cta">Get Founders Access ✦</a>
@@ -337,20 +344,31 @@ const initialCapReached = founderStatus?.capReached ?? false;
 
   // Re-fetch the live count on load — the server-rendered number above is
   // correct at request time, but this keeps a page left open in a tab from
-  // drifting more than the 5-minute cache window.
+  // drifting more than the 5-minute cache window. Always rebuilds the
+  // pill's full innerHTML (rather than patching a number in place) since
+  // which case applies (capped / real number / neutral "spots open") can
+  // change between the server render and this fetch, and each case has a
+  // different DOM shape.
+  //
+  // Keep in sync with FOUNDER_REVEAL_THRESHOLD in src/lib/founderCount.ts
+  // — this script can't import a TS module at runtime.
+  const FOUNDER_REVEAL_THRESHOLD = 25;
   fetch('/api/founder-count')
     .then(r => r.json())
     .then(data => {
       if (!data.available) return; // Stripe was unreachable — leave the server-rendered value as-is
       const pills = ['hero', 'scarcity', 'final'].map(id => document.getElementById(`counter-pill-${id}`));
-      const nums  = ['hero', 'scarcity', 'final'].map(id => document.getElementById(`counter-num-${id}`));
-      pills.forEach((pill, i) => {
+      pills.forEach((pill) => {
         if (!pill) return;
         if (data.capReached) {
           pill.dataset.state = 'capped';
           pill.innerHTML = '<span>All 500 founding spots are taken</span>';
-        } else if (nums[i]) {
-          nums[i]!.textContent = String(data.remaining);
+        } else if (typeof data.count === 'number' && data.count < FOUNDER_REVEAL_THRESHOLD) {
+          pill.dataset.state = 'open';
+          pill.innerHTML = '<span>Founding spots open</span>';
+        } else {
+          pill.dataset.state = 'open';
+          pill.innerHTML = `<span><strong>${data.remaining}</strong> of 500 founding spots remain</span>`;
         }
       });
     })

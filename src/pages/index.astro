@@ -566,8 +566,15 @@ const hero = ACTIVE_HERO_VARIANT;
         <p class="section-sub" style="margin-top:10px;">
           Free shows you it works. Premium is how you keep the whole story — not just the last 90 days of it.
         </p>
+        <!-- Neutral pre-JS/no-JS fallback — this page is fully prerendered
+             (prerender = true, no request-time data available), and the
+             real count is genuinely 0-and-climbing early on, so a static
+             "0 of 500" (or worse, a stale build-time number) would read as
+             reverse social proof the moment anyone saw it before the fetch
+             below resolves. See FOUNDER_REVEAL_THRESHOLD in
+             src/lib/founderCount.ts. -->
         <div class="counter-pill" id="counter-pill-home" data-state="open">
-          <span><strong id="counter-num-home">500</strong> of 500 founding spots remain</span>
+          <span id="counter-text-home">Founding spots open</span>
         </div>
       </div>
 
@@ -650,11 +657,19 @@ const hero = ACTIVE_HERO_VARIANT;
     // count, the endpoint returns { available: false } and this hides the
     // pill entirely rather than showing a fabricated or stale-beyond-trust
     // number (same rule founders.astro follows).
+    //
+    // Below FOUNDER_REVEAL_THRESHOLD real founders (src/lib/founderCount.ts
+    // — keep in sync, this script can't import a TS module at runtime),
+    // the live count reads as reverse social proof ("0 of 500" tells every
+    // visitor nobody else has bought yet) rather than encouragement, so the
+    // number stays hidden behind neutral "spots open" copy until it's
+    // actually a number worth showing.
+    const FOUNDER_REVEAL_THRESHOLD = 25;
     fetch('/api/founder-count')
       .then(r => r.json())
       .then(data => {
         const pill = document.getElementById('counter-pill-home');
-        const num = document.getElementById('counter-num-home');
+        const text = document.getElementById('counter-text-home');
         if (!pill) return;
         if (!data.available) {
           pill.style.display = 'none';
@@ -663,8 +678,10 @@ const hero = ACTIVE_HERO_VARIANT;
         if (data.capReached) {
           pill.dataset.state = 'capped';
           pill.innerHTML = '<span>All 500 founding spots are taken</span>';
-        } else if (num) {
-          num.textContent = String(data.remaining);
+        } else if (typeof data.count === 'number' && data.count < FOUNDER_REVEAL_THRESHOLD) {
+          if (text) text.textContent = 'Founding spots open';
+        } else if (text) {
+          text.innerHTML = `<strong>${data.remaining}</strong> of 500 founding spots remain`;
         }
       })
       .catch(() => {
@@ -826,7 +843,7 @@ const hero = ACTIVE_HERO_VARIANT;
       <div class="cta-inner">
         <div class="cta-glyph" aria-hidden="true">◎</div>
         <h2>Your signs are waiting</h2>
-        <p>Lock in the founder rate before it closes — $3.99/mo for life.</p>
+        <p>Lock in the founder rate before it closes — $3.99/mo, for as long as you stay subscribed.</p>
         <a href="/founders" class="btn btn-primary" style="padding: 16px 36px; font-size: 0.9rem;">Claim Founder Pricing ✦</a>
         <span class="cta-note">Normally $7.99/mo · Cancel anytime</span>
       </div>

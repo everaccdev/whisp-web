@@ -12,8 +12,16 @@ interface Props {
 
 const {
   title = 'Whisp — A Journal for Signs & Synchronicity',
-  description = 'Track signs, synchronicities, and symbols. Discover what the universe might be whispering to you.',
-  ogImage = 'https://getwhisp.app/icon.jpg',
+  // Was pre-positioning copy ("what the universe might be whispering")
+  // predating the pattern-first rework — index.astro passes no title/
+  // description/ogImage props at all, so this default IS effectively the
+  // homepage's live metadata (what actually shows in search results and
+  // link previews for getwhisp.app itself), not just a generic fallback.
+  description = "One sign is a moment. A pattern is a message. Whisp remembers what you don't — and shows you what it adds up to.",
+  // Real app screenshots (Insights, Home, Journal) in the Whispercore
+  // nebula composition — was the bare app icon, which is weak for social
+  // shares of the homepage itself.
+  ogImage = 'https://getwhisp.app/demo-pattern.jpg',
 } = Astro.props;
 ---
 

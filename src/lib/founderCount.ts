@@ -11,6 +11,16 @@ import Stripe from 'stripe';
 const FOUNDER_CAP = 500;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+// Below this many real founders, showing the live count publicly reads as
+// reverse social proof — "0 of 500 sold" tells every visitor nobody else
+// has bought yet, which is worse than showing no number at all. Callers
+// (index.astro, founders.astro) show neutral "spots open" copy instead of
+// the numeric count while count is under this threshold, then switch to
+// the real number once it's a number worth showing. The cap enforcement
+// itself (getFounderCount above, api/checkout.ts) is completely unaffected
+// by this — it's a display-only threshold.
+const FOUNDER_REVEAL_THRESHOLD = 25;
+
 const FOUNDERS_PRICE_IDS = [
   'price_1U40ORCwtErAAxY9rPrMvCM6', // monthly
   'price_1U40ORCwtErAAxY9tD751yjH', // annual
@@ -80,4 +90,4 @@ export async function getFounderCount(secretKey: string): Promise<{ count: numbe
   }
 }
 
-export { FOUNDER_CAP, FOUNDERS_PRICE_IDS };
+export { FOUNDER_CAP, FOUNDERS_PRICE_IDS, FOUNDER_REVEAL_THRESHOLD };
