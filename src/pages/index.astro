@@ -375,6 +375,17 @@ const hero = ACTIVE_HERO_VARIANT;
     </div>
 
     <div class="appshot-scroll" id="appshot-scroll">
+      <!-- Real Pattern Story ("Whisp is Noticing") composition, leading the
+           carousel — the single strongest, most differentiated thing the
+           product does, previously unpictured anywhere on the homepage.
+           Own aspect ratio (source is ~4:3, not the 16:9-ish ratio the
+           other device shots share) with object-fit:contain rather than
+           cover, so nothing gets cropped out of a composition not
+           originally built to this carousel's wide ratio. -->
+      <div class="appshot-card">
+        <img class="appshot-img appshot-img--story" src="/pattern-story.jpg" alt="Whisp noticing a pattern across signs — the Pattern Story reading" loading="lazy" />
+        <p class="appshot-caption">Whisp is noticing — before you even ask</p>
+      </div>
       <div class="appshot-card">
         <img class="appshot-img" src="/device-1.jpg" alt="Whisp home screen showing your journey this week and a noticed pattern" loading="lazy" />
         <p class="appshot-caption">Your week, gathered into one view</p>
@@ -416,6 +427,7 @@ const hero = ACTIVE_HERO_VARIANT;
         <button class="sc-dot" data-idx="4"></button>
         <button class="sc-dot" data-idx="5"></button>
         <button class="sc-dot" data-idx="6"></button>
+        <button class="sc-dot" data-idx="7"></button>
       </div>
       <button class="sc-btn" id="as-next" aria-label="Next">→</button>
     </div>
@@ -427,7 +439,7 @@ const hero = ACTIVE_HERO_VARIANT;
     const appshotCards = document.querySelectorAll<HTMLElement>('.appshot-card');
     const appshotDots  = document.querySelectorAll<HTMLElement>('#as-dots .sc-dot');
     let appshotCur = 0;
-    const appshotTot = 7;
+    const appshotTot = 8;
 
     function getAppshotPad() {
       if (!appshotEl) return 0;
@@ -1751,6 +1763,13 @@ const hero = ACTIVE_HERO_VARIANT;
     border-radius: 14px;
     background: #06080f;
     box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  /* The Pattern Story composition is its own ~4:3 source, not this
+     carousel's usual wide ratio — contain (not cover) so nothing gets
+     cropped out of a composition that wasn't built to this aspect ratio. */
+  .appshot-img--story {
+    aspect-ratio: 1448 / 1086;
+    object-fit: contain;
   }
   .appshot-caption {
     text-align: center;
