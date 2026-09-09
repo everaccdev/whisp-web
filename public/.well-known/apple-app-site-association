@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "HB7YPHCX4P.com.eyeswidewellness.whisp",
+        "paths": [
+          "/r/*",
+          "/c/*",
+          "/d/*",
+          "/je/*",
+          "/sl/*",
+          "/v/*",
+          "/y/*"
+        ]
+      }
+    ]
+  }
+}
