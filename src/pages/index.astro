@@ -378,12 +378,12 @@ const hero = ACTIVE_HERO_VARIANT;
       <!-- Real Pattern Story ("Whisp is Noticing") composition, leading the
            carousel — the single strongest, most differentiated thing the
            product does, previously unpictured anywhere on the homepage.
-           Own aspect ratio (source is ~4:3, not the 16:9-ish ratio the
-           other device shots share) with object-fit:contain rather than
-           cover, so nothing gets cropped out of a composition not
-           originally built to this carousel's wide ratio. -->
+           Replaced Sep 2026 (pattern-story3a) with a composition matching
+           the twin-phones-on-the-shore style the other device shots use, so
+           it no longer needs its own aspect-ratio/object-fit treatment —
+           just the standard .appshot-img cover crop like every other card. -->
       <div class="appshot-card">
-        <img class="appshot-img appshot-img--story" src="/pattern-story.jpg" alt="Whisp noticing a pattern across signs — the Pattern Story reading" loading="lazy" />
+        <img class="appshot-img" src="/pattern-story.jpg" alt="Whisp noticing a pattern across signs — the Pattern Story reading" loading="lazy" />
         <p class="appshot-caption">Whisp is noticing — before you even ask</p>
       </div>
       <div class="appshot-card">
@@ -418,7 +418,9 @@ const hero = ACTIVE_HERO_VARIANT;
     </div>
 
     <div class="slides-nav">
-      <button class="sc-btn" id="as-prev" aria-label="Previous">←</button>
+      <button class="sc-btn" id="as-prev" aria-label="Previous">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="sc-dots" id="as-dots">
         <button class="sc-dot active" data-idx="0"></button>
         <button class="sc-dot" data-idx="1"></button>
@@ -429,7 +431,19 @@ const hero = ACTIVE_HERO_VARIANT;
         <button class="sc-dot" data-idx="6"></button>
         <button class="sc-dot" data-idx="7"></button>
       </div>
-      <button class="sc-btn" id="as-next" aria-label="Next">→</button>
+      <button class="sc-btn" id="as-next" aria-label="Next">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Click-to-enlarge lightbox for the screenshot carousel above. One
+         shared overlay reused for every card rather than per-image markup —
+         src is swapped in on open. -->
+    <div class="appshot-lightbox" id="appshot-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged screenshot">
+      <button class="appshot-lightbox-close" id="appshot-lightbox-close" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <img class="appshot-lightbox-img" id="appshot-lightbox-img" src="" alt="" />
     </div>
   </section>
 
@@ -459,8 +473,9 @@ const hero = ACTIVE_HERO_VARIANT;
     document.getElementById('as-next')?.addEventListener('click', () => appshotTo(appshotCur + 1));
     appshotDots.forEach(d => d.addEventListener('click', () => appshotTo(Number(d.dataset.idx))));
 
-    let appshotTimer = setInterval(() => appshotTo(appshotCur + 1), 5000);
-    appshotEl?.addEventListener('pointerdown', () => { clearInterval(appshotTimer); appshotTimer = setInterval(() => appshotTo(appshotCur + 1), 5000); });
+    const APPSHOT_AUTOPLAY_MS = 9000;
+    let appshotTimer = setInterval(() => appshotTo(appshotCur + 1), APPSHOT_AUTOPLAY_MS);
+    appshotEl?.addEventListener('pointerdown', () => { clearInterval(appshotTimer); appshotTimer = setInterval(() => appshotTo(appshotCur + 1), APPSHOT_AUTOPLAY_MS); });
 
     if (typeof IntersectionObserver !== 'undefined' && appshotEl) {
       const ioShot = new IntersectionObserver(entries => {
@@ -473,6 +488,32 @@ const hero = ACTIVE_HERO_VARIANT;
       }, { root: appshotEl, threshold: 0.55 });
       appshotCards.forEach(c => ioShot.observe(c));
     }
+
+    // Click-to-enlarge lightbox
+    const appshotLightbox    = document.getElementById('appshot-lightbox');
+    const appshotLightboxImg = document.getElementById('appshot-lightbox-img') as HTMLImageElement | null;
+
+    function openAppshotLightbox(img: HTMLImageElement) {
+      if (!appshotLightbox || !appshotLightboxImg) return;
+      clearInterval(appshotTimer); // don't keep auto-advancing the carousel underneath while the lightbox is open
+      appshotLightboxImg.src = img.src;
+      appshotLightboxImg.alt = img.alt;
+      appshotLightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAppshotLightbox() {
+      if (!appshotLightbox) return;
+      appshotLightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      appshotTimer = setInterval(() => appshotTo(appshotCur + 1), APPSHOT_AUTOPLAY_MS);
+    }
+
+    document.querySelectorAll<HTMLImageElement>('.appshot-img').forEach(img => {
+      img.addEventListener('click', () => openAppshotLightbox(img));
+    });
+    document.getElementById('appshot-lightbox-close')?.addEventListener('click', closeAppshotLightbox);
+    appshotLightbox?.addEventListener('click', (e) => { if (e.target === appshotLightbox) closeAppshotLightbox(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAppshotLightbox(); });
   </script>
 
   <!-- ═══════════════ FEATURES ═══════════════ -->
@@ -1268,7 +1309,7 @@ const hero = ACTIVE_HERO_VARIANT;
      section itself was cut (Emotional Narrative Pass, Phase 6: it
      restated Features almost 1:1 in a second visual format immediately
      next to this other, more credible screenshot carousel), but these
-     nav/dot/spacer rules stayed since Showcase still uses them. -->
+     nav/dot/spacer rules stayed since Showcase still uses them. */
   .slides-spacer { flex: 0 0 clamp(24px,6vw,80px); }
 
   .slides-nav {
@@ -1763,14 +1804,10 @@ const hero = ACTIVE_HERO_VARIANT;
     border-radius: 14px;
     background: #06080f;
     box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    cursor: zoom-in;
+    transition: transform 0.25s ease;
   }
-  /* The Pattern Story composition is its own ~4:3 source, not this
-     carousel's usual wide ratio — contain (not cover) so nothing gets
-     cropped out of a composition that wasn't built to this aspect ratio. */
-  .appshot-img--story {
-    aspect-ratio: 1448 / 1086;
-    object-fit: contain;
-  }
+  .appshot-img:hover { transform: scale(1.015); }
   .appshot-caption {
     text-align: center;
     font-family: var(--font-heading);
@@ -1779,6 +1816,47 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream-dim);
     padding: 0 8px;
   }
+
+  /* Click-to-enlarge overlay for the showcase carousel */
+  .appshot-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(20px, 6vw, 64px);
+    background: rgba(6,8,15,0.92);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease;
+  }
+  .appshot-lightbox.open { opacity: 1; visibility: visible; }
+  .appshot-lightbox-img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    cursor: zoom-out;
+  }
+  .appshot-lightbox-close {
+    position: absolute;
+    top: clamp(16px, 4vw, 32px);
+    right: clamp(16px, 4vw, 32px);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--cream-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .appshot-lightbox-close:hover { border-color: var(--gold-dim); color: var(--gold-light); }
 
   /* ── WHAT'S NEW ── */
   .whats-new {
