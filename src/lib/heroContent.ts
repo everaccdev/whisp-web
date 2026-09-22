@@ -9,13 +9,13 @@
 // plus the subhead paragraph beneath it.
 
 export type HeroVariant = {
-  id: 'A' | 'B' | 'C';
+  id: 'A' | 'B' | 'C' | 'D';
   titlePlain: string;
   titleEmphasis: string;
   sub: string;
 };
 
-export const HERO_VARIANTS: Record<'A' | 'B' | 'C', HeroVariant> = {
+export const HERO_VARIANTS: Record<'A' | 'B' | 'C' | 'D', HeroVariant> = {
   A: {
     id: 'A',
     titlePlain: 'One sign is a moment.',
@@ -34,8 +34,29 @@ export const HERO_VARIANTS: Record<'A' | 'B' | 'C', HeroVariant> = {
     titleEmphasis: 'longer than you’ve been listening.',
     sub: "Whisp remembers what you don't —<br />and shows you what it adds up to.",
   },
+  // D is the headline the current homepage narrative is built around: the
+  // whole page is a progressive expansion from one noticed moment outward,
+  // and every later section resolves against this line. A/B/C predate that
+  // restructure and pair with a page that argued differently.
+  D: {
+    id: 'D',
+    titlePlain: 'You noticed the sign.',
+    titleEmphasis: 'Whisp noticed the pattern.',
+    sub: 'Dreams. Numbers. Symbols. Coincidences.<br />Whisp remembers what keeps finding you — and what was happening when it did.',
+  },
 };
 
-// The live variant. Swap this one line to test B or C — nothing else in
-// index.astro needs to change.
-export const ACTIVE_HERO_VARIANT: HeroVariant = HERO_VARIANTS.A;
+// The live variant — server-rendered, and the no-JS / first-paint default.
+export const ACTIVE_HERO_VARIANT: HeroVariant = HERO_VARIANTS.D;
+
+// Which variants the client-side split actually assigns from.
+//
+// Currently a single entry, which means the split is effectively PAUSED —
+// every visitor sees D. That's deliberate: the page narrative below the
+// hero now depends on D's framing, so serving A/B/C would put a quarter of
+// visitors on a hero that contradicts the rest of the page.
+//
+// The machinery is intact rather than deleted. To resume testing, add ids
+// back to this array — nothing else needs to change, and the cookie,
+// PostHog super-property and assignment event all keep working.
+export const HERO_SPLIT_IDS: Array<HeroVariant['id']> = ['D'];

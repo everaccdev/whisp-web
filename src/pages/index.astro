@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-import { ACTIVE_HERO_VARIANT, HERO_VARIANTS } from '../lib/heroContent';
+import { ACTIVE_HERO_VARIANT, HERO_VARIANTS, HERO_SPLIT_IDS } from '../lib/heroContent';
 import WhispGlyph from '../components/whisp-glyphs/WhispGlyph.astro';
 import WhispDivider from '../components/whisp-glyphs/WhispDivider.astro';
 // ACTIVE_HERO_VARIANT is still what's server-rendered — the no-JS /
@@ -57,7 +57,7 @@ const hero = ACTIVE_HERO_VARIANT;
           class="btn btn-primary hero-primary-btn"
           data-analytics="hero_primary_cta"
         >
-          <span id="hero-primary-cta-text">Download for iOS ✦</span>
+          <span id="hero-primary-cta-text">Start noticing ✦</span>
         </a>
         <div class="hero-cta-secondary">
           <a href="https://apps.apple.com/app/id6777561873" class="hero-store-badge" id="hero-badge-ios" data-analytics="hero_app_store_click">
@@ -73,7 +73,7 @@ const hero = ACTIVE_HERO_VARIANT;
       </div>
 
       <p class="hero-note fade-up" style="animation-delay:0.44s">
-        ✦ &nbsp;Free to start &nbsp;·&nbsp; iOS & Android &nbsp;·&nbsp; Founder rate locked for early members
+        ✦ &nbsp;Free to start &nbsp;·&nbsp; iOS &amp; Android
       </p>
     </div>
 
@@ -98,9 +98,10 @@ const hero = ACTIVE_HERO_VARIANT;
     const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.eyeswidewellness.whisp&pcampaignid=web_hero';
 
     if (primaryCta && primaryCtaText) {
+      // Label is now platform-agnostic ("Start noticing") so it reads as an
+      // invitation rather than a download instruction — only the HREF adapts.
       if (isAndroid) {
         primaryCta.href = ANDROID_URL;
-        primaryCtaText.textContent = 'Download for Android ✦';
       } else if (isIOS) {
         // Already the server-rendered default — leave as-is.
       } else {
@@ -110,7 +111,7 @@ const hero = ACTIVE_HERO_VARIANT;
     }
   </script>
 
-  <script is:inline define:vars={{ variants: HERO_VARIANTS }}>
+  <script is:inline define:vars={{ variants: HERO_VARIANTS, splitIds: HERO_SPLIT_IDS, activeId: ACTIVE_HERO_VARIANT.id }}>
     // Hero copy split test. Real 3-way random split, sticky per visitor —
     // not a formal PostHog Experiment (that needs a feature flag created
     // in the PostHog dashboard, which is a config step on the account, not
@@ -129,7 +130,9 @@ const hero = ACTIVE_HERO_VARIANT;
     // "server-rendered default" pattern the CTA button uses.
     (function () {
       var COOKIE = 'whisp_hero_variant';
-      var IDS = Object.keys(variants);
+      // Only the ids the split is currently running on — see HERO_SPLIT_IDS
+      // in lib/heroContent.ts. A single entry means the split is paused.
+      var IDS = splitIds && splitIds.length ? splitIds : Object.keys(variants);
 
       function getCookie(name) {
         var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
@@ -148,7 +151,9 @@ const hero = ACTIVE_HERO_VARIANT;
         isNewAssignment = true;
       }
 
-      if (variant !== 'A') {
+      // Swap only when the assigned variant differs from the one that was
+      // server-rendered (activeId) — previously hardcoded to 'A'.
+      if (variant !== activeId) {
         var v = variants[variant];
         var plainEl = document.getElementById('hero-title-plain');
         var emEl = document.getElementById('hero-title-em');
@@ -189,13 +194,14 @@ const hero = ACTIVE_HERO_VARIANT;
     <div class="validation-bg" aria-hidden="true"></div>
     <div class="container">
       <div class="section-header">
-        <span class="section-label fade-up">You know this feeling</span>
+        <h2 class="validation-title fade-up">You know when something feels<br /><em>a little too specific to ignore?</em></h2>
       </div>
       <div class="validation-lines">
-        <p class="validation-line fade-up" style="animation-delay:0.05s">11:11 again — and that small jolt, right in your chest.</p>
-        <p class="validation-line fade-up" style="animation-delay:0.15s">The same word, from three different people, in one day.</p>
-        <p class="validation-line fade-up" style="animation-delay:0.25s">A dream about someone, and then they call.</p>
-        <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.35s">You half-laugh it off. You wonder if you're the only one who counts these.</p>
+        <p class="validation-line fade-up" style="animation-delay:0.05s">11:11.<br /><span class="validation-line-beat">Again.</span></p>
+        <p class="validation-line fade-up" style="animation-delay:0.15s">You dream about someone.<br /><span class="validation-line-beat">They call the next morning.</span></p>
+        <p class="validation-line fade-up" style="animation-delay:0.25s">The same symbol appears three times<br /><span class="validation-line-beat">during the week you&rsquo;re considering a change.</span></p>
+        <p class="validation-line fade-up" style="animation-delay:0.35s">A word you haven&rsquo;t thought about in years<br /><span class="validation-line-beat">suddenly seems to be everywhere.</span></p>
+        <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.45s">You half-laugh it off. You wonder if you&rsquo;re the only one who counts these.</p>
 
         <div class="fade-up" style="animation-delay:0.4s">
           <WhispDivider glyph="spark" size={13} class="validation-divider" />
@@ -235,109 +241,6 @@ const hero = ACTIVE_HERO_VARIANT;
     }
   </script>
 
-  <!-- ═══════════════ THE TENSION BEAT ═══════════════
-       Phase 3. Short, on purpose — its entire job is the felt gap between
-       the recognition above and the demonstration below. Closing line is
-       the first appearance of Whisp as the answer; it should read as
-       relief, not a pitch. -->
-  <section class="tension-beat" id="tension-beat">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-label fade-up">But the moment passes</span>
-        <p class="tension-body fade-up" style="animation-delay:0.1s">
-          You notice. You feel it. Then the day moves on, and by next week the details have already softened.
-          If it happens again in three months, you won't remember this happened at all.
-        </p>
-
-        <p class="tension-resolve fade-up" style="animation-delay:0.3s">
-          <em>Whisp remembers what stands out — even when you don't.</em>
-        </p>
-
-        <div class="tension-glyph-close">
-          <WhispGlyph name="sign-diamond" size={22} animate="brighten" delay={1} />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════ DEMONSTRATE THE PATTERN ═══════════════
-       Homepage Conversion Rework Phase 2, refined in the Emotional
-       Narrative Pass — the single highest-leverage section on the page.
-       Shows accumulation rather than describing it, resolving the tension
-       beat above: "you weren't imagining it." The explicit ChatGPT
-       comparison used to be this section's own label — moved down to the
-       FAQ (Emotional Narrative Pass, Phase 6) so the underlying
-       differentiation idea (memory across time vs. one lookup) stays high
-       without spending the visitor's first real objection this early. The
-       timeline below is explicitly illustrative (labelled as such), not a
-       live backend call or a real user's data — it's modeled on what
-       Whisp's actual detectors do (patternEngine.js: frequency surges,
-       dream/waking overlap, cross-entry-type recurrence across
-       signs/dreams/journal), not invented functionality. -->
-  <section class="demo-pattern" id="demo-pattern">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-label">You weren't imagining it</span>
-        <h2 class="section-title">One sign is a curiosity.<br /><em>A pattern is something a single lookup can't see.</em></h2>
-        <p class="section-sub">
-          Ask a chatbot what a number means and the context evaporates the moment you close the tab.
-          Whisp remembers across weeks — here's the shape of what that looks like.
-        </p>
-      </div>
-
-      <div class="demo-visual fade-up">
-        <img
-          src="/demo-pattern.jpg"
-          alt="Whisp noticing a recurring theme across signs, dreams, and journal entries"
-          loading="lazy"
-          class="demo-visual-img"
-        />
-      </div>
-
-      <div class="demo-timeline fade-up" role="list" aria-label="Illustrative example, not a real user's data">
-        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 1</span><span class="demo-beat-sign">11:11</span></div>
-        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
-        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 6</span><span class="demo-beat-sign">a white butterfly</span></div>
-        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
-        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 11</span><span class="demo-beat-sign">a dream about leaving home</span></div>
-        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
-        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 17</span><span class="demo-beat-sign">a journal entry about a career change</span></div>
-        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
-        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 23</span><span class="demo-beat-sign">11:11 again</span></div>
-      </div>
-
-      <div class="demo-result fade-up">
-        <span class="demo-result-label">✦ WHISP NOTICES</span>
-        <p class="demo-result-text">Transition keeps appearing — across your signs, your dreams, and what you've written.</p>
-      </div>
-
-      <p class="demo-caveat">
-        Illustrative example, not a specific person's data — modeled on how Whisp's real pattern
-        detection actually works: recurring symbols, dream-and-waking overlap, and themes that
-        span your signs, dreams, and journal at once.
-      </p>
-    </div>
-  </section>
-
-  <script>
-    // Fires once per visitor when the demonstration section first enters
-    // view — the "did the differentiation land" signal (Phase 7).
-    const demoSection = document.getElementById('demo-pattern');
-    if (demoSection && typeof IntersectionObserver !== 'undefined') {
-      let demoSeen = false;
-      const demoIO = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !demoSeen) {
-            demoSeen = true;
-            (window as any).posthog?.capture('website_demo_section_viewed');
-            demoIO.disconnect();
-          }
-        });
-      }, { threshold: 0.4 });
-      demoIO.observe(demoSection);
-    }
-  </script>
-
   <!-- ═══════════════ SIGNS COME IN EVERY FORM ═══════════════
        Addresses an objection the page never explicitly answered: that
        Whisp is only for astrology/numerology people. One visual, tight
@@ -364,13 +267,444 @@ const hero = ACTIVE_HERO_VARIANT;
     </div>
   </section>
 
+  <!-- ═══════════════ THE TENSION BEAT ═══════════════
+       Phase 3. Short, on purpose — its entire job is the felt gap between
+       the recognition above and the demonstration below. Closing line is
+       the first appearance of Whisp as the answer; it should read as
+       relief, not a pitch. -->
+  <section class="tension-beat" id="tension-beat">
+    <div class="container">
+      <div class="section-header">
+        <p class="tension-step fade-up" style="animation-delay:0.05s">You notice it.</p>
+        <p class="tension-step fade-up" style="animation-delay:0.2s">And then you forget it.</p>
+
+        <p class="tension-aside fade-up" style="animation-delay:0.35s">That&rsquo;s the problem.</p>
+
+        <!-- This line carries the section. Nothing explanatory follows it
+             on purpose - the next section opens the expansion instead. -->
+        <p class="tension-resolve fade-up" style="animation-delay:0.5s">Whisp doesn&rsquo;t.</p>
+
+        <div class="tension-glyph-close">
+          <WhispGlyph name="sign-diamond" size={22} animate="brighten" delay={1} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ DEPTH — EVERYTHING INSIDE ONE MOMENT ═══════════════
+       The page's other argument is breadth-across-TIME. This one is
+       depth-within-a-single-entry, and it is the section that stops Whisp
+       reading as a symbol dictionary.
+
+       Every context source below is verified against the shipped app -
+       logInsightService.js assembles exactly these into the reflection
+       prompt: personal meaning for the symbol, whatWasHappening (flagged
+       in the prompt itself as "the single most important piece of
+       context"), lifeContext, mood/moodLabel with valence and energy,
+       somatic state and sensations, lifeAreaTags, occurrenceCount, and
+       co-occurring symbols. Beliefs come via claudeService's
+       buildBeliefContext (only beliefs the user actually selected), and
+       sacred text via logInsightService's SCRIPTURE_TRADITIONS.
+
+       The somatic words used below (Chills, Gut drop, Calm wash, Tension,
+       Expansion, Warmth) are the app's own sensation labels from
+       somaticUtils.js - not invented adjectives.
+
+       Deliberately NOT an icon grid: the moment sits at the centre and the
+       context converges on it. Do not "simplify" this into four cards with
+       icons - that would make the capability feel ordinary, which is the
+       exact failure this section exists to avoid. -->
+  <section class="depth" id="depth">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="depth-open fade-up">But remembering<br /><em>is only the beginning.</em></h2>
+        <p class="depth-sub fade-up">
+          Tap anything you&rsquo;ve logged and there can be far more inside it than a definition.
+        </p>
+      </div>
+
+      <div class="depth-composition">
+        <div class="depth-moment fade-up">
+          <span class="depth-moment-label">The moment</span>
+          <p class="depth-moment-text">You keep seeing<br /><em>a white butterfly.</em></p>
+        </div>
+
+        <div class="depth-context">
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your beliefs</h3>
+            <p class="depth-ctx-text">What this symbol holds inside the traditions and frameworks you actually chose &mdash; and none of the ones you didn&rsquo;t.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Sacred traditions &amp; texts</h3>
+            <p class="depth-ctx-text">Where it appears across the scriptures and lineages that matter to you, if any do.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your inner world</h3>
+            <p class="depth-ctx-text">Archetype, shadow, dream symbolism, and the psychological lenses you&rsquo;ve added.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your body</h3>
+            <p class="depth-ctx-text">Chills. Gut drop. Calm wash. Tension. Expansion. Warmth. What happened in you when it appeared.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your emotional state</h3>
+            <p class="depth-ctx-text">What you were feeling in that moment &mdash; and only if you said so.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your life right now</h3>
+            <p class="depth-ctx-text">What was happening around it, in your words. This one matters more than all the rest.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">What you&rsquo;re seeking</h3>
+            <p class="depth-ctx-text">The questions and themes you&rsquo;ve been carrying lately.</p>
+          </div>
+          <div class="depth-ctx fade-up">
+            <h3 class="depth-ctx-label">Your intentions</h3>
+            <p class="depth-ctx-text">What you&rsquo;ve been consciously moving toward &mdash; and how long it&rsquo;s been open.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="depth-land fade-up">
+        <p class="depth-land-text">
+          Same symbol.<br />
+          Different person.<br />
+          Different life.<br />
+          <em>Different reflection.</em>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Pairs with website_demo_section_viewed - the two halves of the
+    // differentiation argument (depth per moment vs. memory across time),
+    // tracked separately so we can see which one holds attention.
+    const depthSection = document.getElementById('depth');
+    if (depthSection && typeof IntersectionObserver !== 'undefined') {
+      let depthSeen = false;
+      const depthIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !depthSeen) {
+            depthSeen = true;
+            (window as any).posthog?.capture('website_depth_section_viewed');
+            depthIO.disconnect();
+          }
+        });
+      }, { threshold: 0.35 });
+      depthIO.observe(depthSection);
+    }
+  </script>
+
+  <!-- ═══════════════ REAL USER STORIES ═══════════════
+       NOT a testimonial section. No quotations, no names, no avatars, no
+       ratings. These are real experiences users shared with the founder,
+       retold in third person with identifying detail deliberately removed
+       - which is both accurate and legally clean (the FTC's 2024 rule on
+       consumer reviews prohibits fabricated endorsements; retold
+       experience presented as such is not an endorsement).
+
+       The three cards are STRATEGICALLY DIFFERENT and must stay that way:
+         card 1 = DEPTH within a single moment
+         card 2 = CONNECTION across time
+         card 3 = MEANING through personal life context
+       Do not rewrite these into three versions of "Whisp found a pattern."
+       That collapse would destroy the point of the section. -->
+  <section class="stories" id="stories">
+    <div class="stories-bg"></div>
+    <div class="stories-overlay"></div>
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">They logged one thing.<br /><em>Whisp found something else.</em></h2>
+        <p class="section-sub">
+          A dream you almost forgot. A pattern hiding across months. Something you&rsquo;ve been
+          circling without knowing how to name it. Sometimes a reflection lands differently
+          when it comes from your own life.
+        </p>
+      </div>
+
+      <div class="stories-grid">
+        <article class="story fade-up">
+          <span class="story-mark" aria-hidden="true">&#10022;</span>
+          <h3 class="story-label">The dream she couldn&rsquo;t shake</h3>
+          <p class="story-text">
+            Her father had been gone for years.
+          </p>
+          <p class="story-text">
+            Then she dreamed of him standing on a staircase disappearing beneath his feet.
+            She logged it before the details faded.
+          </p>
+          <p class="story-turn">It stayed with her for days.</p>
+        </article>
+
+        <article class="story fade-up">
+          <span class="story-mark" aria-hidden="true">&#10022;</span>
+          <h3 class="story-label">The pattern she didn&rsquo;t see</h3>
+          <p class="story-text">
+            For months, she&rsquo;d been logging the same numbers through a difficult chapter of
+            self-love, boundaries and letting go.
+          </p>
+          <p class="story-text">
+            Whisp connected something she hadn&rsquo;t been able to name.
+          </p>
+          <p class="story-turn story-turn--solo">She cried.</p>
+          <p class="story-coda">Then she made the decision she&rsquo;d been circling for months.</p>
+        </article>
+
+        <article class="story fade-up">
+          <span class="story-mark" aria-hidden="true">&#10022;</span>
+          <h3 class="story-label">The dream that made him stop</h3>
+          <p class="story-text">
+            Everything in his life felt out of control.
+          </p>
+          <p class="story-text">
+            Then came a dream: cars he couldn&rsquo;t steer, a crash he couldn&rsquo;t prevent,
+            his children in the back seat.
+          </p>
+          <p class="story-text">
+            Whisp reflected something about how he was carrying it all that he hadn&rsquo;t been
+            able to see himself.
+          </p>
+          <p class="story-turn">It made him face it.</p>
+        </article>
+      </div>
+
+      <div class="stories-close-block fade-up">
+        <p class="stories-question">What would Whisp<br /><em>notice in yours?</em></p>
+        <a href="https://apps.apple.com/app/id6777561873" class="stories-cta" data-analytics="stories_cta">Start noticing &rarr;</a>
+      </div>
+
+      <p class="stories-note">
+        Based on real experiences shared by Whisp users. Details are intentionally limited
+        to protect the reflections that belong to them.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ EXPANSION ═══
+       The bridge from DEPTH-WITHIN-AN-ENTRY to CONNECTIONS-BETWEEN-ENTRIES.
+       Deliberately unhurried: each line is its own beat, and the section
+       resolves on a line that opens rather than closes. Do NOT add
+       explanatory copy after the final line - the pattern section below
+       is the explanation. -->
+  <section class="expansion" id="expansion">
+    <div class="container">
+      <h2 class="expansion-title fade-up">And that&rsquo;s just<br /><em>one moment.</em></h2>
+
+      <div class="expansion-lines">
+        <p class="expansion-line fade-up">One dream can hold a lot.</p>
+        <p class="expansion-line fade-up">But Whisp also remembers the dream before it.</p>
+        <p class="expansion-line fade-up">The number you saw three weeks ago.</p>
+        <p class="expansion-line fade-up">The intention you set last month.</p>
+        <p class="expansion-line fade-up">The life event you logged.</p>
+        <p class="expansion-line fade-up">What you were feeling.</p>
+        <p class="expansion-line fade-up">What you&rsquo;ve been writing about.</p>
+      </div>
+
+      <p class="expansion-turn fade-up">
+        And sometimes,<br /><em>that&rsquo;s where something else appears.</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ DEMONSTRATE THE PATTERN ═══════════════
+       Homepage Conversion Rework Phase 2, refined in the Emotional
+       Narrative Pass — the single highest-leverage section on the page.
+       Shows accumulation rather than describing it, resolving the tension
+       beat above: "you weren't imagining it." The explicit ChatGPT
+       comparison used to be this section's own label — moved down to the
+       FAQ (Emotional Narrative Pass, Phase 6) so the underlying
+       differentiation idea (memory across time vs. one lookup) stays high
+       without spending the visitor's first real objection this early. The
+       timeline below is explicitly illustrative (labelled as such), not a
+       live backend call or a real user's data — it's modeled on what
+       Whisp's actual detectors do (patternEngine.js: frequency surges,
+       dream/waking overlap, cross-entry-type recurrence across
+       signs/dreams/journal), not invented functionality. -->
+  <section class="demo-pattern" id="demo-pattern">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">None of these<br /><em>seemed connected.</em></h2>
+      </div>
+
+      <div class="demo-visual fade-up">
+        <img
+          src="/demo-pattern.jpg"
+          alt="Whisp noticing a recurring theme across signs, dreams, and journal entries"
+          loading="lazy"
+          class="demo-visual-img"
+        />
+      </div>
+
+      <div class="demo-timeline fade-up" role="list" aria-label="Illustrative example, not a real user's data">
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 1</span><span class="demo-beat-sign">11:11</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 6</span><span class="demo-beat-sign">A white butterfly</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 11</span><span class="demo-beat-sign">A dream about leaving home</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 17</span><span class="demo-beat-sign">&ldquo;I think I&rsquo;m ready for something different.&rdquo;</span></div>
+        <div class="demo-beat-arrow" aria-hidden="true">↓</div>
+        <div class="demo-beat" role="listitem"><span class="demo-beat-day">Day 23</span><span class="demo-beat-sign">11:11. Again.</span></div>
+      </div>
+
+      <div class="demo-result fade-up">
+        <span class="demo-result-label">&#10022; WHISP NOTICED SOMETHING</span>
+        <p class="demo-result-text">Every one appeared around moments of transition.</p>
+      </div>
+
+      <p class="demo-question">Would you have<br /><em>remembered day 1?</em></p>
+
+      <p class="demo-caveat">
+        Illustrative example, not a specific person&rsquo;s data &mdash; modeled on how Whisp&rsquo;s real
+        pattern detection actually works: recurring symbols, dream-and-waking overlap, and themes
+        that span your signs, dreams, and journal at once.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // Fires once per visitor when the demonstration section first enters
+    // view — the "did the differentiation land" signal (Phase 7).
+    const demoSection = document.getElementById('demo-pattern');
+    if (demoSection && typeof IntersectionObserver !== 'undefined') {
+      let demoSeen = false;
+      const demoIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !demoSeen) {
+            demoSeen = true;
+            (window as any).posthog?.capture('website_demo_section_viewed');
+            demoIO.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      demoIO.observe(demoSection);
+    }
+  </script>
+
+  <!-- ═══ PERSONAL MEMORY DIFFERENTIATOR ═══
+       Every question below is answerable from data the app actually stores
+       on a sign log - see QuickLogScreen's signDocData and
+       logInsightService's prompt assembly: loggedAt / occurrenceCount,
+       dream entries in journalEntries, co-occurring symbols via
+       correlationService, whatWasHappening / lifeContext, mood / moodLabel,
+       and seekingGoals on the profile. No competitor named, no comparison
+       table - the contrast is made by the questions alone. -->
+  <section class="differentiator" id="differentiator">
+    <div class="container">
+      <div class="diff-inner">
+        <h2 class="diff-open fade-up">Anyone can tell you<br /><em>what 111 means.</em></h2>
+
+        <p class="diff-pivot fade-up">But do they know<br /><em>you saw it six days ago?</em></p>
+
+        <ul class="diff-list">
+          <li class="fade-up">Do they know you dreamed about the same thing last month?</li>
+          <li class="fade-up">Do they know another symbol appeared around the same issue three weeks earlier?</li>
+          <li class="fade-up">Do they know what was happening in your life the last three times you saw it?</li>
+          <li class="fade-up">Do they know what you were feeling?</li>
+          <li class="fade-up">Do they know what you&rsquo;ve been asking yourself lately?</li>
+        </ul>
+
+        <p class="diff-answer fade-up">Whisp does.</p>
+
+        <div class="diff-close fade-up">
+          <h3 class="diff-close-title">Meaning isn&rsquo;t always<br /><em>in the symbol alone.</em></h3>
+          <p class="diff-close-body">
+            Sometimes it&rsquo;s in when it appears.<br />
+            What surrounds it.<br />
+            What came before.<br />
+            And what keeps coming back.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WHOLE-LIFE ECOSYSTEM ═══
+       NOT a feature grid. Four groups arranged as a converging
+       constellation: three inputs (what you notice / what you're living /
+       what you're reaching toward) feeding one outcome column.
+
+       Every item verified against the shipped app: signs & dreams
+       (signLogs, isDreamSign), journal entries and life events
+       (journalEntries, entryType 'journal' | 'event'), mood and
+       nervous-system / somatic state, intentions - which a user can have
+       labelled Intentions, Manifestations or Assumptions
+       (intentionTerms.js) - Vision Boards, things you're seeking
+       (seekingGoals), and the outputs: reflections, correlations, Pattern
+       Stories, Recurring Themes and weekly Weaves. -->
+  <section class="ecosystem" id="ecosystem">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">The whole picture</span>
+        <h2 class="section-title">Because your signs<br /><em>don&rsquo;t happen in a vacuum.</em></h2>
+      </div>
+
+      <div class="eco-map">
+        <div class="eco-inputs">
+          <div class="eco-group fade-up">
+            <h3 class="eco-group-title">What you notice</h3>
+            <ul class="eco-items">
+              <li>Signs</li><li>Symbols</li><li>Dreams</li>
+              <li>Synchronicities</li><li>Repeating numbers</li>
+            </ul>
+          </div>
+
+          <div class="eco-group fade-up">
+            <h3 class="eco-group-title">What you&rsquo;re living</h3>
+            <ul class="eco-items">
+              <li>Journal entries</li><li>Life events</li>
+              <li>Mood</li><li>Body &amp; nervous-system state</li>
+              <li>What was happening at the time</li>
+            </ul>
+          </div>
+
+          <div class="eco-group fade-up">
+            <h3 class="eco-group-title">What you&rsquo;re reaching toward</h3>
+            <ul class="eco-items">
+              <li>Intentions</li><li>Vision Boards</li>
+              <li>What you&rsquo;re seeking</li>
+              <li>The questions you&rsquo;re carrying</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="eco-bridge" aria-hidden="true">
+          <span class="eco-bridge-glyph">&#10022;</span>
+        </div>
+
+        <div class="eco-output fade-up">
+          <h3 class="eco-group-title eco-group-title--out">What begins to emerge</h3>
+          <ul class="eco-items eco-items--out">
+            <li>Personal reflections</li>
+            <li>Correlations</li>
+            <li>Recurring themes</li>
+            <li>Pattern Stories</li>
+            <li>Weekly Weaves</li>
+            <li>Connections across time</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="eco-close fade-up">
+        <p class="eco-close-line">Context creates meaning.</p>
+        <p class="eco-close-body">
+          The more context you give Whisp,<br />the more context your reflections can hold.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ APP SHOWCASE ═══════════════ -->
   <section class="showcase" id="showcase">
     <div class="container">
       <div class="section-header">
         <span class="section-label">Inside Whisp</span>
-        <h2 class="section-title">Every sign has a home</h2>
-        <p class="section-sub">Beautiful, minimal, and built around what you actually believe.</p>
+        <h2 class="section-title">It starts with<br /><em>one moment.</em></h2>
+        <p class="section-sub">
+          You saw something. You dreamed something. Something made you stop.<br />
+          Then another. Then something starts repeating.
+        </p>
       </div>
     </div>
 
@@ -387,7 +721,7 @@ const hero = ACTIVE_HERO_VARIANT;
         <p class="appshot-caption">Whisp is noticing — before you even ask</p>
       </div>
       <div class="appshot-card">
-        <img class="appshot-img" src="/device-1.jpg" alt="Whisp home screen showing your journey this week and a noticed pattern" loading="lazy" />
+        <img class="appshot-img" src="/device-1.jpg" alt="Whisp home screen showing your week and a noticed pattern" loading="lazy" />
         <p class="appshot-caption">Your week, gathered into one view</p>
       </div>
       <div class="appshot-card">
@@ -516,52 +850,41 @@ const hero = ACTIVE_HERO_VARIANT;
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAppshotLightbox(); });
   </script>
 
-  <!-- ═══════════════ FEATURES ═══════════════ -->
-  <section class="features" id="features">
+  <section class="showcase-close">
+    <div class="container">
+      <p class="showcase-close-text fade-up">
+        And eventually&hellip;<br /><em>Whisp helps you see something you didn&rsquo;t before.</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CAPABILITIES ═══════════════
+       Condensed from a six-card feature grid to three human concepts.
+       The page has already demonstrated the breadth by this point - a
+       feature grid here would flatten it back into an ordinary product
+       page. Supporting product detail sits UNDER each concept, never
+       above it. -->
+  <section class="capabilities" id="features">
     <div class="container">
       <div class="section-header">
-        <span class="section-label">What Whisp does</span>
-        <h2 class="section-title">Your signs. Your meaning.</h2>
-        <p class="section-sub">
-          Not generic horoscopes. Not one-size-fits-all interpretations.<br />
-          Whisp learns how you make meaning — and interprets through the lenses you choose.
-        </p>
+        <h2 class="section-title">Three things Whisp does<br /><em>with what you give it.</em></h2>
       </div>
 
-      <div class="features-grid">
-        <div class="feature-card feature-card--large">
-          <div class="feature-icon">◐</div>
-          <h3>Sign & Dream Logging</h3>
-          <p>Capture repeating numbers, animals, dreams, and symbols the moment they happen. Quick, frictionless, and beautiful.</p>
-          <div class="feature-tag">Core</div>
+      <div class="cap-grid">
+        <div class="cap fade-up">
+          <h3 class="cap-title">Remember</h3>
+          <p class="cap-body">Keep the strange little moments that would otherwise disappear.</p>
+          <p class="cap-detail">Signs, dreams, symbols, journal entries and life events &mdash; logged in seconds, kept for as long as you keep noticing.</p>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">⟁</div>
-          <h3>Pattern Intelligence</h3>
-          <p>Whisp surfaces correlations across your logs — symbols that cluster around emotional states, moon phases, or life events.</p>
-          <div class="feature-tag feature-tag--gold">Premium</div>
+        <div class="cap fade-up">
+          <h3 class="cap-title">Connect</h3>
+          <p class="cap-body">See what keeps appearing across dreams, signs, emotions, intentions and your life.</p>
+          <p class="cap-detail">Correlations, recurring themes and Pattern Stories &mdash; surfaced only when there&rsquo;s enough to say so honestly.</p>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">◎</div>
-          <h3>Personal Symbol Library</h3>
-          <p>Every symbol builds a profile over time. See frequency, emotional tone, and personalized reflections that remember your beliefs.</p>
-          <div class="feature-tag feature-tag--gold">Premium</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">☽</div>
-          <h3>Celestial Context</h3>
-          <p>Moon phases, retrogrades, eclipses, and your natal chart woven into every log — gated by what you actually believe in.</p>
-          <div class="feature-tag">Core</div>
-        </div>
-
-        <div class="feature-card feature-card--large">
-          <div class="feature-icon">✦</div>
-          <h3>Belief-Aware Reflections</h3>
-          <p>Choose how you make meaning — astrology, numerology, Jungian, spiritual, secular — and Whisp only draws on the lenses you've selected. Your meaning, not ours.</p>
-          <div class="feature-tag feature-tag--gold">Premium</div>
+        <div class="cap fade-up">
+          <h3 class="cap-title">Reflect</h3>
+          <p class="cap-body">Explore what those moments might mean through the beliefs, traditions and frameworks that matter to you.</p>
+          <p class="cap-detail">Personal reflections and weekly Weaves, drawn only from the lenses you&rsquo;ve actually chosen.</p>
         </div>
       </div>
     </div>
@@ -575,11 +898,12 @@ const hero = ACTIVE_HERO_VARIANT;
       <div class="philosophy-inner">
         <div class="philosophy-glyph" aria-hidden="true">✦</div>
         <blockquote class="philosophy-quote">
-          "The universe speaks in symbols.<br />Whisp helps you learn the language."
+          Maybe it&rsquo;s chance.<br />Maybe it&rsquo;s something more.<br /><em>Either way, you noticed.</em>
         </blockquote>
         <p class="philosophy-body">
-          We believe meaning isn't universal — it's personal. What a crow means to you is shaped by your history, your beliefs, your culture, and the moment it appeared.
-          Whisp doesn't tell you what your signs mean. It helps you discover it yourself.
+          Meaning isn&rsquo;t universal &mdash; it&rsquo;s personal. What a crow means to you is shaped by your history,
+          your beliefs, your culture, and the moment it appeared. Whisp doesn&rsquo;t tell you what your
+          signs mean, and it doesn&rsquo;t decide what you believe. Your beliefs shape the lens.
         </p>
       </div>
     </div>
@@ -610,7 +934,10 @@ const hero = ACTIVE_HERO_VARIANT;
     <div class="container">
       <div class="section-header">
         <span class="section-label">Founding Membership</span>
-        <h2 class="section-title">Get in at the beginning — <em>and stay there.</em></h2>
+        <h2 class="section-title">The more you remember,<br /><em>the more there is to see.</em></h2>
+        <p class="section-sub pricing-transition">
+          Start free. If Whisp becomes part of how you make sense of your life, keep the whole story.
+        </p>
         <p class="section-sub">
           Whisp is new. So is this offer. The first 500 members lock in Premium at half the regular price,
           for as long as they stay — not an intro rate that quietly climbs, not a trial.
@@ -643,7 +970,7 @@ const hero = ACTIVE_HERO_VARIANT;
             <li>✓ Symbol library (universal meanings)</li>
             <li>✓ Celestial context</li>
             <li>✓ Basic pattern tracking</li>
-            <li>✓ Reflection credits — 12 to start, plus more from daily logging and streaks</li>
+            <li>✓ Reflection credits — 15 to start, plus more from daily logging and streaks</li>
             <li>✓ 90-day sign & dream history</li>
           </ul>
           <div class="dl-btn-row">
@@ -782,7 +1109,7 @@ const hero = ACTIVE_HERO_VARIANT;
   <section class="how-it-works" id="how-it-works">
     <div class="container">
       <div class="section-header">
-        <span class="section-label">The journey</span>
+        <span class="section-label">How it unfolds</span>
         <h2 class="section-title">From sign to meaning</h2>
       </div>
 
@@ -828,7 +1155,7 @@ const hero = ACTIVE_HERO_VARIANT;
 
         <details class="faq-item">
           <summary class="faq-q">Is Whisp free to use?</summary>
-          <p class="faq-a">Yes. Whisp is free to download and start. The free plan includes unlimited sign and dream logging, the symbol library, celestial context, and pattern tracking. Premium unlocks AI reflections, chakra insights, sacred text resonance, custom symbol imagery, and more. Current pricing is shown in the app.</p>
+          <p class="faq-a">Yes. Whisp is free to download and start. The free plan includes unlimited sign and dream logging, the symbol library, celestial context, and pattern tracking. Premium adds AI reflections, chakra insights, sacred text resonance, custom symbol imagery, and more. Current pricing is shown in the app.</p>
         </details>
 
         <details class="faq-item">
@@ -873,7 +1200,7 @@ const hero = ACTIVE_HERO_VARIANT;
 
         <details class="faq-item">
           <summary class="faq-q">What AI powers Whisp?</summary>
-          <p class="faq-a">Whisp uses Claude by Anthropic — one of the most thoughtful and context-aware AI systems available. Your belief settings shape what the AI considers; your logged history shapes how it interprets. Free users receive 3 AI reflections per month; Premium is unlimited.</p>
+          <p class="faq-a">Whisp uses Claude by Anthropic — one of the most thoughtful and context-aware AI systems available. Your belief settings shape what the AI considers; your logged history shapes how it interprets. Free users start with 15 reflection credits and earn more through daily logging, streaks, and sharing — one credit per reflection. Premium is unlimited.</p>
         </details>
 
         <details class="faq-item">
@@ -894,11 +1221,11 @@ const hero = ACTIVE_HERO_VARIANT;
   <section class="final-cta">
     <div class="container">
       <div class="cta-inner">
-        <div class="cta-glyph" aria-hidden="true">◎</div>
-        <h2>Your signs are waiting</h2>
-        <p>Lock in the founder rate before it closes — $3.99/mo, for as long as you stay subscribed.</p>
-        <a href="/founders" class="btn btn-primary" style="padding: 16px 36px; font-size: 0.9rem;">Claim Founder Pricing ✦</a>
-        <span class="cta-note">Normally $7.99/mo · Cancel anytime</span>
+        <div class="cta-glyph" aria-hidden="true">&#9678;</div>
+        <h2>You&rsquo;ve already<br /><em>started noticing.</em></h2>
+        <p class="cta-lead">Now see what happens when you remember.</p>
+        <a href="https://apps.apple.com/app/id6777561873" class="btn btn-primary" id="final-cta-btn" data-analytics="final_cta" style="padding: 16px 36px; font-size: 0.9rem;">Start with your first sign &rarr;</a>
+        <span class="cta-note">Free to start &middot; iOS &amp; Android &middot; <a href="/founders" class="cta-founders-link" data-analytics="final_cta_founders">Founder pricing &rarr;</a></span>
       </div>
     </div>
   </section>
@@ -1270,6 +1597,136 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream-dim);
     opacity: 0.65;
   }
+  /* ── WHAT PEOPLE WRITE ──
+     Atmospheric treatment (same bg + heavy-scrim pattern as .philosophy)
+     because this is an emotional beat, not an evidence one. Kept quieter
+     than the hero: the scrim is deliberately heavier so the three stories
+     carry the section rather than the artwork. */
+  .stories {
+    position: relative;
+    padding: var(--section-pad) 0;
+    overflow: hidden;
+  }
+  .stories-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('/stories-bg.jpg');
+    background-size: cover;
+    background-position: center 55%;
+    z-index: 0;
+  }
+  .stories-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(to bottom,
+        rgba(8,12,24,0.94) 0%,
+        rgba(8,12,24,0.80) 35%,
+        rgba(8,12,24,0.80) 65%,
+        rgba(8,12,24,0.94) 100%
+      );
+  }
+  .stories .container {
+    position: relative;
+    z-index: 2;
+  }
+  .stories .section-header {
+    max-width: 640px;
+    margin: 0 auto 44px;
+    text-align: center;
+  }
+  .stories .section-title { margin-top: 14px; }
+  .stories .section-sub { margin-top: 16px; }
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1020px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+  .story {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 26px 26px;
+    border: 1px solid var(--navy-border);
+    border-radius: 10px;
+    background: rgba(8,12,24,0.55);
+    backdrop-filter: blur(2px);
+  }
+  .story-mark {
+    display: block;
+    color: var(--gold);
+    opacity: 0.5;
+    font-size: 0.85rem;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .story-label {
+    font-family: var(--font-display);
+    font-size: 0.64rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .story-text {
+    font-family: var(--font-heading);
+    font-size: 1.06rem;
+    line-height: 1.7;
+    color: var(--cream);
+    margin-bottom: 18px;
+  }
+  /* The turn — pushed to the card's baseline so all three align regardless
+     of scenario length, and set apart by a hairline so the emotional beat
+     reads as a separate movement rather than a fourth sentence. */
+  .story-turn {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--navy-border);
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--gold-light);
+    opacity: 0.88;
+  }
+  /* Reserved for when permissioned attribution lands — drops straight in
+     under any .story-turn without restructuring the section. */
+  .story-attrib {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .stories-close {
+    max-width: 560px;
+    margin: 44px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--navy-border);
+    text-align: center;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--cream-dim);
+  }
+  @media (max-width: 900px) {
+    .stories-grid { grid-template-columns: 1fr; max-width: 560px; gap: 16px; }
+    .story { padding: 26px 24px 24px; }
+  }
+  @media (max-width: 600px) {
+    .story-text { font-size: 1.02rem; }
+    .story-turn { font-size: 0.97rem; }
+    .stories-close { font-size: 0.96rem; margin-top: 36px; }
+  }
+
   @media (max-width: 600px) {
     .demo-beat { padding: 9px 14px; gap: 10px; }
     .demo-beat-day { width: 46px; font-size: 0.6rem; }
@@ -1348,8 +1805,6 @@ const hero = ACTIVE_HERO_VARIANT;
   }
   .sc-dot.active { background: var(--gold); transform: scale(1.4); }
 
-  /* ── FEATURES ── */
-  .features { padding: var(--section-pad) 0; }
   .section-header {
     text-align: center;
     margin-bottom: 64px;
@@ -1371,62 +1826,6 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream-dim);
     text-align: center;
     line-height: 1.7;
-  }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .feature-card--large { grid-column: span 2; }
-  .feature-card {
-    background: rgba(15, 24, 48, 0.6);
-    border: 1px solid var(--navy-border);
-    border-radius: 8px;
-    padding: 36px;
-    position: relative;
-    transition: border-color 0.3s, transform 0.3s;
-  }
-  .feature-card:hover {
-    border-color: rgba(201,168,76,0.25);
-    transform: translateY(-3px);
-  }
-  .feature-icon {
-    font-size: 1.8rem;
-    color: var(--gold);
-    opacity: 0.7;
-    margin-bottom: 20px;
-    line-height: 1;
-  }
-  .feature-card h3 {
-    font-family: var(--font-heading);
-    font-size: 1.4rem;
-    font-weight: 500;
-    margin-bottom: 12px;
-    color: var(--cream);
-  }
-  .feature-card p {
-    font-size: 0.9rem;
-    color: var(--cream-dim);
-    line-height: 1.7;
-  }
-  .feature-tag {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-family: var(--font-display);
-    font-size: 0.55rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 2px;
-    background: rgba(30, 45, 80, 0.8);
-    color: var(--cream-dim);
-    border: 1px solid var(--navy-border);
-  }
-  .feature-tag--gold {
-    background: rgba(201, 168, 76, 0.1);
-    color: var(--gold);
-    border-color: rgba(201, 168, 76, 0.2);
   }
 
   /* ── HOW IT WORKS ── */
@@ -1760,13 +2159,9 @@ const hero = ACTIVE_HERO_VARIANT;
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
-    .features-grid {
-      grid-template-columns: 1fr 1fr;
-    }
     .feature-card--large { grid-column: span 2; }
   }
   @media (max-width: 640px) {
-    .features-grid { grid-template-columns: 1fr; }
     .feature-card--large { grid-column: span 1; }
     .pricing-grid { grid-template-columns: 1fr; }
     .step { grid-template-columns: 48px 1fr; gap: 20px; }
@@ -1976,4 +2371,413 @@ const hero = ACTIVE_HERO_VARIANT;
   @media (max-width: 480px) {
     .wn-grid { grid-template-columns: 1fr; }
   }
+
+  /* ══════════ NARRATIVE REWORK — new sections ══════════ */
+
+  /* ── RECOGNITION ── */
+  .validation-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 3.6vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+    margin-bottom: 48px;
+  }
+  .validation-title em { font-style: italic; color: var(--gold-light); }
+  .validation-line-beat {
+    display: inline-block;
+    margin-top: 4px;
+    color: var(--cream);
+  }
+
+  /* ── MEMORY ──
+     "Whisp doesn't." carries the section. Nothing explanatory follows it. */
+  .tension-step {
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .tension-aside {
+    font-size: 0.92rem;
+    color: var(--cream-dim);
+    opacity: 0.7;
+    margin: 22px 0 46px;
+  }
+  .tension-resolve {
+    font-family: var(--font-heading);
+    font-size: clamp(2.1rem, 5.5vw, 3.6rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--gold-light);
+  }
+
+  /* ── DEPTH ── */
+  .depth {
+    padding: var(--section-pad) 0;
+    background: linear-gradient(180deg, var(--navy-mid) 0%, var(--navy) 100%);
+    border-top: 1px solid var(--navy-border);
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .depth .section-header { max-width: 660px; margin: 0 auto 64px; text-align: center; }
+  .depth-open {
+    font-family: var(--font-heading);
+    font-size: clamp(1.7rem, 4vw, 2.7rem);
+    font-weight: 300;
+    line-height: 1.3;
+    color: var(--cream);
+  }
+  .depth-open em { font-style: italic; color: var(--gold-light); }
+  .depth-sub { margin-top: 18px; font-size: 1rem; line-height: 1.75; color: var(--cream-dim); }
+
+  .depth-composition {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 940px;
+    margin: 0 auto;
+  }
+  .depth-moment {
+    text-align: center;
+    padding: 34px 28px;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    background: rgba(201,168,76,0.05);
+    max-width: 440px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .depth-moment::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -40px;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(201,168,76,0.45), transparent);
+  }
+  .depth-moment-label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 14px;
+  }
+  .depth-moment-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--cream);
+  }
+  .depth-moment-text em { font-style: italic; color: var(--gold-light); }
+
+  .depth-context {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 44px;
+  }
+  .depth-ctx { position: relative; padding-left: 20px; }
+  .depth-ctx::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 9px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+  }
+  .depth-ctx-label {
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 9px;
+  }
+  .depth-ctx-text { font-size: 0.95rem; line-height: 1.7; color: var(--cream-dim); }
+
+  .depth-land { margin: 72px auto 0; max-width: 620px; text-align: center; }
+  .depth-land-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3.6vw, 2.35rem);
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--cream);
+  }
+  .depth-land-text em { font-style: italic; color: var(--gold-light); }
+
+  /* ── STORIES additions ── */
+  .story-turn--solo {
+    font-size: 1.5rem;
+    font-style: normal;
+    color: var(--gold-light);
+    padding-top: 18px;
+  }
+  .story-coda {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--cream-dim);
+  }
+  .stories-close-block { margin: 56px auto 0; max-width: 560px; text-align: center; }
+  .stories-question {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+    margin-bottom: 26px;
+  }
+  .stories-question em { font-style: italic; color: var(--gold-light); }
+  .stories-cta {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(201,168,76,0.4);
+    padding-bottom: 3px;
+  }
+  .stories-cta:hover { color: var(--gold-light); border-bottom-color: var(--gold-light); }
+  .stories-note {
+    max-width: 520px;
+    margin: 44px auto 0;
+    text-align: center;
+    font-size: 0.73rem;
+    line-height: 1.65;
+    color: var(--cream-dim);
+    opacity: 0.55;
+  }
+
+  /* ── EXPANSION ── */
+  .expansion {
+    padding: var(--section-pad) 0;
+    background: var(--navy);
+    text-align: center;
+  }
+  .expansion-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.9rem, 4.6vw, 3rem);
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--cream);
+    margin-bottom: 54px;
+  }
+  .expansion-title em { font-style: italic; color: var(--gold-light); }
+  .expansion-lines { max-width: 520px; margin: 0 auto; }
+  .expansion-line {
+    font-family: var(--font-heading);
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: var(--cream-dim);
+    padding: 11px 0;
+  }
+  .expansion-turn {
+    margin-top: 54px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--cream);
+  }
+  .expansion-turn em { font-style: italic; color: var(--gold-light); }
+
+  /* ── PATTERN question ── */
+  .demo-question {
+    max-width: 520px;
+    margin: 46px auto 0;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+  }
+  .demo-question em { font-style: italic; color: var(--gold-light); }
+
+  /* ── DIFFERENTIATOR ── */
+  .differentiator {
+    padding: var(--section-pad) 0;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-top: 1px solid var(--navy-border);
+  }
+  .diff-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+  .diff-open {
+    font-family: var(--font-heading);
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    font-weight: 300;
+    line-height: 1.3;
+    color: var(--cream-dim);
+  }
+  .diff-open em { font-style: italic; color: var(--cream); }
+  .diff-pivot {
+    margin-top: 30px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3.6vw, 2.3rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+  }
+  .diff-pivot em { font-style: italic; color: var(--gold-light); }
+  .diff-list { list-style: none; margin: 40px auto 0; max-width: 560px; }
+  .diff-list li {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--cream-dim);
+    padding: 10px 0;
+  }
+  .diff-answer {
+    margin-top: 44px;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-light);
+  }
+  .diff-close { margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--navy-border); }
+  .diff-close-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+  }
+  .diff-close-title em { font-style: italic; color: var(--gold-light); }
+  .diff-close-body { margin-top: 22px; font-size: 1rem; line-height: 1.9; color: var(--cream-dim); }
+
+  /* ── ECOSYSTEM ── */
+  .ecosystem {
+    padding: var(--section-pad) 0;
+    background: var(--navy-mid);
+    border-top: 1px solid var(--navy-border);
+  }
+  .ecosystem .section-header { max-width: 640px; margin: 0 auto 60px; text-align: center; }
+  .eco-map {
+    display: grid;
+    grid-template-columns: 1.6fr auto 1fr;
+    gap: 34px;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .eco-inputs { display: grid; gap: 26px; }
+  .eco-group {
+    padding: 22px 24px;
+    border: 1px solid var(--navy-border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.015);
+  }
+  .eco-group-title {
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 12px;
+  }
+  .eco-group-title--out { color: var(--gold); }
+  .eco-items { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .eco-items li {
+    font-family: var(--font-heading);
+    font-size: 0.98rem;
+    color: var(--cream-dim);
+  }
+  .eco-items--out { flex-direction: column; gap: 9px; }
+  .eco-items--out li { color: var(--cream); }
+  .eco-bridge { display: flex; align-items: center; justify-content: center; position: relative; }
+  .eco-bridge::before,
+  .eco-bridge::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: 34%;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.3));
+  }
+  .eco-bridge::before { top: 0; }
+  .eco-bridge::after { bottom: 0; transform: scaleY(-1); }
+  .eco-bridge-glyph { color: var(--gold); opacity: 0.55; font-size: 1rem; }
+  .eco-output {
+    padding: 28px 26px;
+    border: 1px solid rgba(201,168,76,0.28);
+    border-radius: 10px;
+    background: rgba(201,168,76,0.05);
+  }
+  .eco-close { margin: 64px auto 0; max-width: 580px; text-align: center; }
+  .eco-close-line {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3.6vw, 2.2rem);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-light);
+  }
+  .eco-close-body { margin-top: 20px; font-size: 1rem; line-height: 1.8; color: var(--cream-dim); }
+
+  /* ── CAPABILITIES ── */
+  .capabilities { padding: var(--section-pad) 0; background: var(--navy); }
+  .capabilities .section-header { max-width: 620px; margin: 0 auto 56px; text-align: center; }
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .cap { text-align: center; }
+  .cap-title {
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+  }
+  .cap-body { font-family: var(--font-heading); font-size: 1.05rem; line-height: 1.65; color: var(--cream); }
+  .cap-detail { margin-top: 14px; font-size: 0.87rem; line-height: 1.7; color: var(--cream-dim); opacity: 0.8; }
+
+  /* ── PRICING / FINAL CTA additions ── */
+  .pricing-transition { margin-top: 16px; }
+  .cta-lead { font-size: 1.05rem; line-height: 1.7; }
+  .cta-founders-link { color: var(--gold-dim); border-bottom: 1px solid rgba(138,111,48,0.4); }
+  .cta-founders-link:hover { color: var(--gold); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .depth-context { grid-template-columns: 1fr; gap: 26px; }
+    .cap-grid { grid-template-columns: 1fr; gap: 44px; max-width: 460px; }
+    .eco-map { grid-template-columns: 1fr; gap: 24px; max-width: 520px; }
+    .eco-bridge { height: 40px; }
+    .eco-bridge::before, .eco-bridge::after { height: 40%; }
+    .eco-items--out { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; }
+  }
+  @media (max-width: 600px) {
+    .validation-title { margin-bottom: 36px; }
+    .tension-resolve { font-size: 2.2rem; }
+    .depth-moment { padding: 26px 20px; }
+    .depth-land { margin-top: 52px; }
+    .expansion-line { font-size: 1.04rem; padding: 9px 0; }
+    .diff-list li { font-size: 0.95rem; }
+    .diff-close { margin-top: 52px; padding-top: 36px; }
+    .story-turn--solo { font-size: 1.35rem; }
+  }
+
+
+  /* ── SHOWCASE CLOSE ── */
+  .showcase-close { padding: 0 0 var(--section-pad); background: var(--navy); text-align: center; }
+  .showcase-close-text {
+    max-width: 620px;
+    margin: 0 auto;
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--cream);
+  }
+  .showcase-close-text em { font-style: italic; color: var(--gold-light); }
+
 </style>
