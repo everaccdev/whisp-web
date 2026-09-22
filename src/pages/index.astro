@@ -32,7 +32,7 @@ const hero = ACTIVE_HERO_VARIANT;
       </div>
 
       <h1 class="hero-title fade-up" style="animation-delay:0.15s">
-        <span id="hero-title-plain">{hero.titlePlain}</span><br /><em id="hero-title-em">{hero.titleEmphasis}</em>
+        <span id="hero-title-plain" set:html={hero.titlePlain}></span><br /><em id="hero-title-em" set:html={hero.titleEmphasis}></em>
       </h1>
 
       <div class="hero-rule fade-up" style="animation-delay:0.22s">
@@ -158,8 +158,8 @@ const hero = ACTIVE_HERO_VARIANT;
         var plainEl = document.getElementById('hero-title-plain');
         var emEl = document.getElementById('hero-title-em');
         var subEl = document.getElementById('hero-sub');
-        if (plainEl) plainEl.textContent = v.titlePlain;
-        if (emEl) emEl.textContent = v.titleEmphasis;
+        if (plainEl) plainEl.innerHTML = v.titlePlain;
+        if (emEl) emEl.innerHTML = v.titleEmphasis;
         if (subEl) subEl.innerHTML = v.sub;
       }
 
@@ -179,35 +179,49 @@ const hero = ACTIVE_HERO_VARIANT;
        Emotional Narrative Pass, Phase 2. Job: make the visitor feel
        personally, specifically recognized before the page argues anything.
        Power is entirely in the specificity of the examples and the closing
-       italic line — never generalize this copy. Visual is deliberately
-       restrained (CSS-only dark/nebula gradient, no image) so nothing
-       competes with the text. Reuses the existing load-time .fade-up
+       italic line — never generalize this copy. Visual UX pass added the
+       lifestyle photograph beside the moments: the image does the
+       identification work so the copy only has to name the feeling.
+       Reuses the existing load-time .fade-up
        stagger already established on the hero — no new animation
        mechanism, and .fade-up already degrades to static under
        prefers-reduced-motion (see global.css). -->
   <section class="validation-beat" id="validation-beat">
-    <!-- CSS nebula gradient only — the feather-symbol.jpg ambient
-         background layer was removed (too clunky as a large image behind
-         the copy). The spark divider and closing feather glyph stayed —
-         those read fine on their own; only the background image was the
-         problem. -->
+    <!-- CSS nebula gradient behind everything (the old full-width
+         feather-symbol.jpg ambient layer was removed as too clunky). The
+         photograph added in the visual pass is a contained figure beside
+         the copy, not a background wash — that was the distinction that
+         made the earlier attempt fail. -->
     <div class="validation-bg" aria-hidden="true"></div>
     <div class="container">
       <div class="section-header">
         <h2 class="validation-title fade-up">You know when something feels<br /><em>a little too specific to ignore?</em></h2>
       </div>
-      <div class="validation-lines">
-        <p class="validation-line fade-up" style="animation-delay:0.05s">11:11.<br /><span class="validation-line-beat">Again.</span></p>
-        <p class="validation-line fade-up" style="animation-delay:0.15s">You dream about someone.<br /><span class="validation-line-beat">They call the next morning.</span></p>
-        <p class="validation-line fade-up" style="animation-delay:0.25s">The same symbol appears three times<br /><span class="validation-line-beat">during the week you&rsquo;re considering a change.</span></p>
-        <p class="validation-line fade-up" style="animation-delay:0.35s">A word you haven&rsquo;t thought about in years<br /><span class="validation-line-beat">suddenly seems to be everywhere.</span></p>
-        <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.45s">You half-laugh it off. You wonder if you&rsquo;re the only one who counts these.</p>
 
-        <div class="fade-up" style="animation-delay:0.4s">
-          <WhispDivider glyph="spark" size={13} class="validation-divider" />
+      <!-- Image + moments side by side. The photograph is doing the
+           identification work ("that is my room, that is my 11pm") so the
+           copy doesn't have to describe the feeling as well as name it. -->
+      <div class="validation-split">
+        <div class="validation-figure fade-up">
+          <img src="/home-recognition.jpg"
+               alt="A woman in bed at dusk looking at her phone, a journal, crystals and a moon chart around her"
+               loading="lazy" width="1500" height="844" />
+        </div>
+        <div class="validation-lines">
+          <p class="validation-line fade-up" style="animation-delay:0.05s">11:11.<br /><span class="validation-line-beat">Again.</span></p>
+          <p class="validation-line fade-up" style="animation-delay:0.15s">You dream about someone.<br /><span class="validation-line-beat">They call the next morning.</span></p>
+          <p class="validation-line fade-up" style="animation-delay:0.25s">The same symbol appears three times<br /><span class="validation-line-beat">during the week you&rsquo;re considering a change.</span></p>
+          <p class="validation-line fade-up" style="animation-delay:0.35s">A word you haven&rsquo;t thought about in years<br /><span class="validation-line-beat">suddenly seems to be everywhere.</span></p>
+          <p class="validation-line validation-line--soft fade-up" style="animation-delay:0.45s">You half-laugh it off. You wonder if you&rsquo;re the only one who counts these.</p>
+        </div>
+      </div>
+
+      <div class="validation-outro">
+        <div class="validation-divider-wrap fade-up" style="animation-delay:0.52s">
+          <WhispDivider glyph="spark" size={13} />
         </div>
 
-        <p class="validation-hinge fade-up" style="animation-delay:0.48s">
+        <p class="validation-hinge fade-up" style="animation-delay:0.6s">
           <em>You've never told anyone how often this actually happens.</em>
         </p>
 
@@ -260,29 +274,32 @@ const hero = ACTIVE_HERO_VARIANT;
       <div class="signs-visual fade-up">
         <img
           src="/signs-collage.jpg"
-          alt="A collage of signs Whisp tracks: repeating numbers, animal encounters, dreams, and objects"
+          alt="A collage of the kinds of signs people log in Whisp: repeating numbers, animal encounters, dreams, and objects"
           loading="lazy"
         />
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ THE TENSION BEAT ═══════════════
-       Phase 3. Short, on purpose — its entire job is the felt gap between
-       the recognition above and the demonstration below. Closing line is
-       the first appearance of Whisp as the answer; it should read as
-       relief, not a pitch. -->
+  <!-- ═══════════════ LOOKING CLOSER ═══════════════
+       Replaces the old memory beat ("You notice it / and then you forget
+       it / Whisp doesn't"). That version was clever but framed Whisp as
+       the thing keeping watch while the user forgot — an app that knows
+       you better than you know yourself. The emotional proposition is
+       DISCOVERY, not memory: the reader is the one looking closer, and
+       Whisp is the lens. Three beats, escalating, ending on something
+       that opens rather than resolves. -->
   <section class="tension-beat" id="tension-beat">
     <div class="container">
       <div class="section-header">
-        <p class="tension-step fade-up" style="animation-delay:0.05s">You notice it.</p>
-        <p class="tension-step fade-up" style="animation-delay:0.2s">And then you forget it.</p>
-
-        <p class="tension-aside fade-up" style="animation-delay:0.35s">That&rsquo;s the problem.</p>
+        <p class="tension-step fade-up" style="animation-delay:0.05s">One moment can make you wonder.</p>
+        <p class="tension-step fade-up" style="animation-delay:0.2s">A few can make you look closer.</p>
 
         <!-- This line carries the section. Nothing explanatory follows it
              on purpose - the next section opens the expansion instead. -->
-        <p class="tension-resolve fade-up" style="animation-delay:0.5s">Whisp doesn&rsquo;t.</p>
+        <p class="tension-resolve fade-up" style="animation-delay:0.4s">
+          Put them together, and<br /><em>something else can come into view.</em>
+        </p>
 
         <div class="tension-glyph-close">
           <WhispGlyph name="sign-diamond" size={22} animate="brighten" delay={1} />
@@ -317,9 +334,10 @@ const hero = ACTIVE_HERO_VARIANT;
   <section class="depth" id="depth">
     <div class="container">
       <div class="section-header">
-        <h2 class="depth-open fade-up">But remembering<br /><em>is only the beginning.</em></h2>
+        <h2 class="depth-open fade-up">One moment<br /><em>can hold a lot.</em></h2>
         <p class="depth-sub fade-up">
-          Tap anything you&rsquo;ve logged and there can be far more inside it than a definition.
+          A generic interpretation can tell you what a white butterfly traditionally symbolises.
+          Open one in Whisp and there can be far more inside it than a definition.
         </p>
       </div>
 
@@ -365,14 +383,27 @@ const hero = ACTIVE_HERO_VARIANT;
         </div>
       </div>
 
-      <div class="depth-land fade-up">
-        <p class="depth-land-text">
-          Same symbol.<br />
-          Different person.<br />
-          Different life.<br />
-          <em>Different reflection.</em>
-        </p>
-      </div>
+      <!-- The payoff is carried by the IMAGE, not the copy. Two people,
+           different ages, different frameworks (a crucifix and family
+           photographs on one side; Jung, astrology and moon charts on the
+           other), the same white butterfly at both windows, the same look
+           on both faces. The four lines underneath only name what the
+           reader has already seen. -->
+      <figure class="depth-land fade-up">
+        <div class="depth-land-img">
+          <img src="/home-two-lives.jpg"
+               alt="Two women in different homes, one with family photographs and a worn Bible, one with books on Jung and astrology, both looking up at a white butterfly at the window"
+               loading="lazy" width="1600" height="900" />
+          <span class="depth-land-tag depth-land-tag--l">Same butterfly.</span>
+          <span class="depth-land-tag depth-land-tag--r">Same morning.</span>
+        </div>
+        <figcaption class="depth-land-text">
+          <span class="dl-line">Same symbol.</span>
+          <span class="dl-line">Different person.</span>
+          <span class="dl-line">Different life.</span>
+          <span class="dl-line dl-line--hit">Different reflection.</span>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -408,16 +439,17 @@ const hero = ACTIVE_HERO_VARIANT;
          card 1 = DEPTH within a single moment
          card 2 = CONNECTION across time
          card 3 = MEANING through personal life context
-       Do not rewrite these into three versions of "Whisp found a pattern."
+       Do not rewrite these into three versions of "Whisp found a pattern" -
+       and keep the USER as the protagonist, never the product.
        That collapse would destroy the point of the section. -->
   <section class="stories" id="stories">
     <div class="stories-bg"></div>
     <div class="stories-overlay"></div>
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">They logged one thing.<br /><em>Whisp found something else.</em></h2>
+        <h2 class="section-title">They logged one thing.<br /><em>Then something came into view.</em></h2>
         <p class="section-sub">
-          A dream you almost forgot. A pattern hiding across months. Something you&rsquo;ve been
+          A dream you almost forgot. A thread running through months. Something you&rsquo;ve been
           circling without knowing how to name it. Sometimes a reflection lands differently
           when it comes from your own life.
         </p>
@@ -445,7 +477,8 @@ const hero = ACTIVE_HERO_VARIANT;
             self-love, boundaries and letting go.
           </p>
           <p class="story-text">
-            Whisp connected something she hadn&rsquo;t been able to name.
+            Seeing those moments together brought something into focus she hadn&rsquo;t
+            been able to name.
           </p>
           <p class="story-turn story-turn--solo">She cried.</p>
           <p class="story-coda">Then she made the decision she&rsquo;d been circling for months.</p>
@@ -462,15 +495,15 @@ const hero = ACTIVE_HERO_VARIANT;
             his children in the back seat.
           </p>
           <p class="story-text">
-            Whisp reflected something about how he was carrying it all that he hadn&rsquo;t been
-            able to see himself.
+            The reflection helped him see something about how he was carrying it all that
+            he hadn&rsquo;t been able to see before.
           </p>
           <p class="story-turn">It made him face it.</p>
         </article>
       </div>
 
       <div class="stories-close-block fade-up">
-        <p class="stories-question">What would Whisp<br /><em>notice in yours?</em></p>
+        <p class="stories-question">What might you<br /><em>see in yours?</em></p>
         <a href="https://apps.apple.com/app/id6777561873" class="stories-cta" data-analytics="stories_cta">Start noticing &rarr;</a>
       </div>
 
@@ -488,21 +521,22 @@ const hero = ACTIVE_HERO_VARIANT;
        explanatory copy after the final line - the pattern section below
        is the explanation. -->
   <section class="expansion" id="expansion">
+    <div class="expansion-bg" aria-hidden="true"></div>
+    <div class="expansion-overlay" aria-hidden="true"></div>
     <div class="container">
       <h2 class="expansion-title fade-up">And that&rsquo;s just<br /><em>one moment.</em></h2>
 
       <div class="expansion-lines">
-        <p class="expansion-line fade-up">One dream can hold a lot.</p>
-        <p class="expansion-line fade-up">But Whisp also remembers the dream before it.</p>
-        <p class="expansion-line fade-up">The number you saw three weeks ago.</p>
-        <p class="expansion-line fade-up">The intention you set last month.</p>
-        <p class="expansion-line fade-up">The life event you logged.</p>
-        <p class="expansion-line fade-up">What you were feeling.</p>
-        <p class="expansion-line fade-up">What you&rsquo;ve been writing about.</p>
+        <p class="expansion-line fade-up" style="--step:0">Put it beside the dream from last week.</p>
+        <p class="expansion-line fade-up" style="--step:1">The number that keeps appearing.</p>
+        <p class="expansion-line fade-up" style="--step:2">The intention you&rsquo;ve been carrying.</p>
+        <p class="expansion-line fade-up" style="--step:3">What you&rsquo;ve been feeling.</p>
+        <p class="expansion-line fade-up" style="--step:4">What&rsquo;s changing in your life.</p>
+        <p class="expansion-line fade-up" style="--step:5">What you&rsquo;ve been writing about.</p>
       </div>
 
       <p class="expansion-turn fade-up">
-        And sometimes,<br /><em>that&rsquo;s where something else appears.</em>
+        Something different<br /><em>can come into view.</em>
       </p>
     </div>
   </section>
@@ -549,11 +583,11 @@ const hero = ACTIVE_HERO_VARIANT;
       </div>
 
       <div class="demo-result fade-up">
-        <span class="demo-result-label">&#10022; WHISP NOTICED SOMETHING</span>
+        <span class="demo-result-label">&#10022; THEN YOU SEE THEM TOGETHER</span>
         <p class="demo-result-text">Every one appeared around moments of transition.</p>
       </div>
 
-      <p class="demo-question">Would you have<br /><em>remembered day 1?</em></p>
+      <p class="demo-question">You couldn&rsquo;t see it<br /><em>from one moment alone.</em></p>
 
       <p class="demo-caveat">
         Illustrative example, not a specific person&rsquo;s data &mdash; modeled on how Whisp&rsquo;s real
@@ -582,38 +616,39 @@ const hero = ACTIVE_HERO_VARIANT;
     }
   </script>
 
-  <!-- ═══ PERSONAL MEMORY DIFFERENTIATOR ═══
-       Every question below is answerable from data the app actually stores
-       on a sign log - see QuickLogScreen's signDocData and
-       logInsightService's prompt assembly: loggedAt / occurrenceCount,
-       dream entries in journalEntries, co-occurring symbols via
-       correlationService, whatWasHappening / lifeContext, mood / moodLabel,
-       and seekingGoals on the profile. No competitor named, no comparison
-       table - the contrast is made by the questions alone. -->
+  <!-- ═══ CONTEXT ═══
+       Replaces the old "Anyone can tell you what 111 means / but do THEY
+       know you saw it six days ago?" framing. That version centred what
+       Whisp knows about you, which reads as surveillance and makes the
+       product the protagonist. These questions are addressed to the
+       READER instead - they hold the answers; Whisp is where the answers
+       sit beside each other.
+
+       Every question maps to something the app actually captures:
+       whatWasHappening, lifeContext, mood/moodLabel, dream entries in
+       journalEntries, co-occurring symbols via correlationService,
+       seekingGoals, and active intentions. No competitor named, no
+       comparison table. -->
   <section class="differentiator" id="differentiator">
     <div class="container">
       <div class="diff-inner">
-        <h2 class="diff-open fade-up">Anyone can tell you<br /><em>what 111 means.</em></h2>
-
-        <p class="diff-pivot fade-up">But do they know<br /><em>you saw it six days ago?</em></p>
+        <h2 class="diff-open fade-up">111 doesn&rsquo;t happen<br /><em>in a vacuum.</em></h2>
 
         <ul class="diff-list">
-          <li class="fade-up">Do they know you dreamed about the same thing last month?</li>
-          <li class="fade-up">Do they know another symbol appeared around the same issue three weeks earlier?</li>
-          <li class="fade-up">Do they know what was happening in your life the last three times you saw it?</li>
-          <li class="fade-up">Do they know what you were feeling?</li>
-          <li class="fade-up">Do they know what you&rsquo;ve been asking yourself lately?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What were you thinking about when you saw it?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What was happening in your life that week?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What were you feeling?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What had you dreamed about?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What other symbols kept appearing?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What were you hoping would change?</li>
+          <li class="fade-up"><span class="diff-q" aria-hidden="true">?</span>What intention had you been carrying?</li>
         </ul>
 
-        <p class="diff-answer fade-up">Whisp does.</p>
-
         <div class="diff-close fade-up">
-          <h3 class="diff-close-title">Meaning isn&rsquo;t always<br /><em>in the symbol alone.</em></h3>
+          <h3 class="diff-close-title">Context changes<br /><em>what you can see.</em></h3>
           <p class="diff-close-body">
-            Sometimes it&rsquo;s in when it appears.<br />
-            What surrounds it.<br />
-            What came before.<br />
-            And what keeps coming back.
+            Whisp doesn&rsquo;t just help you explore the symbol.<br />
+            It helps you explore the life happening around it.
           </p>
         </div>
       </div>
@@ -637,13 +672,13 @@ const hero = ACTIVE_HERO_VARIANT;
     <div class="container">
       <div class="section-header">
         <span class="section-label">The whole picture</span>
-        <h2 class="section-title">Because your signs<br /><em>don&rsquo;t happen in a vacuum.</em></h2>
+        <h2 class="section-title">And neither does<br /><em>the rest of your life.</em></h2>
       </div>
 
       <div class="eco-map">
         <div class="eco-inputs">
           <div class="eco-group fade-up">
-            <h3 class="eco-group-title">What you notice</h3>
+            <h3 class="eco-group-title"><span class="eco-num">01</span>What you notice</h3>
             <ul class="eco-items">
               <li>Signs</li><li>Symbols</li><li>Dreams</li>
               <li>Synchronicities</li><li>Repeating numbers</li>
@@ -651,7 +686,7 @@ const hero = ACTIVE_HERO_VARIANT;
           </div>
 
           <div class="eco-group fade-up">
-            <h3 class="eco-group-title">What you&rsquo;re living</h3>
+            <h3 class="eco-group-title"><span class="eco-num">02</span>What you&rsquo;re living</h3>
             <ul class="eco-items">
               <li>Journal entries</li><li>Life events</li>
               <li>Mood</li><li>Body &amp; nervous-system state</li>
@@ -660,7 +695,7 @@ const hero = ACTIVE_HERO_VARIANT;
           </div>
 
           <div class="eco-group fade-up">
-            <h3 class="eco-group-title">What you&rsquo;re reaching toward</h3>
+            <h3 class="eco-group-title"><span class="eco-num">03</span>What you&rsquo;re reaching toward</h3>
             <ul class="eco-items">
               <li>Intentions</li><li>Vision Boards</li>
               <li>What you&rsquo;re seeking</li>
@@ -689,7 +724,7 @@ const hero = ACTIVE_HERO_VARIANT;
       <div class="eco-close fade-up">
         <p class="eco-close-line">Context creates meaning.</p>
         <p class="eco-close-body">
-          The more context you give Whisp,<br />the more context your reflections can hold.
+          The more pieces you can see together,<br />the more there is to explore.
         </p>
       </div>
     </div>
@@ -853,7 +888,7 @@ const hero = ACTIVE_HERO_VARIANT;
   <section class="showcase-close">
     <div class="container">
       <p class="showcase-close-text fade-up">
-        And eventually&hellip;<br /><em>Whisp helps you see something you didn&rsquo;t before.</em>
+        And eventually&hellip;<br /><em>something comes into view.</em>
       </p>
     </div>
   </section>
@@ -867,18 +902,18 @@ const hero = ACTIVE_HERO_VARIANT;
   <section class="capabilities" id="features">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Three things Whisp does<br /><em>with what you give it.</em></h2>
+        <h2 class="section-title">Three ways<br /><em>to look.</em></h2>
       </div>
 
       <div class="cap-grid">
         <div class="cap fade-up">
-          <h3 class="cap-title">Remember</h3>
-          <p class="cap-body">Keep the strange little moments that would otherwise disappear.</p>
+          <h3 class="cap-title">Notice</h3>
+          <p class="cap-body">Keep the strange little moments that would otherwise slip past.</p>
           <p class="cap-detail">Signs, dreams, symbols, journal entries and life events &mdash; logged in seconds, kept for as long as you keep noticing.</p>
         </div>
         <div class="cap fade-up">
           <h3 class="cap-title">Connect</h3>
-          <p class="cap-body">See what keeps appearing across dreams, signs, emotions, intentions and your life.</p>
+          <p class="cap-body">Put them beside each other and see what runs through your dreams, signs, emotions, intentions and life.</p>
           <p class="cap-detail">Correlations, recurring themes and Pattern Stories &mdash; surfaced only when there&rsquo;s enough to say so honestly.</p>
         </div>
         <div class="cap fade-up">
@@ -934,9 +969,9 @@ const hero = ACTIVE_HERO_VARIANT;
     <div class="container">
       <div class="section-header">
         <span class="section-label">Founding Membership</span>
-        <h2 class="section-title">The more you remember,<br /><em>the more there is to see.</em></h2>
+        <h2 class="section-title">The more you bring together,<br /><em>the more there is to see.</em></h2>
         <p class="section-sub pricing-transition">
-          Start free. If Whisp becomes part of how you make sense of your life, keep the whole story.
+          Start free. If Whisp becomes part of how you make sense of your life, keep the whole picture.
         </p>
         <p class="section-sub">
           Whisp is new. So is this offer. The first 500 members lock in Premium at half the regular price,
@@ -1126,8 +1161,8 @@ const hero = ACTIVE_HERO_VARIANT;
         <div class="step">
           <div class="step-number">02</div>
           <div class="step-content">
-            <h3>Whisp finds the patterns</h3>
-            <p>Over days and weeks, your personal intelligence model builds. Whisp surfaces what's repeating, what shifts with your mood, what clusters around certain times.</p>
+            <h3>See them together</h3>
+            <p>Over days and weeks the moments stop being separate. What's repeating, what shifts with your mood, what gathers around certain times — all of it in one view instead of scattered across months.</p>
           </div>
         </div>
         <div class="step-connector">· · ·</div>
@@ -1136,7 +1171,7 @@ const hero = ACTIVE_HERO_VARIANT;
           <div class="step-number">03</div>
           <div class="step-content">
             <h3>Meaning that's yours</h3>
-            <p>Reflections that know your beliefs, your life context, and your resonance history. Not a generic interpretation — a conversation with your own emerging mythology.</p>
+            <p>Reflections shaped by the beliefs you chose, what was happening around the moment, and what you've noticed before. Not a generic interpretation — a way into your own emerging mythology.</p>
           </div>
         </div>
       </div>
@@ -1160,7 +1195,7 @@ const hero = ACTIVE_HERO_VARIANT;
 
         <details class="faq-item">
           <summary class="faq-q">What makes Whisp different from a regular journaling app?</summary>
-          <p class="faq-a">Whisp is built around meaning, not output. Rather than just storing what you write, it tracks patterns across time — which symbols recur, which emotional states cluster together, which signs appear during specific moon phases or life events. The AI doesn't respond to a single entry; it responds to your history.</p>
+          <p class="faq-a">Whisp is built around meaning, not output. Rather than leaving every entry on its own, it lets you see them beside each other — which symbols recur, which emotional states appear together, which signs show up during particular moon phases or life events. A reflection is shaped by everything surrounding the moment, not only the moment itself.</p>
         </details>
 
         <details class="faq-item">
@@ -1219,11 +1254,13 @@ const hero = ACTIVE_HERO_VARIANT;
 
   <!-- ═══════════════ FINAL CTA ═══════════════ -->
   <section class="final-cta">
+    <div class="final-bg" aria-hidden="true"></div>
+    <div class="final-overlay" aria-hidden="true"></div>
     <div class="container">
       <div class="cta-inner">
         <div class="cta-glyph" aria-hidden="true">&#9678;</div>
         <h2>You&rsquo;ve already<br /><em>started noticing.</em></h2>
-        <p class="cta-lead">Now see what happens when you remember.</p>
+        <p class="cta-lead">Now see what happens when you put it together.</p>
         <a href="https://apps.apple.com/app/id6777561873" class="btn btn-primary" id="final-cta-btn" data-analytics="final_cta" style="padding: 16px 36px; font-size: 0.9rem;">Start with your first sign &rarr;</a>
         <span class="cta-note">Free to start &middot; iOS &amp; Android &middot; <a href="/founders" class="cta-founders-link" data-analytics="final_cta_founders">Founder pricing &rarr;</a></span>
       </div>
@@ -1450,10 +1487,6 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream-dim);
     font-style: italic;
     font-size: clamp(1rem, 2vw, 1.2rem);
-  }
-  .validation-divider {
-    max-width: 220px;
-    margin: 0 auto;
   }
   .validation-hinge {
     margin-top: -6px;
@@ -2779,5 +2812,263 @@ const hero = ACTIVE_HERO_VARIANT;
     color: var(--cream);
   }
   .showcase-close-text em { font-style: italic; color: var(--gold-light); }
+
+
+  /* ── DEPTH payoff — image-led ── */
+  .depth-land { margin: 84px auto 0; max-width: 880px; }
+  .depth-land-img {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--navy-border);
+    box-shadow: 0 30px 90px rgba(0,0,0,0.5);
+  }
+  .depth-land-img img { display: block; width: 100%; height: auto; }
+  /* Hairline seam down the centre, echoing the split in the photograph */
+  .depth-land-img::after {
+    content: '';
+    position: absolute;
+    left: 50%; top: 8%; bottom: 8%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.5), transparent);
+  }
+  .depth-land-tag {
+    position: absolute;
+    bottom: 16px;
+    font-family: var(--font-display);
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: rgba(8,12,24,0.68);
+    padding: 6px 12px;
+    border-radius: 3px;
+    backdrop-filter: blur(3px);
+  }
+  .depth-land-tag--l { left: 16px; }
+  .depth-land-tag--r { right: 16px; }
+  .depth-land-text {
+    margin-top: 44px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  /* Scan layer: the first three lines recede, the fourth is the one a
+     scanner stops on. */
+  .dl-line {
+    font-family: var(--font-heading);
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--cream-dim);
+  }
+  .dl-line--hit {
+    margin-top: 14px;
+    font-size: clamp(1.9rem, 4.6vw, 3rem);
+    font-style: italic;
+    line-height: 1.25;
+    color: var(--gold-light);
+  }
+  @media (max-width: 600px) {
+    .depth-land { margin-top: 56px; }
+    .depth-land-text { margin-top: 30px; }
+    .depth-land-tag { font-size: 0.5rem; padding: 5px 9px; bottom: 10px; }
+    .depth-land-tag--l { left: 9px; }
+    .depth-land-tag--r { right: 9px; }
+  }
+
+
+  /* ══════════ VISUAL UX PASS ══════════
+     The page was a long column of centred text blocks. Scanners need
+     anchors, alternation, and a clear payoff line per section. Three
+     devices, applied consistently:
+       1. lifestyle photography at the emotional beats (people, not
+          abstraction - there was not a single human on the page before)
+       2. broken symmetry: side-by-side and left-aligned compositions
+          between the centred ones, so the eye keeps moving
+       3. a scan layer - setup copy recedes, the payoff line is large,
+          italic and gold, so a reader who only reads headlines still
+          gets the argument */
+
+  /* ── RECOGNITION: image + moments side by side ── */
+  .validation-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 46px;
+    align-items: center;
+    max-width: 1020px;
+    margin: 0 auto;
+  }
+  .validation-figure {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--navy-border);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+  }
+  .validation-figure img { display: block; width: 100%; height: auto; }
+  .validation-split .validation-lines { text-align: left; }
+  .validation-split .validation-line { padding: 13px 0; }
+
+  /* ── EXPANSION: ripple photograph + staircased lines ── */
+  .expansion { position: relative; overflow: hidden; }
+  .expansion-bg {
+    position: absolute; inset: 0;
+    background-image: url('/home-expansion.jpg');
+    background-size: cover;
+    background-position: center 62%;
+    z-index: 0;
+  }
+  .expansion-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to bottom,
+      rgba(8,12,24,0.93) 0%, rgba(8,12,24,0.80) 40%,
+      rgba(8,12,24,0.84) 70%, rgba(8,12,24,0.96) 100%);
+  }
+  .expansion .container { position: relative; z-index: 2; }
+  /* Accumulation made visible: each line steps further in than the last,
+     with a node on a shared vertical rule. */
+  .expansion-lines {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: left;
+    padding-left: 18px;
+    border-left: 1px solid rgba(201,168,76,0.22);
+  }
+  .expansion-line {
+    position: relative;
+    padding-left: calc(var(--step, 0) * 13px);
+    transition: none;
+  }
+  .expansion-line::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--step, 0) * 13px - 22px);
+    top: 1.05em;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    opacity: calc(0.35 + var(--step, 0) * 0.09);
+  }
+
+  /* ── DIFFERENTIATOR: left-aligned rows, not centred prose ── */
+  .diff-list { text-align: left; }
+  .diff-list li {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .diff-list li:last-child { border-bottom: none; }
+  .diff-q {
+    flex-shrink: 0;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--gold-dim);
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  /* ── FINAL CTA: photograph behind it ── */
+  .final-cta { position: relative; overflow: hidden; }
+  .final-bg {
+    position: absolute; inset: 0;
+    background-image: url('/home-final.jpg');
+    background-size: cover;
+    background-position: center 55%;
+    z-index: 0;
+  }
+  .final-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to bottom,
+      rgba(8,12,24,0.90) 0%, rgba(8,12,24,0.74) 45%, rgba(8,12,24,0.95) 100%);
+  }
+  .final-cta .container { position: relative; z-index: 2; }
+
+  @media (max-width: 860px) {
+    .validation-split { grid-template-columns: 1fr; gap: 32px; max-width: 540px; }
+    .validation-split .validation-lines { text-align: center; }
+  }
+  @media (max-width: 600px) {
+    /* Staircase halves on mobile - full indent would eat the column */
+    .expansion-line { padding-left: calc(var(--step, 0) * 6px); }
+    .expansion-line::before { left: calc(var(--step, 0) * 6px - 22px); }
+    .diff-list li { gap: 10px; padding: 11px 0; }
+    .validation-figure { border-radius: 10px; }
+  }
+
+
+  /* ── ECOSYSTEM: chips, not bullet lists ──
+     Four stacked lists was the densest block left on the page. Chips are
+     scannable at a glance and echo the tag language used inside the app
+     itself. The numbered input groups give the eye anchors; the output
+     column is visually distinct because it is the consequence, not
+     another input. */
+  .eco-group-title { display: flex; align-items: baseline; gap: 9px; }
+  .eco-num {
+    font-family: var(--font-display);
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    opacity: 0.55;
+  }
+  .eco-items { gap: 8px; }
+  .eco-items li {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    color: var(--cream-dim);
+    padding: 5px 11px;
+    border: 1px solid var(--navy-border);
+    border-radius: 100px;
+    background: rgba(255,255,255,0.025);
+    line-height: 1.35;
+  }
+  .eco-items--out { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  .eco-items--out li {
+    color: var(--gold-light);
+    border-color: rgba(201,168,76,0.28);
+    background: rgba(201,168,76,0.07);
+  }
+  @media (max-width: 600px) {
+    .eco-items li { font-size: 0.78rem; padding: 4px 10px; }
+  }
+
+
+  /* ── RECOGNITION layout fix ──
+     The divider + hinge + feather used to live inside .validation-lines
+     and inherited its 620px centred column. Once the section became a
+     two-column split they became direct children of .container, so the
+     hinge rendered left-aligned at full width and the divider's rules
+     ran the whole page. .validation-divider's own max-width could never
+     have fixed it - that class lands on WhispDivider's root element,
+     which carries the component's style scope, not this file's. So the
+     constraint belongs on a wrapper we own. */
+  .validation-outro {
+    max-width: 620px;
+    margin: 56px auto 0;
+    text-align: center;
+  }
+  .validation-divider-wrap { max-width: 220px; margin: 0 auto 26px; }
+
+  /* Image column matched the text column's height instead of floating
+     centred against it, which was leaving a large dead area beneath the
+     photograph. */
+  .validation-split { align-items: stretch; }
+  .validation-figure { display: flex; }
+  .validation-figure img {
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    object-fit: cover;
+    object-position: 38% center;
+  }
+  @media (max-width: 860px) {
+    .validation-outro { margin-top: 40px; }
+    .validation-figure img { height: auto; min-height: 0; aspect-ratio: 16 / 10; }
+  }
 
 </style>

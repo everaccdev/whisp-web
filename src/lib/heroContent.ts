@@ -9,13 +9,19 @@
 // plus the subhead paragraph beneath it.
 
 export type HeroVariant = {
-  id: 'A' | 'B' | 'C' | 'D';
+  id: 'A' | 'B' | 'C' | 'D' | 'E';
   titlePlain: string;
   titleEmphasis: string;
   sub: string;
 };
 
-export const HERO_VARIANTS: Record<'A' | 'B' | 'C' | 'D', HeroVariant> = {
+// ⚠ A through D are RETIRED POSITIONING, kept only so the split machinery
+// and its historical PostHog data stay intact. They all sell memory
+// ("Whisp remembers what you don't"), which the strategy deliberately
+// moved away from: Whisp is the lens, not the watcher. Do NOT put any of
+// them back into HERO_SPLIT_IDS without rewriting their copy first — they
+// would contradict the entire page below the hero.
+export const HERO_VARIANTS: Record<'A' | 'B' | 'C' | 'D' | 'E', HeroVariant> = {
   A: {
     id: 'A',
     titlePlain: 'One sign is a moment.',
@@ -44,19 +50,31 @@ export const HERO_VARIANTS: Record<'A' | 'B' | 'C' | 'D', HeroVariant> = {
     titleEmphasis: 'Whisp noticed the pattern.',
     sub: 'Dreams. Numbers. Symbols. Coincidences.<br />Whisp remembers what keeps finding you — and what was happening when it did.',
   },
+  // E supersedes D. D ("Whisp noticed the pattern") gave the product too
+  // much agency and framed it as the one doing the discovering — which
+  // reads as an app watching you rather than a lens you look through. E
+  // puts the question to the reader and makes them the protagonist; the
+  // page below answers it progressively.
+  E: {
+    id: 'E',
+    titlePlain: 'What if the things you&rsquo;ve been noticing',
+    titleEmphasis: 'aren&rsquo;t as separate as they seem?',
+    sub: 'Bring your dreams, signs, symbols and synchronicities together &mdash;<br />and explore the threads running through them.',
+  },
 };
 
 // The live variant — server-rendered, and the no-JS / first-paint default.
-export const ACTIVE_HERO_VARIANT: HeroVariant = HERO_VARIANTS.D;
+export const ACTIVE_HERO_VARIANT: HeroVariant = HERO_VARIANTS.E;
 
 // Which variants the client-side split actually assigns from.
 //
 // Currently a single entry, which means the split is effectively PAUSED —
-// every visitor sees D. That's deliberate: the page narrative below the
-// hero now depends on D's framing, so serving A/B/C would put a quarter of
-// visitors on a hero that contradicts the rest of the page.
+// every visitor sees E. That's deliberate: the page narrative below the
+// hero now depends on E's framing (the reader is the one doing the
+// discovering), so serving an older variant would put visitors on a hero
+// that contradicts the rest of the page.
 //
 // The machinery is intact rather than deleted. To resume testing, add ids
 // back to this array — nothing else needs to change, and the cookie,
 // PostHog super-property and assignment event all keep working.
-export const HERO_SPLIT_IDS: Array<HeroVariant['id']> = ['D'];
+export const HERO_SPLIT_IDS: Array<HeroVariant['id']> = ['E'];
