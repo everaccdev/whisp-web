@@ -12,7 +12,7 @@ const variantCopy = (variantParam && VARIANT_COPY[variantParam]) || VARIANT_COPY
 
 const introHeadline = campaignSymbol ? campaignSymbol.reflected : variantCopy.headline;
 const introSub = campaignSymbol
-  ? "A few quick questions, then a real reading — not a template."
+  ? "Four quick questions, then a real reading — not a template."
   : variantCopy.sub;
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
@@ -20,7 +20,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
 <MinimalLayout
   title="Discover · Whisp"
-  description="A few quick questions, then a real reading — not a template."
+  description="Four quick questions, then a real reading — not a template."
   ogUrl="https://getwhisp.app/discover"
 >
 
@@ -40,7 +40,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   <div class="quiz-shell">
     <button type="button" id="back-btn" class="back-btn" hidden aria-label="Back">←</button>
     <div class="progress-wrap" id="progress-wrap" hidden>
-      <p class="progress-label" id="progress-label">1 of 5</p>
+      <p class="progress-label" id="progress-label">1 of 4</p>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
 
@@ -81,14 +81,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       </div>
     </div>
 
-    <!-- ═══ STEP 3 — birth date ═══ -->
-    <div class="quiz-step" data-step="s3" hidden>
-      <h2 class="q-title">When were you born?</h2>
-      <p class="q-note">This powers your sun sign and Life Path number in the reading below.</p>
-      <input type="date" id="birthdate-input" class="q-input q-date" min="1920-01-01" />
-      <button type="button" class="cta-btn" id="s3-continue" disabled>Continue</button>
-    </div>
-
     <!-- ═══ STEP 4 — life context ═══ -->
     <div class="quiz-step" data-step="s4" hidden>
       <h2 class="q-title">What's going on in your life right now?</h2>
@@ -113,15 +105,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
         <button type="button" class="opt-btn" data-value="Faith or scripture"><span class="opt-glyph">⊹</span><span class="opt-label">Faith or scripture</span></button>
         <button type="button" class="opt-btn" data-value="Just curious"><span class="opt-glyph">◇</span><span class="opt-label">Just curious</span></button>
       </div>
-    </div>
-
-    <!-- ═══ STEP 6 — optional ═══ -->
-    <div class="quiz-step" data-step="s6" hidden>
-      <h2 class="q-title">Anything else you want to add?</h2>
-      <p class="q-note">Optional — helps Whisp read more specifically.</p>
-      <input type="text" id="s6-text" class="q-input" maxlength="200" placeholder="Totally optional..." />
-      <button type="button" class="cta-btn" id="s6-continue">Continue</button>
-      <button type="button" class="skip-btn" id="s6-skip">Skip this</button>
     </div>
 
     <!-- ═══ TEASER ═══ -->
@@ -218,10 +201,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   }
 
   // ── Step order (honest progress — campaign path genuinely skips 2 steps) ──
-  const FULL_ORDER = ['s1', 's2', 's3', 's4', 's5', 's6'];
-  const CAMPAIGN_ORDER = ['s3', 's4', 's5', 's6'];
+  //
+  // Cut from six steps to four. Birth date (old s3) was the highest-friction
+  // question on the page and was asked before the visitor had received
+  // anything; it only fed sun sign / Life Path, which the Cloud Function
+  // treats as optional. The free-text step (old s6) was already skippable.
+  // What remains is the part that actually makes a reading specific: what
+  // they noticed, which one, what's going on in their life, and the lens
+  // they make sense of things through.
+  const FULL_ORDER = ['s1', 's2', 's4', 's5'];
+  const CAMPAIGN_ORDER = ['s4', 's5'];
   const order = campaign ? CAMPAIGN_ORDER : FULL_ORDER;
-  const requiredOrder = order.filter((s) => s !== 's6');
+  const requiredOrder = order;
 
   // -1 means "at the intro screen, quiz not yet begun" — the honest default
   // for a fresh visit. Only a valid, in-range saved index moves off it, so a
@@ -250,13 +241,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       if (el) el.hidden = s !== name;
     });
 
+    // Every remaining step is required, so the progress bar is either
+    // shown with an honest "n of 4" or hidden entirely (intro / teaser /
+    // gate / loading). The old "Optional" state belonged to the free-text
+    // step, which no longer exists.
     const stepPos = order.indexOf(name);
-    if (stepPos === -1 || name === 's6') {
-      els.progressWrap.hidden = name === 's6' ? false : true;
-      if (name === 's6') {
-        els.progressLabel.textContent = 'Optional';
-        els.progressFill.style.width = '100%';
-      }
+    if (stepPos === -1) {
+      els.progressWrap.hidden = true;
     } else {
       els.progressWrap.hidden = false;
       const reqPos = requiredOrder.indexOf(name);
@@ -438,32 +429,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   });
 
   // ── Step 3 — birth date ───────────────────────────────────────────────
-  const birthInput = document.getElementById('birthdate-input') as HTMLInputElement;
-  const s3Continue = document.getElementById('s3-continue') as HTMLButtonElement;
-  birthInput.max = new Date().toISOString().slice(0, 10); // no future birthdates, computed at runtime rather than baked into the HTML
-  if (state.birthDate) birthInput.value = state.birthDate;
-  s3Continue.disabled = !birthInput.value;
-  birthInput.addEventListener('input', () => { s3Continue.disabled = !birthInput.value; });
-  s3Continue.addEventListener('click', () => {
-    if (!birthInput.value) return;
-    state.birthDate = birthInput.value;
-    persist();
-    goNext();
-  });
-
-  // ── Step 6 — optional ─────────────────────────────────────────────────
-  const s6Text = document.getElementById('s6-text') as HTMLInputElement;
-  if (state.freeText) s6Text.value = state.freeText;
-  document.getElementById('s6-continue')?.addEventListener('click', () => {
-    state.freeText = s6Text.value.trim() || null;
-    persist();
-    goNext();
-  });
-  document.getElementById('s6-skip')?.addEventListener('click', () => {
-    state.freeText = null;
-    persist();
-    goNext();
-  });
 
   // ── Teaser (zero API calls — local math + one cached-meaning fetch) ────
   const FRAGMENTS = [

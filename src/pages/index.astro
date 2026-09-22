@@ -504,7 +504,11 @@ const hero = ACTIVE_HERO_VARIANT;
 
       <div class="stories-close-block fade-up">
         <p class="stories-question">What might you<br /><em>see in yours?</em></p>
-        <a href="https://apps.apple.com/app/id6777561873" class="stories-cta" data-analytics="stories_cta">Start noticing &rarr;</a>
+        <!-- Points at /discover rather than the App Store on purpose. The
+             reader has just been asked "what might you see in yours?" —
+             the honest answer to that question is a reading, not a
+             download prompt. Reciprocity before the ask. -->
+        <a href="/discover" class="stories-cta" data-analytics="stories_cta_discover">Find out free &rarr;</a>
       </div>
 
       <p class="stories-note">
@@ -588,6 +592,13 @@ const hero = ACTIVE_HERO_VARIANT;
       </div>
 
       <p class="demo-question">You couldn&rsquo;t see it<br /><em>from one moment alone.</em></p>
+
+      <!-- /patterns is the interactive version of this exact section: it
+           collects several things you've noticed over time and draws the
+           map. It was also unlinked from anywhere on the site. -->
+      <p class="demo-cta-line">
+        <a href="/patterns" class="demo-cta" data-analytics="demo_patterns_link">Map your own &rarr;</a>
+      </p>
 
       <p class="demo-caveat">
         Illustrative example, not a specific person&rsquo;s data &mdash; modeled on how Whisp&rsquo;s real
@@ -3070,5 +3081,19 @@ const hero = ACTIVE_HERO_VARIANT;
     .validation-outro { margin-top: 40px; }
     .validation-figure img { height: auto; min-height: 0; aspect-ratio: 16 / 10; }
   }
+
+
+  /* ── Funnel entry points ── */
+  .demo-cta-line { text-align: center; margin-top: 30px; }
+  .demo-cta {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(201,168,76,0.4);
+    padding-bottom: 3px;
+  }
+  .demo-cta:hover { color: var(--gold-light); border-bottom-color: var(--gold-light); }
 
 </style>
