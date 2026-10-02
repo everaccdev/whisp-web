@@ -8,10 +8,12 @@ import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLin
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const iosUrl = withShareUtm(APP_STORE_URL, 'reading', id);
-const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'reading', id);
+const iosUrl = withShareUtm(APP_STORE_URL, 'reflection', id);
+const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'reflection', id);
 
-const data = await getDoc('sharedReadings', id ?? '');
+// New shares write to sharedReflections; fall back to the legacy
+// sharedReadings collection so links sent before the rename still resolve.
+const data = (await getDoc('sharedReflections', id ?? '')) ?? (await getDoc('sharedReadings', id ?? ''));
 const notFound = !data;
 const hasImage = !notFound && !!data?.imageUrl;
 
@@ -46,8 +48,8 @@ const contextLine = noticingParts.length
 const paragraphs = reading.split('\n').filter((p: string) => p.trim());
 
 const pageTitle = recipientName
-  ? `A reading for ${recipientName} ✦ Whisp`
-  : 'A reading from Whisp ✦';
+  ? `A reflection for ${recipientName} ✦ Whisp`
+  : 'A reflection from Whisp ✦';
 
 const pageDescription = !notFound && reading
   ? String(reading).slice(0, 150) + '…'
@@ -76,9 +78,9 @@ const pageDescription = !notFound && reading
           />
         </svg>
       </div>
-      <h1>This reading has faded</h1>
+      <h1>This reflection has faded</h1>
       <p class="subtext">
-        Gifted readings linger for a while, then return to the ether — as the signs themselves do.
+        Gifted reflections linger for a while, then return to the ether — as the signs themselves do.
       </p>
       <div class="cta-row">
         <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
@@ -94,7 +96,7 @@ const pageDescription = !notFound && reading
       <!-- ── Hero ──────────────────────────────────────────────────────────── -->
       <div class="hero">
         {hasImage ? (
-          <img src={imageUrl} alt="A reading for you" class="hero-img" />
+          <img src={imageUrl} alt="A reflection for you" class="hero-img" />
         ) : (
           <div class="hero-fallback"></div>
         )}
@@ -120,8 +122,8 @@ const pageDescription = !notFound && reading
           </p>
           <h1 class="hero-title">
             {recipientName
-              ? <><span>A reading for </span><em>{recipientName}</em></>
-              : <><span>A reading </span><em>for you</em></>}
+              ? <><span>A reflection for </span><em>{recipientName}</em></>
+              : <><span>A reflection </span><em>for you</em></>}
           </h1>
         </div>
       </div>
@@ -142,7 +144,7 @@ const pageDescription = !notFound && reading
         )}
 
         <div class="reading-card">
-          <p class="reading-eyebrow">✦ WHISP'S READING</p>
+          <p class="reading-eyebrow">✦ WHISP'S REFLECTION</p>
           <div class="reading-text">
             {paragraphs.map((para: string) => <p>{para}</p>)}
           </div>
@@ -153,13 +155,13 @@ const pageDescription = !notFound && reading
         <div class="convert">
           {isFunnelReading ? (
             <>
-              <p class="convert-headline">This was <em>one</em> reading.</p>
+              <p class="convert-headline">This was <em>one</em> reflection.</p>
               <p class="convert-body">
                 Whisp is a journal for every sign, symbol, dream, and synchronicity
-                you notice — with personal AI readings drawn from your own life
+                you notice — with personal AI reflections drawn from your own life
                 and beliefs, not a single one-off preview.
               </p>
-              <a href={`https://getwhisp.app/founders?utm_source=share&utm_medium=reading&utm_content=${id}`} class="cta" data-analytics="share_landing_cta_click">Claim Founders Access ✦</a>
+              <a href={`https://getwhisp.app/founders?utm_source=share&utm_medium=reflection&utm_content=${id}`} class="cta" data-analytics="share_landing_cta_click">Claim Founders Access ✦</a>
               <p class="microcopy">Free to start · iOS & Android · Founder rate locked for early members</p>
             </>
           ) : (
@@ -167,7 +169,7 @@ const pageDescription = !notFound && reading
               <p class="convert-headline">Curious what <em>your</em> signs mean?</p>
               <p class="convert-body">
                 Whisp is a journal for the signs, symbols, and synchronicities
-                you notice every day — with personal AI readings drawn from your
+                you notice every day — with personal AI reflections drawn from your
                 own life and beliefs.
               </p>
               <div class="cta-row">

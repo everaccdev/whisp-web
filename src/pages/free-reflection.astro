@@ -12,9 +12,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 ---
 
 <MinimalLayout
-  title="Get a Free Reading · Whisp"
-  description="Tell Whisp what you've been noticing — a sign, a dream, or nothing at all — and get a short, honest reading in your inbox."
-  ogUrl="https://getwhisp.app/reading"
+  title="Get a Free Reflection · Whisp"
+  description="Tell Whisp what you've been noticing — a sign, a dream, or nothing at all — and get a short, honest reflection in your inbox."
+  ogUrl="https://getwhisp.app/free-reflection"
 >
 
 <section class="reading-page">
@@ -23,13 +23,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <div class="hero-bg"></div>
     <div class="hero-wordmark">✦ whisp</div>
     <div class="hero-content">
-      <p class="eyebrow">FREE READING</p>
+      <p class="eyebrow">FREE REFLECTION</p>
       <h1 class="headline">
         What has life<br/><em>been showing you?</em>
       </h1>
       <p class="sub">
         Share a sign, a dream, or what's going on — or nothing at all — and get a short,
-        honest reading sent to your inbox. No account needed.
+        honest reflection sent to your inbox. No account needed.
       </p>
     </div>
   </div>
@@ -72,14 +72,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
         )}
 
         <button type="submit" id="submit-btn">
-          <span id="submit-text">Get My Reading ✦</span>
-          <span id="submit-loading" style="display:none;">Reading the signs…</span>
+          <span id="submit-text">Get My Reflection ✦</span>
+          <span id="submit-loading" style="display:none;">Reflecting on the signs…</span>
         </button>
 
         <p id="form-error" class="form-error" hidden></p>
 
         <p class="fine">
-          We'll email you the reading and occasional notes from Whisp. Unsubscribe any time —
+          We'll email you the reflection and occasional notes from Whisp. Unsubscribe any time —
           see our <a href="/privacy">privacy policy</a>.
         </p>
       </form>
@@ -137,7 +137,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
     try {
       const hadContext = !!(signInput.value.trim() || dreamInput.value.trim() || situationInput.value.trim());
-      (window as any).posthog?.capture('website_reading_requested', { had_context: hadContext });
+      (window as any).posthog?.capture('website_reflection_requested', { had_context: hadContext });
 
       const res = await fetch('/api/lead-reading', {
         method: 'POST',

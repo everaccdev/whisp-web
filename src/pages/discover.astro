@@ -12,7 +12,7 @@ const variantCopy = (variantParam && VARIANT_COPY[variantParam]) || VARIANT_COPY
 
 const introHeadline = campaignSymbol ? campaignSymbol.reflected : variantCopy.headline;
 const introSub = campaignSymbol
-  ? "Four quick questions, then a real reading — not a template."
+  ? "Four quick questions, then a real reflection — not a template."
   : variantCopy.sub;
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
@@ -20,7 +20,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
 
 <MinimalLayout
   title="Discover · Whisp"
-  description="Four quick questions, then a real reading — not a template."
+  description="Four quick questions, then a real reflection — not a template."
   ogUrl="https://getwhisp.app/discover"
 >
 
@@ -111,13 +111,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <div class="quiz-step" data-step="teaser" hidden>
       <p class="teaser-eyebrow">A FIRST GLANCE</p>
       <div class="teaser-card" id="teaser-card"></div>
-      <p class="teaser-note">This is a glimpse, not the full reading.</p>
-      <button type="button" class="cta-btn" id="teaser-continue">See My Full Reading ✦</button>
+      <p class="teaser-note">This is a glimpse, not the full reflection.</p>
+      <button type="button" class="cta-btn" id="teaser-continue">See My Full Reflection ✦</button>
     </div>
 
     <!-- ═══ EMAIL GATE ═══ -->
     <div class="quiz-step" data-step="gate" hidden>
-      <h2 class="q-title">Your full reading is ready.</h2>
+      <h2 class="q-title">Your full reflection is ready.</h2>
       <p class="q-note">Where should we send it?</p>
       <form id="gate-form">
         <input type="text" id="gate-name" class="q-input" placeholder="Your name" autocomplete="name" required maxlength="80" />
@@ -125,9 +125,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
         {turnstileSiteKey && (
           <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark"></div>
         )}
-        <button type="submit" class="cta-btn" id="gate-submit">Send My Reading ✦</button>
+        <button type="submit" class="cta-btn" id="gate-submit">Send My Reflection ✦</button>
         <p class="fine">
-          We'll email you the reading and occasional notes from Whisp. Unsubscribe any time —
+          We'll email you the reflection and occasional notes from Whisp. Unsubscribe any time —
           see our <a href="/privacy">privacy policy</a>.
         </p>
         <p id="gate-error" class="form-error" hidden></p>
@@ -137,7 +137,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     <!-- ═══ LOADING ═══ -->
     <div class="quiz-step" data-step="loading" hidden>
       <div class="loading-spinner"></div>
-      <p class="loading-text" id="loading-text">Reading your signs…</p>
+      <p class="loading-text" id="loading-text">Reflecting on your signs…</p>
     </div>
 
   </div>
@@ -206,7 +206,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   // question on the page and was asked before the visitor had received
   // anything; it only fed sun sign / Life Path, which the Cloud Function
   // treats as optional. The free-text step (old s6) was already skippable.
-  // What remains is the part that actually makes a reading specific: what
+  // What remains is the part that actually makes a reflection specific: what
   // they noticed, which one, what's going on in their life, and the lens
   // they make sense of things through.
   const FULL_ORDER = ['s1', 's2', 's4', 's5'];
@@ -484,7 +484,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
     const meaningBlock = meaning
       ? `<p class="teaser-meaning"><strong>${symbolLabel}:</strong> ${meaning}</p>`
       : state.sign
-        ? `<p class="teaser-meaning">${symbolLabel} is newer to Whisp's library — but it's already part of your full reading below.</p>`
+        ? `<p class="teaser-meaning">${symbolLabel} is newer to Whisp's library — but it's already part of your full reflection below.</p>`
         : '';
 
     card.innerHTML = rows.join('') + meaningBlock + connector;
@@ -501,7 +501,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   const gateError = document.getElementById('gate-error') as HTMLParagraphElement;
   const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
 
-  const LOADING_COPY = ['Reading your signs…', 'Weaving the threads…', 'Almost there…'];
+  const LOADING_COPY = ['Reflecting on your signs…', 'Weaving the threads…', 'Almost there…'];
 
   gateForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -546,7 +546,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       clearInterval(loadingTimer);
 
       if (res.ok && data.readingId) {
-        posthog()?.capture('quiz_reading_generated');
+        posthog()?.capture('quiz_reflection_generated');
         try { sessionStorage.removeItem(STORAGE_KEY); sessionStorage.removeItem(STEP_KEY); } catch (err) {}
         window.location.href = `/r/${data.readingId}`;
         return;
@@ -554,7 +554,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       throw new Error(data.error || 'Something went wrong. Please try again.');
     } catch (err: any) {
       clearInterval(loadingTimer);
-      posthog()?.capture('quiz_reading_failed');
+      posthog()?.capture('quiz_reflection_failed');
       showScreen('gate');
       gateError.textContent = err.message;
       gateError.hidden = false;

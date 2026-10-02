@@ -8,3 +8,8 @@
 [dev]
   command = "npm run dev"
   port = 4321
+
+[[redirects]]
+  from = "/reading"
+  to = "/free-reflection"
+  status = 301

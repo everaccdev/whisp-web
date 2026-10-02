@@ -42,19 +42,19 @@ export interface VariantCopy {
 export const VARIANT_COPY: Record<string, VariantCopy> = {
   default: {
     headline: "What has life been showing you?",
-    sub: 'Four quick questions, then a real reading — built from what you tell us, not a template.',
+    sub: 'Four quick questions, then a real reflection — built from what you tell us, not a template.',
   },
   signs: {
     headline: 'Something keeps showing up. What might it mean?',
-    sub: 'Four quick questions, then a short reading built from what you actually tell us.',
+    sub: 'Four quick questions, then a short reflection built from what you actually tell us.',
   },
   numbers: {
     headline: 'You keep seeing the same number.',
-    sub: 'A short reading built from what you actually tell us — not a generic template.',
+    sub: 'A short reflection built from what you actually tell us — not a generic template.',
   },
   animals: {
     headline: 'The same creature keeps crossing your path.',
-    sub: 'A short reading built from what you actually tell us — not a generic template.',
+    sub: 'A short reflection built from what you actually tell us — not a generic template.',
   },
 };
 
