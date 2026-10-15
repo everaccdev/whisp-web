@@ -1,0 +1,458 @@
+---
+export const prerender = false;
+
+// Pattern Story share landing — sharePatternStory.js (app) writes
+// sharedPatternStories/{id} and shares https://getwhisp.app/p/{id}. Same
+// structure as sl/[id].astro. coreMeaning is always present; interpretation
+// and evidence exist only if the owner opted in to sharing them.
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import { getDoc } from '../../lib/firestore';
+import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const { id } = Astro.params;
+const iosUrl = withShareUtm(APP_STORE_URL, 'pattern_story', id);
+const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'pattern_story', id);
+
+const data = await getDoc('sharedPatternStories', id ?? '');
+const notFound = !data || !data.coreMeaning;
+
+const coreMeaning = data?.coreMeaning || 'A pattern Whisp noticed';
+const createdAt   = data?.createdAt   || null;
+
+// First name only — never the full display name.
+const ownerFirstName = (data?.ownerDisplayName || '').trim().split(/\s+/)[0] || null;
+
+// Headings are section labels, not reading text — drop the whole line.
+const stripMarkdown = (s: string) => String(s || '')
+  .replace(/^\s*#+.*$/gm, '')
+  .replace(/\*\*(.*?)\*\*/g, '$1')
+  .replace(/__(.*?)__/g, '$1')
+  .replace(/^\s*[-*•]\s+/gm, '')
+  .trim();
+
+const interpretationParas: string[] = data?.interpretation
+  ? stripMarkdown(data.interpretation).split(/\n\s*\n/).map((p) => p.replace(/\n/g, ' ').trim()).filter(Boolean)
+  : [];
+
+const evidence: { label: string; value: string }[] = Array.isArray(data?.evidence)
+  ? data.evidence
+      .filter((e: any) => e && (e.label || e.value))
+      .map((e: any) => ({ label: stripMarkdown(e.label || ''), value: stripMarkdown(String(e.value ?? '')) }))
+  : [];
+
+const formattedDate = createdAt
+  ? new Date(createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : null;
+const byline = [ownerFirstName, formattedDate].filter(Boolean).join(' · ');
+
+const pageTitle = notFound
+  ? 'A Pattern Whisp Noticed · Whisp'
+  : `${coreMeaning} · Whisp`;
+
+const pageDescription = notFound
+  ? 'Whisp — a journal for signs, dreams, and synchronicities.'
+  : interpretationParas[0]
+    ? `${interpretationParas[0].slice(0, 150)}…`
+    : 'A pattern Whisp noticed. Some things only make sense when you see them together.';
+---
+
+<MinimalLayout
+  title={pageTitle}
+  description={pageDescription}
+  ogUrl={`https://getwhisp.app/p/${id}`}
+  shareType="pattern_story"
+  shareId={id}
+  shareFound={!notFound}
+  noindex
+>
+
+  {notFound && (
+    <section class="page expired">
+      <div class="wordmark">✦ whisp</div>
+      <div class="starburst" aria-hidden="true">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none" stroke="#c9a84c" stroke-width="0.8"
+          />
+        </svg>
+      </div>
+      <h1>This pattern has faded</h1>
+      <p class="subtext">Patterns linger for a while in the record, then release.</p>
+      <div class="cta-row">
+        <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
+        <a href={androidUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">Google Play</a>
+      </div>
+      <p class="microcopy">Free to start · iOS & Android</p>
+    </section>
+  )}
+
+  {!notFound && (
+    <article class="sign-page">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-wordmark">✦ whisp</div>
+
+        <div class="hero-content">
+          <p class="hero-eyebrow">A PATTERN WHISP NOTICED</p>
+          <h1 class="hero-title pattern-title">{coreMeaning}</h1>
+          {byline && <p class="hero-date">{byline}</p>}
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        {interpretationParas.length > 0 && (
+          <div class="content-card reflection">
+            <p class="card-eyebrow">✦ THE READING</p>
+            {interpretationParas.map((para) => <p class="card-text para">{para}</p>)}
+          </div>
+        )}
+
+        {evidence.length > 0 && (
+          <div class="content-card">
+            <p class="card-eyebrow">✦ WHAT WHISP SAW</p>
+            <ul class="evidence">
+              {evidence.map((e) => (
+                <li><span class="ev-label">{e.label}</span>{e.value && <span class="ev-value"> — {e.value}</span>}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div class="divider"></div>
+
+        <div class="convert">
+          <p class="convert-headline">Some things only make sense when you see them together.</p>
+          <p class="convert-body">
+            Whisp is a journal for the signs, symbols, and synchronicities
+            you notice every day — with patterns and reflections drawn from
+            your own life.
+          </p>
+          <div class="cta-row">
+            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
+            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
+          </div>
+          <p class="microcopy">Free to start · iOS & Android</p>
+        </div>
+
+        <p class="footer-mark">getwhisp.app</p>
+      </div>
+
+    </article>
+  )}
+
+</MinimalLayout>
+
+<style>
+  /* ── Shared ─────────────────────────────────────────────────────────────────── */
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .starburst {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 28px;
+    opacity: 0.45;
+  }
+
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #c9a84c;
+    color: #0a1020;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 16px 36px;
+    transition: opacity 0.2s;
+  }
+  .cta:hover { opacity: 0.85; }
+
+  .cta-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+  }
+  .cta-half {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 168, 76, 0.1);
+    border: 0.5px solid rgba(201, 168, 76, 0.45);
+    color: #c9a84c;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 10px;
+    padding: 14px 8px;
+    transition: opacity 0.2s;
+  }
+  .cta-half:hover { opacity: 0.8; }
+
+  .microcopy {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.28);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ── Expired ────────────────────────────────────────────────────────────────── */
+
+  .expired {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(180deg, #0e1428 0%, #1a2040 60%, #0e1428 100%);
+    color: #faf8f3;
+  }
+
+  .expired h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: #faf8f3;
+    margin: 0 0 16px;
+  }
+
+  /* ── Sign page ──────────────────────────────────────────────────────────────── */
+
+  .sign-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a1628 0%, #152040 40%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 52vh;
+    min-height: 320px;
+    max-height: 520px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 50%, rgba(45, 27, 78, 0.8) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 30%, rgba(201, 168, 76, 0.15) 0%, transparent 50%),
+      linear-gradient(160deg, #0a1628 0%, #1a2448 60%, #0a1020 100%);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 22, 40, 0.2) 0%,
+      rgba(10, 22, 40, 0.0) 30%,
+      rgba(10, 22, 40, 0.7) 75%,
+      rgba(10, 22, 40, 0.97) 100%
+    );
+  }
+
+  .hero-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.7);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .hero-content {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+    padding: 0 24px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: #c9a84c;
+    margin: 0 0 12px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(32px, 9vw, 58px);
+    line-height: 1.1;
+    color: #faf8f3;
+    margin: 0 0 10px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+
+  .hero-date {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    margin: 0;
+  }
+
+  /* Body */
+  .body {
+    padding: 36px 24px 64px;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .content-card {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    text-align: left;
+  }
+
+  .content-card.reflection {
+    background: rgba(201, 168, 76, 0.05);
+    border-color: rgba(201, 168, 76, 0.2);
+  }
+
+  .card-eyebrow {
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #c9a84c;
+    margin: 0 0 12px;
+  }
+
+  .card-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+  }
+
+  .divider {
+    width: 36px;
+    height: 0.5px;
+    background: rgba(201, 168, 76, 0.35);
+    margin: 16px auto 36px;
+  }
+
+  .convert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .convert-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: #faf8f3;
+    margin: 0 0 14px;
+    line-height: 1.3;
+  }
+
+  .convert-body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 360px;
+    margin: 0 0 28px;
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 1px;
+    margin-top: 40px;
+  }
+
+  .pattern-title {
+    font-size: clamp(28px, 7vw, 46px);
+  }
+
+  .para + .para { margin-top: 14px; }
+
+  .evidence {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .evidence li + li { margin-top: 8px; }
+  .ev-label { color: rgba(255, 248, 235, 0.9); }
+  .ev-value { color: rgba(255, 255, 255, 0.55); }
+
+  @media (max-width: 480px) {
+    .hero { height: 44vh; min-height: 280px; }
+    .hero-title { font-size: 30px; }
+    .pattern-title { font-size: 26px; }
+  }
+</style>

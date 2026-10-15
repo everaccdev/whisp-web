@@ -16,6 +16,8 @@ interface Props {
   shareType?: string;
   shareId?: string;
   shareFound?: boolean;
+  // Share pages hold someone's private moment — keep them out of search.
+  noindex?: boolean;
 }
 
 const {
@@ -27,6 +29,7 @@ const {
   shareType,
   shareId,
   shareFound,
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -36,6 +39,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
