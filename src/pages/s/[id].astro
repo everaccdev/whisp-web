@@ -1,0 +1,387 @@
+---
+export const prerender = false;
+
+// Unified share page — the app's createShare callable writes shares/{id}
+// and shares https://getwhisp.app/s/{id}. One template for every kind
+// (sign, dream, contemplation, journal, pattern, correlation, weave, year).
+// It has to make sense to someone who has never heard of Whisp: whose this
+// is, what happened, what Whisp saw, and a question for THEM — the heart
+// of the page, directly above the call to action.
+//
+// Doc shape: { v, kind, ownerFirstName|null, createdAt, expiresAt,
+//   occurredAt|null, eyebrow, title, moment:{label,text}|null,
+//   bridge:{label,text}|null, reflection:{sections:[{heading|null,text}]}|null,
+//   recipientQuestion, imageUrl|null, keywords[], symbol:{name,type}|null, meta:{} }
+import MinimalLayout from '../../layouts/MinimalLayout.astro';
+import ShareCta from '../../components/ShareCta.astro';
+import { getDoc } from '../../lib/firestore';
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const { id } = Astro.params;
+const fromApp = Astro.url.searchParams.get('from') === 'app';
+
+const data = await getDoc('shares', id ?? '');
+const expired = !!data?.expiresAt && new Date(data.expiresAt).getTime() < Date.now();
+const faded = !data || !data.title || expired;
+
+const KIND_ACCENTS: Record<string, string> = {
+  sign: '#c9a84c',
+  dream: '#b39ddb',
+  contemplation: '#d8c39a',
+  journal: '#c9a84c',
+  pattern: '#e2c878',
+  correlation: '#89a8b2',
+  weave: '#c9a84c',
+  year: '#e2c878',
+};
+const kind: string = data?.kind || 'sign';
+const accent = KIND_ACCENTS[kind] || '#c9a84c';
+
+const ownerFirstName: string | null = data?.ownerFirstName || null;
+const when = data?.occurredAt || data?.createdAt || null;
+const formattedDate = when
+  ? new Date(when).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : null;
+const byline = [ownerFirstName, formattedDate].filter(Boolean).join(' · ');
+
+const paragraphs = (text: string) =>
+  String(text || '').split(/\n\s*\n/).map((p) => p.replace(/\n/g, ' ').trim()).filter(Boolean);
+
+const sections: { heading: string | null; paras: string[] }[] = (data?.reflection?.sections || [])
+  .filter((s: any) => s && s.text)
+  .map((s: any) => ({ heading: s.heading || null, paras: paragraphs(s.text) }));
+
+const keywords: string[] = Array.isArray(data?.keywords) ? data.keywords.filter(Boolean) : [];
+const stats: Record<string, any> | null = data?.meta?.stats || null;
+const STAT_LABELS: Record<string, string> = {
+  signs: 'signs noticed', days: 'days of awareness', longestStreak: 'day longest streak', topSign: 'top sign',
+};
+const question: string = data?.recipientQuestion || '';
+const symbol = data?.symbol?.name ? { name: data.symbol.name, type: data.symbol.type || null } : null;
+
+const pageTitle = faded ? 'Shared from Whisp' : `${data.title} · Whisp`;
+const ogDescription = faded
+  ? 'Some things only make sense when you see them together.'
+  : question || 'Shared from Whisp.';
+const ogImage = !faded && data?.imageUrl ? data.imageUrl : undefined;
+---
+
+<MinimalLayout
+  title={pageTitle}
+  description={ogDescription}
+  ogImage={ogImage}
+  ogUrl={`https://getwhisp.app/s/${id}`}
+  shareType={`share_${kind}`}
+  shareId={id}
+  shareFound={!faded}
+  noindex
+>
+  {faded && (
+    <section class="faded">
+      <div class="wordmark">✦ whisp</div>
+      <div class="starburst" aria-hidden="true">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <polygon
+            points="45,5 49.7,27.6 65,10.4 57.7,32.3 79.6,25 62.4,40.3 85,45 62.4,49.7 79.6,65 57.7,57.7 65,79.6 49.7,62.4 45,85 40.3,62.4 25,79.6 32.3,57.7 10.4,65 27.6,49.7 5,45 27.6,40.3 10.4,25 32.3,32.3 25,10.4 40.3,27.6"
+            fill="none" stroke="#c9a84c" stroke-width="0.8"
+          />
+        </svg>
+      </div>
+      <h1>This has faded</h1>
+      <p class="subtext">Shared moments linger for a while, then release.</p>
+      <ShareCta fromApp={fromApp} shareType="share" id={id} mode="log" expired />
+    </section>
+  )}
+
+  {!faded && (
+    <article class="share-page" style={`--accent:${accent};`}>
+      <header class={`hero ${data.imageUrl ? 'has-image' : ''}`}>
+        {data.imageUrl
+          ? <img class="hero-img" src={data.imageUrl} alt="" loading="eager" />
+          : <div class="hero-bg"></div>}
+        <div class="hero-overlay"></div>
+        <div class="hero-wordmark">✦ whisp</div>
+        <div class="hero-content">
+          <p class="eyebrow">{data.eyebrow}</p>
+          <h1 class="title">{data.title}</h1>
+          {byline && <p class="byline">{byline}</p>}
+        </div>
+      </header>
+
+      <div class="body">
+        {data.moment?.text && (
+          <section class="card">
+            <p class="card-label">{(data.moment.label || 'In their words').toUpperCase()}</p>
+            {paragraphs(data.moment.text).map((p) => <p class="card-text">{p}</p>)}
+          </section>
+        )}
+
+        {data.bridge?.text && (
+          <section class="card bridge">
+            <p class="card-label">{(data.bridge.label || 'Context').toUpperCase()}</p>
+            <p class="bridge-text">{data.bridge.text}</p>
+          </section>
+        )}
+
+        {sections.length > 0 && (
+          <section class="card reflection">
+            <p class="card-label">WHAT WHISP REFLECTED BACK TO {(ownerFirstName || 'them').toUpperCase()}</p>
+            {sections.map((s) => (
+              <div class="section">
+                {s.heading && <h2 class="section-heading">{s.heading}</h2>}
+                {s.paras.map((p) => <p class="card-text">{p}</p>)}
+              </div>
+            ))}
+          </section>
+        )}
+
+        {keywords.length > 0 && (kind === 'dream' || kind === 'weave') && (
+          <div class="pills">{keywords.map((k) => <span class="pill">{k}</span>)}</div>
+        )}
+
+        {stats && (
+          <div class="stats">
+            {Object.entries(stats).map(([k, v]) => (
+              <div class="stat"><span class="stat-value">{String(v)}</span><span class="stat-label">{STAT_LABELS[k] || k}</span></div>
+            ))}
+          </div>
+        )}
+
+        {question && (
+          <section class="question-block">
+            <p class="question-eyebrow">✦ FOR YOU TO SIT WITH</p>
+            <p class="question">{question}</p>
+          </section>
+        )}
+
+        <ShareCta fromApp={fromApp} shareType={`share_${kind}`} id={id} mode="answer" symbol={symbol} />
+
+        <p class="footer-mark">getwhisp.app</p>
+      </div>
+    </article>
+  )}
+</MinimalLayout>
+
+<style>
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: rgba(255, 248, 235, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+  .starburst { width: 80px; height: 80px; margin-bottom: 28px; opacity: 0.45; }
+  .subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 340px;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  .faded {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(180deg, #0e1428 0%, #1a2040 60%, #0e1428 100%);
+    color: #faf8f3;
+  }
+  .faded h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    margin: 0 0 16px;
+  }
+
+  .share-page {
+    --accent: #c9a84c;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a1628 0%, #152040 40%, #0a1020 100%);
+    color: #faf8f3;
+  }
+
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 46vh;
+    min-height: 300px;
+    max-height: 480px;
+    overflow: hidden;
+  }
+  .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 50%, rgba(45, 27, 78, 0.8) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 30%, rgba(201, 168, 76, 0.15) 0%, transparent 50%),
+      linear-gradient(160deg, #0a1628 0%, #1a2448 60%, #0a1020 100%);
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10,22,40,0.25) 0%, rgba(10,22,40,0) 30%, rgba(10,22,40,0.75) 72%, rgba(10,22,40,0.97) 100%);
+  }
+  .hero-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgba(255, 248, 235, 0.75);
+    z-index: 2;
+  }
+  .hero-content {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    padding: 0 24px;
+    z-index: 2;
+    text-align: center;
+  }
+  .eyebrow {
+    font-family: 'Syne', 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(30px, 8vw, 52px);
+    line-height: 1.12;
+    margin: 0 0 10px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  .byline {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin: 0;
+  }
+
+  .body {
+    padding: 32px 24px 64px;
+    max-width: 540px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .card {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    text-align: left;
+    box-sizing: border-box;
+  }
+  .card.bridge { padding: 16px 24px; background: rgba(255,255,255,0.025); }
+  .card.reflection { background: rgba(201,168,76,0.05); border-color: rgba(201,168,76,0.2); }
+  .card-label {
+    font-family: 'Syne', 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .card-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(17px, 4.5vw, 20px);
+    line-height: 1.7;
+    color: rgba(255,255,255,0.86);
+    margin: 0;
+  }
+  .card-text + .card-text { margin-top: 12px; }
+  .bridge-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+  .section + .section { margin-top: 20px; }
+  .section-heading {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: rgba(255,248,235,0.8);
+    margin: 0 0 6px;
+  }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 4px 0 20px; }
+  .pill {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.72);
+    padding: 6px 12px;
+    border-radius: 14px;
+    border: 0.5px solid rgba(201,168,76,0.35);
+  }
+
+  .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; margin: 4px 0 20px; }
+  .stat {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 14px 8px; border-radius: 12px; background: rgba(255,255,255,0.04);
+  }
+  .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #faf8f3; }
+  .stat-label { font-family: 'Raleway', sans-serif; font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.45); text-transform: uppercase; }
+
+  .question-block {
+    width: 100%;
+    margin: 20px 0 28px;
+    padding: 30px 8px 6px;
+    border-top: 0.5px solid rgba(201,168,76,0.35);
+    text-align: center;
+  }
+  .question-eyebrow {
+    font-family: 'Syne', 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: #c9a84c;
+    margin: 0 0 16px;
+  }
+  .question {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(26px, 6.5vw, 36px);
+    line-height: 1.3;
+    color: #c9a84c;
+    margin: 0;
+  }
+
+  .footer-mark {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 1px;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { height: 40vh; min-height: 260px; }
+  }
+</style>

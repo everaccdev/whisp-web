@@ -3,13 +3,13 @@ export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import { getDoc } from '../../lib/firestore';
-import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
+import ShareCta from '../../components/ShareCta.astro';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const iosUrl = withShareUtm(APP_STORE_URL, 'dream', id);
-const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'dream', id);
+// In-app (Whisp's browser adds ?from=app): no store buttons — see ShareCta.
+const fromApp = Astro.url.searchParams.get('from') === 'app';
 
 const data = await getDoc('sharedDreams', id ?? '');
 const notFound = !data;
@@ -72,11 +72,7 @@ const pageDescription = notFound
       </div>
       <h1>This dream has dissolved</h1>
       <p class="subtext">Dream interpretations linger for a while, then fade — as dreams do.</p>
-      <div class="cta-row">
-        <a href={iosUrl} class="cta-half" style={`border-color:${p.accent};color:${p.accent};`} data-analytics="share_landing_expired_cta_click">App Store</a>
-        <a href={androidUrl} class="cta-half" style={`border-color:${p.accent};color:${p.accent};`} data-analytics="share_landing_expired_cta_click">Google Play</a>
-      </div>
-      <p class="microcopy">Free to start · iOS & Android</p>
+      <ShareCta fromApp={fromApp} shareType="dream" id={id} mode="log" expired accent={p.accent} />
     </section>
   )}
 
@@ -133,11 +129,7 @@ const pageDescription = notFound
             the archetypes, patterns, and meanings hiding in
             your sleep.
           </p>
-          <div class="cta-row">
-            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
-            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
-          </div>
-          <p class="microcopy">Free to start · iOS & Android</p>
+          <ShareCta fromApp={fromApp} shareType="dream" id={id} mode="log" />
         </div>
 
         <p class="footer-mark">getwhisp.app</p>

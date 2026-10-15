@@ -3,13 +3,13 @@ export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import { getDoc } from '../../lib/firestore';
-import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
+import ShareCta from '../../components/ShareCta.astro';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const iosUrl = withShareUtm(APP_STORE_URL, 'journal_entry', id);
-const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'journal_entry', id);
+// In-app (Whisp's browser adds ?from=app): no store buttons — see ShareCta.
+const fromApp = Astro.url.searchParams.get('from') === 'app';
 
 const data = await getDoc('sharedJournalEntries', id ?? '');
 const notFound = !data;
@@ -64,11 +64,7 @@ const pageDescription = notFound
       </div>
       <h1>This entry has faded</h1>
       <p class="subtext">Journal entries linger for a while, then return to stillness.</p>
-      <div class="cta-row">
-        <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
-        <a href={androidUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">Google Play</a>
-      </div>
-      <p class="microcopy">Free to start · iOS & Android</p>
+      <ShareCta fromApp={fromApp} shareType="journal_entry" id={id} mode="log" expired />
     </section>
   )}
 
@@ -107,11 +103,7 @@ const pageDescription = notFound
             Whisp is a journal for signs, synchronicities, dreams, and the
             moments that matter — with AI insights drawn from your own life.
           </p>
-          <div class="cta-row">
-            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
-            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
-          </div>
-          <p class="microcopy">Free to start · iOS & Android</p>
+          <ShareCta fromApp={fromApp} shareType="journal_entry" id={id} mode="log" />
         </div>
 
         <p class="footer-mark">getwhisp.app</p>

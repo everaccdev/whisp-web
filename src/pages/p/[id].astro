@@ -7,13 +7,13 @@ export const prerender = false;
 // and evidence exist only if the owner opted in to sharing them.
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import { getDoc } from '../../lib/firestore';
-import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
+import ShareCta from '../../components/ShareCta.astro';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const iosUrl = withShareUtm(APP_STORE_URL, 'pattern_story', id);
-const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'pattern_story', id);
+// In-app (Whisp's browser adds ?from=app): no store buttons — see ShareCta.
+const fromApp = Astro.url.searchParams.get('from') === 'app';
 
 const data = await getDoc('sharedPatternStories', id ?? '');
 const notFound = !data || !data.coreMeaning;
@@ -81,11 +81,7 @@ const pageDescription = notFound
       </div>
       <h1>This pattern has faded</h1>
       <p class="subtext">Patterns linger for a while in the record, then release.</p>
-      <div class="cta-row">
-        <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
-        <a href={androidUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">Google Play</a>
-      </div>
-      <p class="microcopy">Free to start · iOS & Android</p>
+      <ShareCta fromApp={fromApp} shareType="pattern_story" id={id} mode="log" expired />
     </section>
   )}
 
@@ -136,11 +132,7 @@ const pageDescription = notFound
             you notice every day — with patterns and reflections drawn from
             your own life.
           </p>
-          <div class="cta-row">
-            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
-            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
-          </div>
-          <p class="microcopy">Free to start · iOS & Android</p>
+          <ShareCta fromApp={fromApp} shareType="pattern_story" id={id} mode="log" />
         </div>
 
         <p class="footer-mark">getwhisp.app</p>

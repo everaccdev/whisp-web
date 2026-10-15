@@ -3,13 +3,13 @@ export const prerender = false;
 
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import { getDoc } from '../../lib/firestore';
-import { APP_STORE_URL, GOOGLE_PLAY_URL, withShareUtm } from '../../lib/shareLinks';
+import ShareCta from '../../components/ShareCta.astro';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
 const { id } = Astro.params;
-const iosUrl = withShareUtm(APP_STORE_URL, 'correlation', id);
-const androidUrl = withShareUtm(GOOGLE_PLAY_URL, 'correlation', id);
+// In-app (Whisp's browser adds ?from=app): no store buttons — see ShareCta.
+const fromApp = Astro.url.searchParams.get('from') === 'app';
 
 const data = await getDoc('sharedCorrelations', id ?? '');
 const notFound = !data;
@@ -60,11 +60,7 @@ const pageDescription = !notFound && cleaned
       </div>
       <h1>This correlation has faded</h1>
       <p class="subtext">Discovered patterns linger for a while, then dissolve — like the signs themselves.</p>
-      <div class="cta-row">
-        <a href={iosUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">App Store</a>
-        <a href={androidUrl} class="cta-half" data-analytics="share_landing_expired_cta_click">Google Play</a>
-      </div>
-      <p class="microcopy">Free to start · iOS & Android</p>
+      <ShareCta fromApp={fromApp} shareType="correlation" id={id} mode="log" expired />
     </section>
   )}
 
@@ -118,11 +114,7 @@ const pageDescription = !notFound && cleaned
             Whisp finds the threads between your dreams, signs, and journal
             entries, then helps you understand what they're saying together.
           </p>
-          <div class="cta-row">
-            <a href={iosUrl} class="cta-half" data-analytics="share_landing_cta_click">App Store</a>
-            <a href={androidUrl} class="cta-half" data-analytics="share_landing_cta_click">Google Play</a>
-          </div>
-          <p class="microcopy">Free to start · iOS & Android</p>
+          <ShareCta fromApp={fromApp} shareType="correlation" id={id} mode="log" />
         </div>
 
         <p class="footer-mark">getwhisp.app</p>
