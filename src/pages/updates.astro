@@ -36,6 +36,21 @@ import Base from '../layouts/Base.astro';
           <span class="wn-period-date">October 2026</span>
           <span class="wn-period-line"></span>
         </div>
+
+        <article class="wn-spotlight" id="places">
+          <img class="wn-spotlight-img" src="/images/updates/places.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
+          <div class="wn-spotlight-body">
+            <div class="wn-label wn-label--premium">New · Featured</div>
+            <h3 class="wn-spotlight-title">Places — where your signs find you</h3>
+            <p class="wn-desc">Your signs, gathered on a map. Move from the whole world to your country, your region, and right down to around home, and see where the things you notice tend to find you.</p>
+            <ul class="wn-spotlight-list">
+              <li><strong>Name the places that matter.</strong> Home, work, a favourite walk. Whisp gathers what you've noticed there, and each place opens to its own story.</li>
+              <li><strong>Noticing, not predicting.</strong> Whisp only mentions a place once it has a few moments, and it will tell you plainly when there's no strong pattern yet.</li>
+              <li><strong>Connected to your Trends.</strong> See what Whisp is noticing by place, and tap "Show in Places" on any symbol to see where it's appeared.</li>
+              <li><strong>Private by design.</strong> Only you can see your places. It uses your phone's location only if you allow it, and you can remove a place from any entry or turn Places off whenever you like.</li>
+            </ul>
+          </div>
+        </article>
         <div class="wn-grid">
 
           <div class="wn-card">
@@ -807,11 +822,72 @@ import Base from '../layouts/Base.astro';
     line-height: 1.68;
   }
 
+  .wn-spotlight {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    margin-bottom: 16px;
+    background: rgba(12,20,42,0.65);
+    border: 1px solid rgba(201,168,76,0.28);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .wn-spotlight-img {
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    object-fit: cover;
+    display: block;
+  }
+  .wn-spotlight-body {
+    padding: 32px 32px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .wn-spotlight-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .wn-spotlight-list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .wn-spotlight-list li {
+    font-size: 0.82rem;
+    color: var(--cream-dim);
+    line-height: 1.6;
+    padding-left: 16px;
+    position: relative;
+  }
+  .wn-spotlight-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    opacity: 0.55;
+    font-size: 0.6rem;
+    top: 0.35em;
+  }
+  .wn-spotlight-list strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
   @media (max-width: 1100px) {
     .wn-grid { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 900px) {
     .wn-grid { grid-template-columns: repeat(2, 1fr); }
+    .wn-spotlight { grid-template-columns: 1fr; }
+    .wn-spotlight-img { max-height: 280px; }
+    .wn-spotlight-body { padding: 24px 22px; }
   }
   @media (max-width: 480px) {
     .wn-grid { grid-template-columns: 1fr; }
