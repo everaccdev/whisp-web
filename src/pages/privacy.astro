@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-const updated = 'June 20, 2026';
+const updated = 'October 16, 2026';
 ---
 
 <Base
@@ -28,7 +28,7 @@ const updated = 'June 20, 2026';
         <li><strong>Journal content:</strong> sign logs, dreams, symbols, notes, and entries you create in the app. This data is stored in your private account and is not shared with other users.</li>
         <li><strong>Photos:</strong> images you choose to attach to a sign log or journal entry from your camera or photo library.</li>
         <li><strong>Voice recordings:</strong> audio captured only when you use voice-to-text, used solely to transcribe your entry and not stored as audio afterward.</li>
-        <li><strong>Location:</strong> if you choose to attach it, the location where you noticed a sign or logged an entry. Location access is optional and only used when you grant permission.</li>
+        <li><strong>Location (Places):</strong> if you allow Whisp to use your location, Whisp remembers where each new moment happened, to about 10 metres, so you can see your places later. You can turn this off at any time, remove a place from any entry, hide a place, or remove places from all your entries in the app (Places → privacy, or Settings → Privacy → Places &amp; location). Location access is optional and only used when you grant permission. Where your moments happened is visible only to you: it is never part of a share, never shared with third parties or used for advertising, and the AI only ever receives a place's name (like "the gym"), never coordinates.</li>
         <li><strong>Beliefs and preferences:</strong> the cosmological frameworks you select (astrology, numerology, etc.) to personalize AI responses.</li>
         <li><strong>Usage data:</strong> basic analytics like app opens and feature usage, collected in aggregate, not linked to your journal content.</li>
         <li><strong>Device information:</strong> device type, OS version, and app version for debugging and support.</li>
@@ -57,9 +57,12 @@ const updated = 'June 20, 2026';
       <ul>
         <li><strong>Firebase (Google):</strong> for authentication, database, and storage.</li>
         <li><strong>PostHog:</strong> for first-party usage analytics, in both the app (app opens, feature usage) and on this website (page views, which campaign or link brought you here, and whether you started or completed a purchase). PostHog does not have access to your journal content, and we do not use advertising identifiers.</li>
+        <li><strong>HeyCatch:</strong> for product analytics in the app — which screens you open. This is linked to your Whisp account ID, email address and display name so we can understand how Whisp is used per account. Like most analytics services it also receives device and app information (such as device model, OS and app version) and may process your IP address. HeyCatch does not receive your journal content, symbols, beliefs or prayers, and we do not use advertising identifiers.</li>
         <li><strong>Adapty:</strong> for subscription management.</li>
         <li><strong>Stripe:</strong> for payment processing. We do not store payment card details.</li>
         <li><strong>Resend:</strong> to deliver the reflection and any follow-up emails from getwhisp.app/free-reflection.</li>
+        <li><strong>Map data for Places:</strong> to name places and draw your map, the app downloads open map data for a broad area — roughly 20–30 km across for place names, and a similar block for the faint street map — and looks things up on your phone. Our servers learn which broad area was requested, not your exact location, and never store that area alongside your account. Street maps are served from our storage on Cloudflare.</li>
+        <li><strong>Apple / Google location lookup:</strong> when you tap the location button on an entry to fill in a town name, your phone's own map service (Apple Maps on iPhone, Google on Android) looks up that location, as it would for any app. This happens only when you tap the button.</li>
         <li><strong>Cloudflare Turnstile:</strong> to verify the /free-reflection form is submitted by a person, not a bot. Turnstile may process your IP address and browser signals for this purpose; it does not see your name, email, or reflection content.</li>
       </ul>
 
@@ -80,7 +83,8 @@ const updated = 'June 20, 2026';
       <p>You have the right to:</p>
       <ul>
         <li>Access the data we hold about you</li>
-        <li>Export your journal data</li>
+        <li>Export your journal data, including your places and where each moment happened</li>
+        <li>Turn off location for Places, remove a place from any entry, or remove places from all your entries</li>
         <li>Delete your account and all data</li>
         <li>Correct inaccurate account information</li>
         <li>Unsubscribe from marketing emails, including ones from getwhisp.app/free-reflection, via the link in any such email</li>
@@ -93,7 +97,17 @@ const updated = 'June 20, 2026';
       <h2>8. Changes to this policy</h2>
       <p>We may update this policy periodically. Material changes will be communicated via email or in-app notification. Continued use of Whisp after changes constitutes acceptance.</p>
 
-      <h2>9. Contact</h2>
+      <h2>9. Map data credits</h2>
+      <p>
+        Places uses open map data. Town and region names, and the street map, are
+        © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" class="inline-link">OpenStreetMap contributors</a>,
+        available under the Open Database License (ODbL 1.0); the map data Whisp derives from it is available under the same licence.
+        Place names and categories come from the <a href="https://overturemaps.org/" target="_blank" rel="noopener" class="inline-link">Overture Maps Foundation</a>
+        (CDLA-Permissive 2.0, Apache 2.0 or CC0, depending on the source), and the street map is built with the
+        <a href="https://protomaps.com/" target="_blank" rel="noopener" class="inline-link">Protomaps</a> basemap.
+      </p>
+
+      <h2>10. Contact</h2>
       <p>
         Questions about this policy? Reach us at:
         <a href="mailto:hello@eyeswidewellness.com" class="inline-link">hello@eyeswidewellness.com</a>
