@@ -145,6 +145,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
   <p class="footer-mark">getwhisp.app</p>
 </section>
 
+{/* The widget above needs Cloudflare's script to render a token. Without
+    it every submission sent an empty token and the server's verification
+    rejected it ("Verification failed") — /discover never loaded it. */}
+{turnstileSiteKey && (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
 <script is:inline define:vars={{ campaignSymbolJson: campaignSymbol ? JSON.stringify(campaignSymbol) : null, symbolParam, variantParam }}>
   window.__DISCOVER_CAMPAIGN__ = campaignSymbolJson ? JSON.parse(campaignSymbolJson) : null;
   window.__DISCOVER_PARAMS__ = { symbol: symbolParam || null, variant: variantParam || null };
@@ -524,6 +531,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       loadingText.textContent = LOADING_COPY[copyIdx];
     }, 2500);
 
+    let failStatus: number | null = null;
     try {
       const res = await fetch('/api/lead-reading', {
         method: 'POST',
@@ -542,8 +550,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
           campaign: { symbol: urlParams.symbol, variant: urlParams.variant },
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       clearInterval(loadingTimer);
+      failStatus = res.status;
 
       if (res.ok && data.readingId) {
         posthog()?.capture('quiz_reflection_generated');
@@ -554,7 +563,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | u
       throw new Error(data.error || 'Something went wrong. Please try again.');
     } catch (err: any) {
       clearInterval(loadingTimer);
-      posthog()?.capture('quiz_reflection_failed');
+      // Status + the server's fixed error string (never the person's input),
+      // so failures can be told apart in PostHog.
+      posthog()?.capture('quiz_reflection_failed', { status: failStatus, error: String(err?.message || '').slice(0, 120) });
+      // A Turnstile token is single-use: a retry needs a fresh one.
+      try { (window as any).turnstile?.reset(); } catch (e) {}
       showScreen('gate');
       gateError.textContent = err.message;
       gateError.hidden = false;
