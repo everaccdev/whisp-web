@@ -11,7 +11,9 @@ export const prerender = false;
 // Doc shape: { v, kind, ownerFirstName|null, createdAt, expiresAt,
 //   occurredAt|null, eyebrow, title, moment:{label,text}|null,
 //   bridge:{label,text}|null, reflection:{sections:[{heading|null,text}]}|null,
-//   recipientQuestion, imageUrl|null, keywords[], symbol:{name,type}|null, meta:{} }
+//   recipientQuestion, imageUrl|null, keywords[], symbol:{name,type}|null, meta:{},
+//   excerpt:{style:'quote'|'prose', items:[{text,cutStart,cutEnd}]}|null,  — a few chosen lines
+//   note:{label,text}|null }                                                 — the sender's note
 import MinimalLayout from '../../layouts/MinimalLayout.astro';
 import ShareCta from '../../components/ShareCta.astro';
 import { getDoc } from '../../lib/firestore';
@@ -51,6 +53,17 @@ const paragraphs = (text: string) =>
 const sections: { heading: string | null; paras: string[] }[] = (data?.reflection?.sections || [])
   .filter((s: any) => s && s.text)
   .map((s: any) => ({ heading: s.heading || null, paras: paragraphs(s.text) }));
+
+// Share excerpts: a few lines chosen from the reflection, the hero of the
+// page; each its own line (never joined), ellipses where a line was cut
+// mid-sentence. The sender's note sits above them in their own voice.
+const excerptItems: { text: string; cutStart: boolean; cutEnd: boolean }[] = Array.isArray(data?.excerpt?.items)
+  ? data.excerpt.items.filter((x: any) => x && x.text) : [];
+const excerptQuote = data?.excerpt?.style === 'quote' && excerptItems.length === 1;
+const excerptText = (x: { text: string; cutStart: boolean; cutEnd: boolean }) =>
+  `${x.cutStart ? '… ' : ''}${x.text}${x.cutEnd ? ' …' : ''}`;
+const noteText: string = data?.note?.text || '';
+const noteLabel = ownerFirstName ? `A NOTE FROM ${ownerFirstName.toUpperCase()}` : 'A NOTE';
 
 const keywords: string[] = Array.isArray(data?.keywords) ? data.keywords.filter(Boolean) : [];
 const stats: Record<string, any> | null = data?.meta?.stats || null;
@@ -110,6 +123,25 @@ const ogImage = !faded && data?.imageUrl ? data.imageUrl : undefined;
       </header>
 
       <div class="body">
+        {noteText && (
+          <section class="note">
+            <p class="note-label">{noteLabel}</p>
+            <p class="note-text">{noteText}</p>
+          </section>
+        )}
+        {excerptItems.length > 0 && (
+          <section class="excerpt">
+            <p class="card-label">FROM WHAT WHISP REFLECTED BACK TO {(ownerFirstName || 'them').toUpperCase()}</p>
+            {excerptItems.map((x, i) => (
+              <>
+                {i > 0 && <p class="excerpt-divider" aria-hidden="true">· · ·</p>}
+                {excerptQuote
+                  ? <blockquote class="excerpt-quote">“{excerptText(x)}”</blockquote>
+                  : <p class="excerpt-prose">{excerptText(x)}</p>}
+              </>
+            ))}
+          </section>
+        )}
         {data.moment?.text && (
           <section class="card">
             <p class="card-label">{(data.moment.label || 'In their words').toUpperCase()}</p>
@@ -295,6 +327,34 @@ const ogImage = !faded && data?.imageUrl ? data.imageUrl : undefined;
     box-sizing: border-box;
   }
   .card.bridge { padding: 16px 24px; background: rgba(255,255,255,0.025); }
+  /* The sender's note — their voice: sans, plain white, never Whisp's serif gold. */
+  .note {
+    width: 100%; box-sizing: border-box; text-align: left;
+    background: rgba(255,255,255,0.07); border-left: 2px solid rgba(255,255,255,0.55);
+    border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+  }
+  .note-label {
+    font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1.6px;
+    color: rgba(255,255,255,0.55); margin: 0 0 8px;
+  }
+  .note-text {
+    font-family: 'Raleway', sans-serif; font-size: 16px; line-height: 1.55;
+    color: rgba(255,255,255,0.92); margin: 0;
+  }
+  /* The chosen lines — the hero, set by length. */
+  .excerpt { width: 100%; box-sizing: border-box; text-align: left; margin: 4px 0 22px; }
+  .excerpt-quote {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400;
+    font-size: clamp(28px, 7vw, 36px); line-height: 1.3; color: #f3e6c4; text-align: center; margin: 8px 0 0;
+  }
+  .excerpt-prose {
+    font-family: 'Cormorant Garamond', serif; font-weight: 400;
+    font-size: clamp(19px, 5vw, 22px); line-height: 1.55; color: rgba(255,255,255,0.9); margin: 0;
+  }
+  .excerpt-divider {
+    font-family: 'Raleway', sans-serif; font-size: 12px; letter-spacing: 4px; text-align: center;
+    color: var(--accent); opacity: 0.75; margin: 12px 0;
+  }
   .card.reflection { background: rgba(201,168,76,0.05); border-color: rgba(201,168,76,0.2); }
   .card-label {
     font-family: 'Syne', 'Raleway', sans-serif;
