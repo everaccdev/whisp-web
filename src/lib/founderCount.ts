@@ -26,6 +26,24 @@ const FOUNDERS_PRICE_IDS = [
   'price_1U40ORCwtErAAxY9tD751yjH', // annual
 ];
 
+// The Whisp + Wealspring founders bundle (sold on Wealspring's site) makes
+// its buyers Whisp founders too, so they count toward these 500. Its Prices
+// are found by lookup key, then every Price of that Product (an older Price
+// a key has moved off still has its founders).
+const BUNDLE_LOOKUP_KEYS = ['bundle_founders_monthly', 'bundle_founders_annual'];
+// If the key can't read Prices, Whisp's own founders still count and sell.
+async function bundlePriceIds(stripe: Stripe): Promise<string[]> {
+  try {
+    const { data } = await stripe.prices.list({ lookup_keys: BUNDLE_LOOKUP_KEYS, limit: 10 });
+    const products = [...new Set(data.map((p) => (typeof p.product === 'string' ? p.product : p.product.id)))];
+    const lists = await Promise.all(products.map((product) => stripe.prices.list({ product, limit: 100 })));
+    return lists.flatMap((l) => l.data.map((p) => p.id));
+  } catch (err) {
+    console.error('getFounderCount: bundle prices unreadable:', (err as Error).message);
+    return [];
+  }
+}
+
 let cache: { count: number; fetchedAt: number } | null = null;
 
 // Paginates fully rather than trusting the first page — at a 500-person
@@ -67,7 +85,8 @@ export async function getFounderCount(secretKey: string): Promise<{ count: numbe
 
   try {
     const stripe = new Stripe(secretKey);
-    const counts = await Promise.all(FOUNDERS_PRICE_IDS.map(id => countActiveSubscriptions(stripe, id)));
+    const ids = [...FOUNDERS_PRICE_IDS, ...await bundlePriceIds(stripe)];
+    const counts = await Promise.all(ids.map(id => countActiveSubscriptions(stripe, id)));
     const total = counts.reduce((a, b) => a + b, 0);
     cache = { count: total, fetchedAt: Date.now() };
     return {
