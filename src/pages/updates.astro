@@ -33,6 +33,89 @@ import Base from '../layouts/Base.astro';
 
       <div class="wn-period">
         <div class="wn-period-label">
+          <span class="wn-period-date">November 2026</span>
+          <span class="wn-period-line"></span>
+        </div>
+
+        <article class="wn-spotlight" id="wealspring">
+          <img class="wn-spotlight-img" src="/images/updates/wealspring.webp" alt="Three cards laid out on a wooden table at dusk" width="1200" height="800" loading="lazy" decoding="async" />
+          <div class="wn-spotlight-body">
+            <div class="wn-label wn-label--premium">New · Featured</div>
+            <h3 class="wn-spotlight-title">Meet Wealspring, Whisp’s sister app</h3>
+            <p class="wn-desc">Bring a question and draw a card. Wealspring holds decks from many traditions, and every card you choose to keep can come home to your Whisp journal.</p>
+            <ul class="wn-spotlight-list">
+              <li><strong>Many decks, one quiet way to draw.</strong> Rider–Waite Tarot, Zodiac &amp; Astrology, Archetypes, Jungian, Catholic Saints and Hindu Deities are free, each read in its own tradition’s voice, upright or reversed.</li>
+              <li><strong>Save to Whisp.</strong> One tap and the card arrives in your journal as a Card Draw: the deck it came from, whether it came reversed, what was on your mind, and the reflection Wealspring wrote, kept rather than rewritten.</li>
+              <li><strong>Kept apart from your signs.</strong> A card you chose is different from a sign that found you, so draws have their own place in your Journal and are never counted in your sign patterns.</li>
+              <li><strong>Separate by design.</strong> Wealspring has its own account. Nothing crosses between the two apps except the cards you send.</li>
+            </ul>
+            <a class="btn btn-primary wn-spotlight-cta" href="https://wealspring.web.app" target="_blank" rel="noopener" data-analytics="updates_wealspring_cta">Try Wealspring</a>
+          </div>
+        </article>
+
+        <div class="wn-grid">
+
+          <div class="wn-card" id="card-draws">
+            <div class="wn-icon">✦</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Card Draws in Your Journal</h3>
+            <p class="wn-desc">Cards and runes you draw get their own colour, a Draws filter, and a page titled by the deck they came from. A reversed card says so beside its name.</p>
+          </div>
+
+          <div class="wn-card" id="astrology">
+            <div class="wn-icon">☉</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Astrology, Three Ways</h3>
+            <p class="wn-desc">One birth moment, read from three traditions: Western from the Sun, Vedic from the Moon’s nakshatra, Chinese from the Day Master and the Four Pillars. The one you follow leads; every tradition is there to explore.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❂</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Five Phases</h3>
+            <p class="wn-desc">Wood, Fire, Earth, Metal and Water, and the two cycles between them. See where your own words gather across the five, and your chart’s balance beside it, with no link claimed between the two.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">⌖</div>
+            <div class="wn-label">Improved</div>
+            <h3 class="wn-title">Birth Details, Found Properly</h3>
+            <p class="wn-desc">Pick your birthplace from a list as you type, so Portland, Maine is never mistaken for Portland, Oregon. A birth date alone is enough to begin; time and place add more. Visible only to you, and included when you export your data.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">✎</div>
+            <div class="wn-label">New</div>
+            <h3 class="wn-title">Note It Now, Publish It Later</h3>
+            <p class="wn-desc">Save a sign as a draft when there’s only time to note what you saw. Whisp waits: no reflection and nothing counted in your patterns until you add the details and publish it.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">◌</div>
+            <div class="wn-label">Improved</div>
+            <h3 class="wn-title">Possibility, Not Prediction</h3>
+            <p class="wn-desc">The shared meanings behind every symbol now pass the same check as Whisp’s reflections: they speak of what to notice, never of what will happen.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❋</div>
+            <div class="wn-label">Improved</div>
+            <h3 class="wn-title">Truer Counts</h3>
+            <p class="wn-desc">Chakra Resonance now counts whole words only, so “tired” no longer counts as “red”. Elemental Balance and Five Phases each name the tradition they come from.</p>
+          </div>
+
+          <div class="wn-card">
+            <div class="wn-icon">❝</div>
+            <div class="wn-label">Fixed</div>
+            <h3 class="wn-title">Reflections, in Full</h3>
+            <p class="wn-desc">A long reflection now shows to its last word, every time. A few were stopping mid-sentence.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wn-period">
+        <div class="wn-period-label">
           <span class="wn-period-date">October 2026</span>
           <span class="wn-period-line"></span>
         </div>
@@ -1069,6 +1152,7 @@ import Base from '../layouts/Base.astro';
     padding-left: 16px;
     position: relative;
   }
+  .wn-spotlight-cta { align-self: flex-start; margin-top: 8px; text-decoration: none; }
   .wn-spotlight-list li::before {
     content: '✦';
     position: absolute;
